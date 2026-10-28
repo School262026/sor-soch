@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рефлексия</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🙋%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .head input { flex: 1; min-width: 200px; font-size: 18px; font-weight: 700; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tabs .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .topic { text-align: center; font-size: clamp(22px, 4vw, 34px); font-weight: 900; margin: 6px 0 20px; }
+  .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 700px) { .choices { grid-template-columns: 1fr; } }
+  .choice {
+    border: 0; border-radius: 26px; padding: 28px 12px; cursor: pointer; color: #fff; font-weight: 900;
+    font-size: clamp(20px, 2.6vw, 30px); display: flex; flex-direction: column; align-items: center; gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15); transition: transform .12s; min-height: 240px; justify-content: center;
+  }
+  .choice:active { transform: scale(.96); }
+  .choice .em { font-size: clamp(70px, 10vw, 120px); line-height: 1; }
+  .c0 { background: linear-gradient(160deg, #40c057, #2b8a3e); }
+  .c1 { background: linear-gradient(160deg, #ff6b6b, #c92a2a); }
+  .c2 { background: linear-gradient(160deg, #fcc419, #e67700); }
+  .thanks { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 60; font-size: clamp(40px, 8vw, 90px); font-weight: 900; color: var(--text); background: color-mix(in srgb, var(--bg) 70%, transparent); opacity: 0; transition: opacity .2s; }
+  .thanks.on { opacity: 1; }
+  .total { text-align: center; margin-top: 18px; color: var(--muted); font-weight: 700; }
+  .bars { display: grid; gap: 18px; }
+  .bar .lab { display: flex; justify-content: space-between; font-weight: 800; font-size: 20px; margin-bottom: 6px; }
+  .bar .track { height: 38px; background: var(--bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .bar .fill { height: 100%; border-radius: 12px; transition: width .6s; }
+  .qform { display: flex; gap: 8px; margin-top: 16px; }
+  .qform input { flex: 1; font-size: 17px; }
+  .qs { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; }
+  .qs li { background: var(--amber-soft); border-radius: 12px; padding: 10px 14px; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+  .qs li.done { opacity: .5; text-decoration: line-through; }
+  .hist { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .hist th, .hist td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="head no-print">
+    <input type="text" id="topic" data-ip="topicPh">
+    <div class="tabs">
+      <button class="btn on" data-v="vote" data-i="vote"></button>
+      <button class="btn" data-v="res" data-i="results"></button>
+      <button class="btn" data-v="q" data-i="questions"></button>
+      <button class="btn" data-v="hist" data-i="history"></button>
+    </div>
+  </div>
+
+  <section id="v-vote">
+    <div class="topic" id="topicShow"></div>
+    <div class="choices" id="choices"></div>
+    <div class="total"><span data-i="voted"></span>: <b id="cnt">0</b> · <span class="muted" data-i="tapHint"></span></div>
+  </section>
+
+  <section id="v-res" class="card hide">
+    <div class="topic" id="topicShow2"></div>
+    <div class="bars" id="bars"></div>
+    <div class="row" style="margin-top:20px">
+      <button class="btn" id="save" data-i="saveRes"></button>
+      <button class="btn red" id="clr" data-i="newRound"></button>
+      <button class="btn" onclick="print()" data-i="print"></button>
+    </div>
+  </section>
+
+  <section id="v-q" class="card hide">
+    <h2 style="margin:0" data-i="questions"></h2>
+    <p class="muted" style="margin:4px 0 0" data-i="qHint"></p>
+    <form class="qform" id="qform"><input type="text" id="qin" data-ip="qPh" maxlength="300"><button class="btn primary" data-i="add"></button></form>
+    <ul class="qs" id="qs"></ul>
+  </section>
+
+  <section id="v-hist" class="card hide">
+    <table class="hist"><thead><tr><th data-i="date"></th><th data-i="topicCol"></th><th>😊</th><th>😕</th><th>🙋</th></tr></thead><tbody id="hist"></tbody></table>
+    <button class="btn sm" id="histClr" style="margin-top:12px" data-i="clearHist"></button>
+  </section>
+</main>
+<div class="thanks" id="thanks"></div>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'Рефлексия', ru: 'Рефлексия', en: 'Reflection' },
+  topicPh: { kk: 'Сабақ тақырыбы (мыс.: География — Материктер)', ru: 'Тема урока (напр.: География — Материки)', en: 'Lesson topic (e.g. Geography — Continents)' },
+  vote: { kk: 'Дауыс беру', ru: 'Голосование', en: 'Vote' },
+  results: { kk: 'Нәтиже', ru: 'Итоги', en: 'Results' },
+  questions: { kk: 'Сұрақтар', ru: 'Вопросы', en: 'Questions' },
+  history: { kk: 'Тарих', ru: 'История', en: 'History' },
+  o0: { kk: 'Бәрі түсінікті', ru: 'Всё понятно', en: 'All clear' },
+  o1: { kk: 'Тақырыпты түсінбедім', ru: 'Тему не понял(а)', en: 'I didn\'t get it' },
+  o2: { kk: 'Сұрағым бар', ru: 'Есть вопрос', en: 'I have a question' },
+  voted: { kk: 'Дауыс бергендер', ru: 'Проголосовали', en: 'Votes' },
+  tapHint: { kk: 'әр оқушы бір рет басады; нәтиже «Нәтиже» бетінде', ru: 'каждый ученик нажимает один раз; итоги — во вкладке «Итоги»', en: 'each student taps once; see the Results tab' },
+  thanks: { kk: 'Рақмет! 👍', ru: 'Спасибо! 👍', en: 'Thank you! 👍' },
+  saveRes: { kk: '💾 Тарихқа сақтау', ru: '💾 Сохранить в историю', en: '💾 Save to history' },
+  newRound: { kk: 'Жаңа рефлексия', ru: 'Новая рефлексия', en: 'New round' },
+  print: { kk: '🖨 Басып шығару', ru: '🖨 Печать', en: '🖨 Print' },
+  qHint: { kk: 'Оқушы сұрағын жазады — мұғалім сабақ соңында жауап береді.', ru: 'Ученик пишет свой вопрос — учитель отвечает в конце урока.', en: 'Students type a question — the teacher answers at the end of the lesson.' },
+  qPh: { kk: 'Сұрағыңызды жазыңыз…', ru: 'Напишите свой вопрос…', en: 'Type your question…' },
+  add: { kk: 'Қосу', ru: 'Добавить', en: 'Add' },
+  date: { kk: 'Күні', ru: 'Дата', en: 'Date' },
+  topicCol: { kk: 'Тақырып', ru: 'Тема', en: 'Topic' },
+  clearHist: { kk: 'Тарихты тазалау', ru: 'Очистить историю', en: 'Clear history' },
+  sure: { kk: 'Нәтижелер өшіріледі. Жалғастырасыз ба?', ru: 'Результаты будут удалены. Продолжить?', en: 'Results will be cleared. Continue?' },
+  saved: { kk: 'Сақталды ✓', ru: 'Сохранено ✓', en: 'Saved ✓' }
+});
+const $ = id => document.getElementById(id);
+const EM = ['😊', '😕', '🙋'];
+const COLORS = ['var(--green)', 'var(--red)', 'var(--amber)'];
+let st = App.store.get('mt-refl', { topic: '', votes: [0, 0, 0], qs: [], hist: [] });
+const save = () => App.store.set('mt-refl', st);
+
+$('topic').value = st.topic;
+$('topic').oninput = () => { st.topic = $('topic').value; save(); renderTopic(); };
+function renderTopic() { $('topicShow').textContent = st.topic; $('topicShow2').textContent = st.topic; }
+
+function renderChoices() {
+  $('choices').innerHTML = [0, 1, 2].map(i => '<button class="choice c' + i + '" data-c="' + i + '"><span class="em">' + EM[i] + '</span>' + App.t('o' + i) + '</button>').join('');
+}
+let thanksT;
+$('choices').onclick = e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  st.votes[+b.dataset.c]++; save(); $('cnt').textContent = sum();
+  App.beep(880, 0.12);
+  $('thanks').textContent = App.t('thanks'); $('thanks').classList.add('on');
+  clearTimeout(thanksT); thanksT = setTimeout(() => $('thanks').classList.remove('on'), 900);
+  if (b.dataset.c === '2') { tab('q'); setTimeout(() => $('qin').focus(), 50); }
+};
+const sum = () => st.votes.reduce((a, b) => a + b, 0);
+
+function renderBars() {
+  const n = sum() || 1;
+  $('bars').innerHTML = [0, 1, 2].map(i => {
+    const p = Math.round(st.votes[i] / n * 100);
+    return '<div class="bar"><div class="lab"><span>' + EM[i] + ' ' + App.t('o' + i) + '</span><span>' + st.votes[i] + ' · ' + (sum() ? p : 0) + '%</span></div>' +
+      '<div class="track"><div class="fill" style="width:' + (sum() ? p : 0) + '%;background:' + COLORS[i] + '"></div></div></div>';
+  }).join('');
+}
+function renderQs() {
+  $('qs').innerHTML = st.qs.map((q, i) => '<li class="' + (q.done ? 'done' : '') + '"><span>' + App.esc(q.t) + '</span>' +
+    '<span class="row"><button class="btn sm" data-d="' + i + '">✓</button><button class="btn sm" data-x="' + i + '">✕</button></span></li>').join('');
+}
+$('qform').onsubmit = e => {
+  e.preventDefault(); const v = $('qin').value.trim(); if (!v) return;
+  st.qs.push({ t: v }); save(); $('qin').value = ''; renderQs();
+};
+$('qs').onclick = e => {
+  const d = e.target.closest('[data-d]'), x = e.target.closest('[data-x]');
+  if (d) st.qs[+d.dataset.d].done = !st.qs[+d.dataset.d].done;
+  else if (x) st.qs.splice(+x.dataset.x, 1); else return;
+  save(); renderQs();
+};
+function renderHist() {
+  $('hist').innerHTML = st.hist.slice().reverse().map(h => '<tr><td>' + App.esc(h.d) + '</td><td>' + App.esc(h.t) + '</td><td>' + h.v[0] + '</td><td>' + h.v[1] + '</td><td>' + h.v[2] + '</td></tr>').join('');
+}
+$('save').onclick = () => {
+  st.hist.push({ d: new Date().toLocaleDateString(), t: st.topic, v: st.votes.slice() }); save(); renderHist();
+  $('save').textContent = App.t('saved'); setTimeout(() => $('save').textContent = App.t('saveRes'), 1500);
+};
+$('clr').onclick = () => { if (!confirm(App.t('sure'))) return; st.votes = [0, 0, 0]; st.qs = []; save(); renderAll(); };
+$('histClr').onclick = () => { if (!confirm(App.t('sure'))) return; st.hist = []; save(); renderHist(); };
+
+function tab(v) {
+  document.querySelectorAll('.tabs .btn').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  ['vote', 'res', 'q', 'hist'].forEach(k => $('v-' + k).classList.toggle('hide', k !== v));
+  if (v === 'res') renderBars();
+}
+document.querySelector('.tabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) tab(b.dataset.v); };
+function renderAll() { renderTopic(); renderChoices(); renderBars(); renderQs(); renderHist(); $('cnt').textContent = sum(); }
+App.onLang.push(renderAll);
+renderAll();
+</script>
+</body>
+</html>
