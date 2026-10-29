@@ -236,7 +236,7 @@ const blank = () => ({ id: Date.now(), grade: 5, kind: 'sor', subject: '', cls: 
 function newTask() { return { text: '', text2: '', opts: '', opts2: '', crit: 0, lines: 3, answer: '', desc: [{ d: '', p: 1 }] }; }
 let W = App.store.get('mt-gen-cur') || blank();
 // басты беттен «бастауыш» сілтемесімен келсе (?g=2) — аралық бағалауға ауысу
-{ const qg = +new URLSearchParams(location.search).get('g'); if (qg >= 2 && qg <= 4 && !(W.grade >= 2 && W.grade <= 4)) { W = blank(); W.grade = qg; W.kind = 'ao'; W.time = 25; } }
+{ const qg = +new URLSearchParams(location.search).get('g') || (App.prim ? 2 : 0); if (qg >= 2 && qg <= 4 && !(W.grade >= 2 && W.grade <= 4)) { W = blank(); W.grade = qg; W.kind = 'ao'; W.time = 25; } }
 let saved = App.store.get('mt-gen-saved', []);
 const save = () => App.store.set('mt-gen-cur', W);
 const isPrim = () => W.grade >= 2 && W.grade <= 4;
@@ -285,7 +285,7 @@ function sample() {
 
 // ---- форма
 function renderForm() {
-  $('grade').innerHTML = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(g => '<option' + (g === +W.grade ? ' selected' : '') + '>' + g + '</option>').join('');
+  $('grade').innerHTML = (App.prim ? [2, 3, 4] : [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]).map(g => '<option' + (g === +W.grade ? ' selected' : '') + '>' + g + '</option>').join('');
   if (!kinds().includes(W.kind)) W.kind = kinds()[0];
   const L = DL[App.lang];
   $('kind').innerHTML = kinds().map(k => '<button type="button" data-k="' + k + '" class="' + (k === W.kind ? 'on' : '') + '">' + L[k + 'S'] + '</button>').join('');

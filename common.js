@@ -19,6 +19,7 @@
 
   const COMMON = {
     home: { kk: 'Мұғалім құралдары', ru: 'Инструменты учителя', en: 'Teacher Tools' },
+    homePrim: { kk: 'Бастауыш сынып мұғаліміне', ru: 'Учителю начальных классов', en: 'Primary teacher' },
     footer: {
       kk: 'Тегін. Тіркелусіз. Деректер тек сіздің құрылғыңызда сақталады.',
       ru: 'Бесплатно. Без регистрации. Данные хранятся только на вашем устройстве.',
@@ -26,7 +27,9 @@
     }
   };
 
+  const PRIM = new URLSearchParams(location.search).get('prim') === '1' || document.body.dataset.prim === '1';
   const App = {
+    prim: PRIM,
     lang: pickLang(),
     dict: {},
     store,
@@ -62,7 +65,7 @@
         const bar = document.createElement('header');
         bar.className = 'topbar';
         bar.innerHTML =
-          '<a class="home" href="index.html"><span class="logo">✎</span><span data-i="home"></span></a>' +
+          (PRIM ? '<a class="home" href="bastauysh.html"><span class="logo" style="background:var(--green)">🎒</span><span data-i="homePrim"></span></a>' : '<a class="home" href="index.html"><span class="logo">✎</span><span data-i="home"></span></a>') +
           '<span class="title">' + (App.dict.pageTitle ? '<span data-i="pageTitle"></span>' : '') + '</span>' +
           '<div class="langs">' + LANGS.map(l => '<button type="button" data-l="' + l + '">' + LABELS[l] + '</button>').join('') + '</div>';
         document.body.prepend(bar);
@@ -82,6 +85,7 @@
         const u = new URL(a.href, location.href);
         if (u.origin !== location.origin) return;
         u.searchParams.set('lang', App.lang);
+        if (PRIM && !/index\.html$/.test(u.pathname)) u.searchParams.set('prim', '1');
         a.href = u.toString();
       }, true);
     },

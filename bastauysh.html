@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Бастауыш сынып мұғаліміне (2–4)</title>
+<meta name="description" content="Бастауыш сынып (2–4) мұғаліміне тегін құралдар: аралық бағалау жұмысын құрастыру, аралық бағалау талдауы, тоқсандық баға (Q), сабақ таймері, рефлексия. Қазақша/орысша.">
+<meta property="og:title" content="Бастауыш сынып мұғаліміне (2–4) / Учителю начальных классов">
+<meta property="og:description" content="Аралық бағалау (ПО): құрастыру, талдау, баға. Таймер, рефлексия. Тегін.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎒%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .hero { text-align: center; padding: 28px 0 8px; }
+  .hero .big { font-size: 56px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 8px; font-weight: 900; }
+  .hero p { margin: 0 auto; max-width: 660px; color: var(--muted); font-size: 18px; }
+  .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 16px 0 22px; }
+  .badge { background: var(--green-soft); color: var(--green); font-weight: 800; padding: 5px 12px; border-radius: 999px; font-size: 14px; }
+  h2.sec { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 26px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+  .tool { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--text); transition: transform .15s, box-shadow .15s; }
+  .tool:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(28,36,52,.14); }
+  .tool .ic { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-size: 28px; }
+  .tool h3 { margin: 4px 0 0; font-size: 20px; }
+  .tool p { margin: 0; color: var(--muted); font-size: 15px; }
+  .rule { margin-top: 8px; background: var(--amber-soft); border-color: transparent; }
+  .flow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; font-weight: 800; }
+  .flow span { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+  .other { text-align: center; margin-top: 26px; }
+</style>
+</head>
+<body data-prim="1">
+<main class="wrap">
+  <section class="hero">
+    <div class="big">🎒</div>
+    <h1 data-i="h1"></h1>
+    <p data-i="lead"></p>
+    <div class="badges"><span class="badge" data-i="b1"></span><span class="badge" data-i="b2"></span><span class="badge">✓ ҚАЗ · РУС</span></div>
+    <div class="flow"><span data-i="f1"></span>→<span data-i="f2"></span>→<span data-i="f3"></span>→<span data-i="f4"></span></div>
+  </section>
+
+  <h2 class="sec" data-i="sAssess"></h2>
+  <section class="grid">
+    <a class="card tool" href="sor-soch-generator.html"><span class="ic" style="background:var(--violet-soft)">📝</span><h3 data-i="t1"></h3><p data-i="d1"></p></a>
+    <a class="card tool" href="aralyq-bagalau-taldauy.html"><span class="ic" style="background:var(--green-soft)">📊</span><h3 data-i="t2"></h3><p data-i="d2"></p></a>
+    <a class="card tool" href="kalkulyator-sor-soch.html"><span class="ic" style="background:var(--primary-soft)">🧮</span><h3 data-i="t3"></h3><p data-i="d3"></p></a>
+  </section>
+
+  <h2 class="sec" data-i="sLesson"></h2>
+  <section class="grid">
+    <a class="card tool" href="sabak-taimeri.html"><span class="ic" style="background:var(--primary-soft)">⏱️</span><h3 data-i="t5"></h3><p data-i="d5"></p></a>
+    <a class="card tool" href="taimer-1-minut.html"><span class="ic" style="background:var(--amber-soft)">⏳</span><h3 data-i="t6"></h3><p data-i="d6"></p></a>
+    <a class="card tool" href="refleksiya.html"><span class="ic" style="background:var(--green-soft)">🙋</span><h3 data-i="t7"></h3><p data-i="d7"></p></a>
+  </section>
+
+  <div class="card rule" style="margin-top:22px" data-ih="rule"></div>
+  <p class="other"><a href="index.html" data-i="other"></a></p>
+</main>
+<script src="common.js"></script>
+<script>
+App.init({
+  h1: { kk: 'Бастауыш сынып мұғаліміне (2–4)', ru: 'Учителю начальных классов (2–4)' },
+  lead: { kk: 'Аралық бағалау жұмысын құрастыру, нәтижені енгізу, талдауды автоматты жазу және тоқсандық бағаны есептеу — бір жерде.', ru: 'Составить работу ПО, внести результаты, автоматически написать анализ и рассчитать четвертную оценку — в одном месте.' },
+  b1: { kk: '✓ Тегін', ru: '✓ Бесплатно' }, b2: { kk: '✓ Тіркелусіз', ru: '✓ Без регистрации' },
+  f1: { kk: '1. Құрастыру', ru: '1. Составить' }, f2: { kk: '2. Өткізу', ru: '2. Провести' }, f3: { kk: '3. Талдау', ru: '3. Анализ' }, f4: { kk: '4. Тоқсан бағасы', ru: '4. Оценка за четверть' },
+  sAssess: { kk: 'Аралық бағалау (АБ / ПО)', ru: 'Промежуточное оценивание (ПО)' },
+  sLesson: { kk: 'Сабақта', ru: 'На уроке' },
+  t1: { kk: 'Аралық бағалау жұмысын құрастыру', ru: 'Составить работу ПО' },
+  d1: { kk: '2 нұсқа, оқу мақсаттары, критерийлер, дескрипторлар, балл (12/14/16) → Word / PDF.', ru: '2 варианта, цели обучения, критерии, дескрипторы, баллы (12/14/16) → Word / PDF.' },
+  t2: { kk: 'Аралық бағалау талдауы', ru: 'Анализ ПО' },
+  d2: { kk: 'Баллдарды енгізіп, белгілеңіз — деңгейлер, мақсаттар, қиындықтар, себептер, түзету жұмысы өзі жазылады. Word, PDF.', ru: 'Введите баллы и отметьте — уровни, цели, затруднения, причины, коррекция пишутся сами. Word, PDF.' },
+  t3: { kk: 'Тоқсандық баға (Q)', ru: 'Оценка за четверть (Q)' },
+  d3: { kk: 'Q = (F + P) / 2, жылдық баға, білім сапасы.', ru: 'Q = (F + P) / 2, годовая оценка, качество знаний.' },
+  t5: { kk: 'Сабақ таймері', ru: 'Таймер для урока' }, d5: { kk: 'Кез келген уақыт, дыбыс, толық экран.', ru: 'Любое время, звук, полный экран.' },
+  t6: { kk: '1 минуттық таймер', ru: 'Таймер на 1 минуту' }, d6: { kk: '3-2-1 бастау, үлкен сандар.', ru: 'Старт 3-2-1, крупные цифры.' },
+  t7: { kk: 'Рефлексия', ru: 'Рефлексия' }, d7: { kk: '«Түсіндім / Түсінбедім / Сұрағым бар».', ru: '«Понял / Не понял / Есть вопрос».' },
+  rule: { kk: '<b>2026–2027 оқу жылынан:</b> 2–4 сыныптарда БЖБ мен ТЖБ жоқ — бөлімдер бойынша <b>аралық бағалау</b> өткізіледі. Ең жоғары балл: 2-сынып — 12, 3-сынып — 14, 4-сынып — 16. Тоқсандық баға: Q = (F + P) / 2 (№257-НҚ бұйрық).', ru: '<b>С 2026–2027 учебного года:</b> во 2–4 классах нет СОР и СОЧ — проводится <b>промежуточное оценивание</b> за разделы. Максимум: 2 класс — 12, 3 класс — 14, 4 класс — 16 баллов. Четвертная: Q = (F + P) / 2 (приказ № 257-НҚ).' },
+  other: { kk: '5–11 сыныптарға арналған барлық құралдар (БЖБ, ТЖБ) →', ru: 'Все инструменты для 5–11 классов (СОР, СОЧ) →' }
+});
+</script>
+</body>
+</html>

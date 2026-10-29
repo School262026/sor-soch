@@ -244,6 +244,7 @@ function tab(v) {
 $('tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (b) tab(b.dataset.t); };
 function all() { renderSors(); renderQs(); renderCnts(); calc511(); calc24(); calcYear(); calcQual(); }
 App.onLang.push(all);
+if (App.prim) { document.querySelector('[data-t="q511"]').classList.add('hide'); st.yPrim = true; $('yPrim').checked = true; $('yPrim').closest('label').classList.add('hide'); if (st.tab === 'q511') st.tab = 'q24'; }
 all(); tab(st.tab || 'q511');
 </script>
 </body>
