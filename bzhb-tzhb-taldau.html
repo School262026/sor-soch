@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>БЖБ/ТЖБ талдауы</title>
+<meta name="description" content="БЖБ және ТЖБ (СОР, СОЧ) нәтижелерін талдау: сапа, үлгерім, деңгейлер, мониторинг кестесі, диаграмма → Word. Тегін.">
+<meta property="og:title" content="Анализ СОР и СОЧ / БЖБ және ТЖБ талдауы">
+<meta property="og:description" content="Баллдарды енгізіңіз — сапа, үлгерім, деңгейлер, диаграмма, Word құжаты өзі дайындалады.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .steps { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .steps .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  h2 { margin: 0 0 10px; font-size: 20px; }
+  h3 { margin: 16px 0 8px; font-size: 16px; }
+  .g4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .fld { display: grid; gap: 4px; margin: 6px 0; }
+  .fld > span { font-weight: 800; font-size: 14px; }
+  .fld small { color: var(--muted); font-size: 13px; }
+  .works { display: grid; gap: 10px; }
+  .work { display: grid; grid-template-columns: 1.2fr 90px 1.6fr auto; gap: 6px; align-items: center; }
+  @media (max-width: 640px) { .work { grid-template-columns: 1fr 80px; } }
+  .scroll { overflow-x: auto; }
+  table.sc { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.sc th, table.sc td { border-bottom: 1px solid var(--line); padding: 4px 6px; text-align: center; white-space: nowrap; }
+  table.sc th:nth-child(2), table.sc td:nth-child(2) { text-align: left; }
+  table.sc input { width: 64px; text-align: center; padding: 5px; }
+  table.sc .pct { color: var(--muted); font-size: 13px; }
+  .lv-h { color: var(--green); font-weight: 800; } .lv-m { color: var(--amber); font-weight: 800; } .lv-l { color: var(--red); font-weight: 800; }
+  .kpis { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+  .kpi { background: var(--bg); border-radius: 12px; padding: 10px 14px; font-size: 14px; } .kpi b { font-size: 20px; display: block; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+  .chips button { border: 1px dashed var(--line); background: var(--card); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .paper { background: #fff; color: #000; border-radius: 6px; padding: 28px 30px; box-shadow: var(--shadow); font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.35; overflow-x: auto; }
+  .paper h1 { font-size: 16px; text-align: center; margin: 0 0 4px; }
+  .paper p { margin: 6px 0; }
+  .paper table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .paper td, .paper th { border: 1px solid #000; padding: 3px 5px; vertical-align: top; text-align: center; }
+  .paper td.l { text-align: left; }
+  .paper img { max-width: 100%; }
+  .saved li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .saved ul { list-style: none; padding: 0; margin: 0; }
+  .note { background: var(--green-soft); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+  @media print {
+    body * { visibility: hidden; }
+    #paper, #paper * { visibility: visible; }
+    #paper { position: absolute; left: 0; top: 0; box-shadow: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="steps no-print" id="steps">
+    <button class="btn on" data-s="1" data-i="st1"></button>
+    <button class="btn" data-s="2" data-i="st2"></button>
+    <button class="btn" data-s="3" data-i="st3"></button>
+    <button class="btn" data-s="4" data-i="st4"></button>
+    <button class="btn" data-s="5" data-i="st5"></button>
+  </div>
+
+  <!-- 1. Негізгі -->
+  <section class="card" id="s1">
+    <div class="actions"><button class="btn sm" id="newDoc" data-i="newDoc"></button><button class="btn sm" id="sample" data-i="sample"></button><button class="btn sm green" id="saveDoc" data-i="saveDoc"></button></div>
+    <h2 data-i="st1"></h2>
+    <div class="g4">
+      <label class="fld"><span data-i="subject"></span><input type="text" id="subject" list="subjList"><datalist id="subjList"></datalist></label>
+      <label class="fld"><span data-i="cls"></span><input type="text" id="cls" placeholder="6А"></label>
+      <label class="fld"><span data-i="term"></span><select id="term"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      <label class="fld"><span data-i="teacher"></span><input type="text" id="teacher"></label>
+      <label class="fld"><span data-i="year"></span><input type="text" id="year"></label>
+      <label class="fld"><span data-i="docLang"></span><select id="docLang"><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label>
+    </div>
+    <h3 data-i="works"></h3>
+    <p class="muted" style="margin:0 0 8px" data-i="worksHint"></p>
+    <div class="works" id="works"></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-addw="bzhb" data-i="addBzhb"></button><button class="btn sm" data-addw="tzhb" data-i="addTzhb"></button><button class="btn sm" data-addw="ab" data-i="addAb"></button></div>
+    <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn primary" data-go="2" data-i="next"></button></div>
+  </section>
+
+  <!-- 2. Баллдар -->
+  <section class="card hide" id="s2">
+    <h2 data-i="st2"></h2>
+    <div class="g4">
+      <label class="fld" style="grid-column:1/-1"><span data-i="roster"></span><textarea id="roster" rows="5" data-ip="rosterPh"></textarea><small data-i="rosterHint"></small></label>
+    </div>
+    <label class="row"><input type="checkbox" id="useFo"><span data-i="useFo"></span></label>
+    <div class="scroll" id="grid"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" data-go="3" data-i="next"></button></div>
+  </section>
+
+  <!-- 3. Мақсаттар -->
+  <section class="card hide" id="s3">
+    <h2 data-i="st3"></h2>
+    <div id="goals"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" data-go="4" data-i="next"></button></div>
+  </section>
+
+  <!-- 4. Қорытынды мәтін -->
+  <section class="card hide" id="s4">
+    <h2 data-i="st4"></h2>
+    <div id="texts"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" data-go="5" data-i="next"></button></div>
+  </section>
+
+  <!-- 5. Құжат -->
+  <section class="hide" id="s5">
+    <div class="actions no-print">
+      <button class="btn primary" id="word" data-i="word"></button>
+      <button class="btn" id="print" data-i="print"></button>
+      <label class="row"><input type="checkbox" id="charts"><span data-i="chartsOn"></span></label>
+    </div>
+    <div class="paper" id="paper"></div>
+  </section>
+
+  <section class="card saved no-print" style="margin-top:16px"><h2 data-i="savedT"></h2><ul id="savedList"></ul>
+    <p class="note" data-i="privacy"></p></section>
+</main>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'БЖБ/ТЖБ талдауы', ru: 'Анализ СОР и СОЧ' },
+  st1: { kk: '① Негізгі мәлімет', ru: '① Основные данные' },
+  st2: { kk: '② Баллдар', ru: '② Баллы' },
+  st3: { kk: '③ Оқу мақсаттары', ru: '③ Цели обучения' },
+  st4: { kk: '④ Қорытынды', ru: '④ Выводы' },
+  st5: { kk: '⑤ Құжат', ru: '⑤ Документ' },
+  newDoc: { kk: '＋ Жаңа', ru: '＋ Новый' }, sample: { kk: '✨ Үлгі', ru: '✨ Образец' }, saveDoc: { kk: '💾 Сақтау', ru: '💾 Сохранить' }, saved: { kk: 'Сақталды ✓', ru: 'Сохранено ✓' },
+  subject: { kk: 'Пән', ru: 'Предмет' }, cls: { kk: 'Сынып', ru: 'Класс' }, term: { kk: 'Тоқсан', ru: 'Четверть' }, teacher: { kk: 'Педагог', ru: 'Педагог' }, year: { kk: 'Оқу жылы', ru: 'Учебный год' },
+  docLang: { kk: 'Құжат тілі', ru: 'Язык документа' },
+  works: { kk: 'Жұмыстар', ru: 'Работы' },
+  worksHint: { kk: 'Атауы · ең жоғары балл · бөлім атауы', ru: 'Название · максимальный балл · раздел' },
+  wName: { kk: 'Атауы', ru: 'Название' }, wMax: { kk: 'Макс.', ru: 'Макс.' }, wUnit: { kk: 'Бөлім (мыс.: «Ғылым әлемі»)', ru: 'Раздел (напр.: «Мир науки»)' },
+  addBzhb: { kk: '＋ БЖБ', ru: '＋ СОР' }, addTzhb: { kk: '＋ ТЖБ', ru: '＋ СОЧ' }, addAb: { kk: '＋ Аралық бағалау (2–4)', ru: '＋ Промежуточное (2–4)' },
+  next: { kk: 'Келесі →', ru: 'Далее →' },
+  roster: { kk: 'Оқушылар тізімі', ru: 'Список учеников' },
+  rosterPh: { kk: 'Әр жолға бір оқушы (Excel-ден көшіріп қоюға болады)', ru: 'По одному ученику в строке (можно вставить из Excel)' },
+  rosterHint: { kk: 'Кеңес: Excel-ден бір бағанды (баллдарды) көшіріп, бірінші ұяшыққа қойсаңыз — бүкіл баған толады.', ru: 'Совет: скопируйте из Excel столбец баллов и вставьте в первую ячейку — заполнится весь столбец.' },
+  useFo: { kk: 'Тоқсандық бағаны есептеу (ҚБ % бағанын қосу)', ru: 'Рассчитать четвертную оценку (добавить столбец ФО %)' },
+  name: { kk: 'Аты-жөні', ru: 'ФИО' }, qGrade: { kk: 'Тоқсан', ru: 'Четв.' },
+  count: { kk: 'Оқушы', ru: 'Учеников' }, quality: { kk: 'Сапа', ru: 'Качество' }, perf: { kk: 'Үлгерім', ru: 'Успеваемость' },
+  high: { kk: 'Жоғары', ru: 'Высокий' }, mid: { kk: 'Орта', ru: 'Средний' }, low: { kk: 'Төмен', ru: 'Низкий' },
+  achieved: { kk: 'Қол жеткізілген мақсаттар', ru: 'Достигнутые цели' }, difficult: { kk: 'Қиындық тудырған мақсаттар', ru: 'Цели, вызвавшие затруднения' },
+  t2: { kk: '2. Оқушыларға туындаған қиындықтар', ru: '2. Затруднения, возникшие у обучающихся' },
+  t3: { kk: '3. Қиындықтардың себептері', ru: '3. Причины затруднений' },
+  t4: { kk: '4. Жоспарланған түзету жұмысы', ru: '4. Планируемая коррекционная работа' },
+  tGoal: { kk: 'Талдау мақсаты (бос болса — автоматты)', ru: 'Цель анализа (если пусто — автоматически)' },
+  word: { kk: '⬇ Word (.doc)', ru: '⬇ Word (.doc)' }, print: { kk: '🖨 Басып шығару / PDF', ru: '🖨 Печать / PDF' },
+  chartsOn: { kk: 'Диаграммалар', ru: 'Диаграммы' },
+  savedT: { kk: '📂 Сақталған талдаулар', ru: '📂 Сохранённые анализы' }, open: { kk: 'Ашу', ru: 'Открыть' }, del: { kk: 'Өшіру', ru: 'Удалить' },
+  none: { kk: 'Әзірге жоқ.', ru: 'Пока нет.' }, sure: { kk: 'Өшіресіз бе?', ru: 'Удалить?' },
+  sureNew: { kk: 'Ағымдағы талдау тазаланады. Жалғастырасыз ба?', ru: 'Текущий анализ будет очищен. Продолжить?' },
+  privacy: { kk: '🔒 Оқушылардың аты-жөні ешқайда жіберілмейді — тек сіздің браузеріңізде сақталады.', ru: '🔒 ФИО учеников никуда не отправляются — хранятся только в вашем браузере.' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t, esc = App.esc;
+const R1 = x => Math.round(x * 10) / 10;
+const fmtN = x => String(R1(x)).replace('.', ',');
+
+// Құжат мәтіндері
+const DL = {
+  kk: {
+    title: 'Жиынтық бағалаудың сараптама нәтижесі', term: 'тоқсан', subjWord: 'пәні', cls: 'Сынып', count: 'Оқушылар саны', teacher: 'Педагог', goalW: 'Мақсаты',
+    goalAuto: (s, u, w) => s + ' пәні ' + u + ' бөлімдері бойынша өткізілген ' + w + ' нәтижелерін талдау, жиынтық бағалауда оқушылардың тапсырмаларды орындау деңгейін саралау, білім, білік және дағдыларын анықтау.',
+    subject: 'Пән', students: 'Оқушы', maxS: 'Жоғары балл', pctC: 'ЖБ балдарының пайыздық мазмұны', qual: 'Сапа %', perf: 'Үлгерім %',
+    low: 'төмен', mid: 'орта', high: 'жоғары', ach: 'Қол жеткізілген мақсаттар', dif: 'Қиындық тудырған мақсаттар',
+    lv1: n => '1. ' + n + ' нәтижелерін талдау білім алушылардың келесі білім деңгейін көрсетті:', H: 'Жоғары', M: 'Орта', L: 'Төмен', no: 'жоқ',
+    mon: 'Сараптама мониторингі', monGoal: 'Мақсаты: БЖБ, ТЖБ талдауынан оқушылардың оқу жетістіктерінің деңгейлерін (ОЖД) анықтау', nameC: 'Оқушының аты-жөні', maxC: 'Макс. балл', qC: 'тқс', avg: 'Орташа', chart: 'Оқушылардың нәтижесі, %'
+  },
+  ru: {
+    title: 'Результаты анализа суммативного оценивания', term: 'четверть', subjWord: '', cls: 'Класс', count: 'Количество учеников', teacher: 'Педагог', goalW: 'Цель',
+    goalAuto: (s, u, w) => 'Анализ результатов ' + w + ' по предмету «' + s + '» по разделам ' + u + ', определение уровня выполнения заданий, знаний, умений и навыков обучающихся.',
+    subject: 'Предмет', students: 'Учеников', maxS: 'Макс. балл', pctC: 'Процентное содержание баллов СО', qual: 'Качество %', perf: 'Успеваемость %',
+    low: 'низкий', mid: 'средний', high: 'высокий', ach: 'Достигнутые цели', dif: 'Цели, вызвавшие затруднения',
+    lv1: n => '1. Анализ результатов ' + n + ' показал следующий уровень знаний обучающихся:', H: 'Высокий', M: 'Средний', L: 'Низкий', no: 'нет',
+    mon: 'Мониторинг', monGoal: 'Цель: определить уровни учебных достижений обучающихся по результатам СОР и СОЧ', nameC: 'ФИО обучающегося', maxC: 'Макс. балл', qC: 'четв.', avg: 'Среднее', chart: 'Результаты обучающихся, %'
+  }
+};
+const SHORT = { kk: { bzhb: 'БЖБ', tzhb: 'ТЖБ', ab: 'АБ' }, ru: { bzhb: 'СОР', tzhb: 'СОЧ', ab: 'ПО' } };
+const PHR = {
+  t2: { kk: ['Елеусіз қателер көп, бірақ ойды түсінуге кедергі келтірмейді.', 'Есептеу тапсырмаларында қателіктер жіберілді.', 'Ұғымдарды ажыратуда қиналды.', 'Сызба, карта, кестемен жұмыс істеуде қиындықтар болды.', 'Жауапты толық негіздей алмады.'],
+        ru: ['Много незначительных ошибок, но они не мешают пониманию.', 'Допущены ошибки в расчётных заданиях.', 'Затруднялись различать понятия.', 'Были трудности при работе со схемой, картой, таблицей.', 'Не смогли полностью обосновать ответ.'] },
+  t3: { kk: ['Тапсырманың шартын мұқият оқымау.', 'Тақырып пен сұрақты түсінуде қиналады.', 'Уақытты дұрыс бөле алмау.', 'Тақырыпты қайталаудың жеткіліксіздігі.', 'Ойын жеткізуде ішінара ауытқулар кездеседі.'],
+        ru: ['Невнимательное чтение условия задания.', 'Затрудняются в понимании темы и вопроса.', 'Неумение распределить время.', 'Недостаточное повторение темы.', 'При изложении мысли встречаются отклонения.'] },
+  t4: { kk: ['Қателік жіберілген тақырыптар бойынша қайталау сабағында қателікпен жұмыс жүргізіледі.', 'Деңгейлік қосымша тапсырмалар беріледі.', 'Жеке кеңес беру (консультация) ұйымдастырылады.', 'Оқулықты, атласты оқуға және қосымша тапсырмаларды орындауға ұсыныс берілді.', 'Төмен нәтиже көрсеткен оқушылармен жеке жұмыс жүргізіледі.'],
+        ru: ['На уроке повторения проводится работа над ошибками по темам с ошибками.', 'Даются дополнительные разноуровневые задания.', 'Организуются индивидуальные консультации.', 'Рекомендовано работать с учебником, атласом и выполнять дополнительные задания.', 'Проводится индивидуальная работа с учениками с низкими результатами.'] }
+};
+const SUBJ = { kk: ['Жаратылыстану', 'География', 'Биология', 'Физика', 'Химия', 'Математика', 'Алгебра', 'Геометрия', 'Қазақ тілі', 'Қазақ әдебиеті', 'Орыс тілі', 'Ағылшын тілі', 'Қазақстан тарихы', 'Дүниежүзі тарихы', 'Информатика', 'Дүниетану', 'Әдебиеттік оқу'],
+  ru: ['Естествознание', 'География', 'Биология', 'Физика', 'Химия', 'Математика', 'Алгебра', 'Геометрия', 'Русский язык', 'Русская литература', 'Казахский язык', 'Английский язык', 'История Казахстана', 'Всемирная история', 'Информатика', 'Познание мира', 'Литературное чтение'] };
+
+function work(type, n, max) { return { type, n, max, unit: '', ach: '', dif: '' }; }
+const blank = () => ({ id: Date.now(), subject: '', cls: '', term: 1, teacher: '', year: '2026-2027', docLang: App.lang,
+  works: [work('bzhb', 1, 10), work('bzhb', 2, 10), work('tzhb', 1, 20)], roster: '', scores: {}, fo: {}, useFo: false, goal: '', t2: '', t3: '', t4: '', charts: true });
+let A = App.store.get('mt-an-cur') || blank();
+let saved = App.store.get('mt-an-saved', []);
+const save = () => App.store.set('mt-an-cur', A);
+const students = () => A.roster.split('\n').map(s => s.trim()).filter(Boolean);
+const wName = (w, lang) => SHORT[lang || App.lang][w.type] + (w.type === 'tzhb' && A.works.filter(x => x.type === 'tzhb').length < 2 ? '' : ' ' + w.n);
+const sc = (wi, si) => { const v = (A.scores[wi] || {})[si]; return v === '' || v == null ? null : +v; };
+const pct = (wi, si) => { const v = sc(wi, si); return v == null ? null : v / (+A.works[wi].max || 1) * 100; };
+const lvOf = p => p >= 85 ? 'h' : p >= 40 ? 'm' : 'l';
+
+function stats(wi) {
+  const st = students(); let n = 0, h = 0, m = 0, l = 0, q = 0, u = 0, sum = 0;
+  st.forEach((_, si) => { const p = pct(wi, si); if (p == null) return; n++; sum += p; const lv = lvOf(p); lv === 'h' ? h++ : lv === 'm' ? m++ : l++; if (p >= 65) q++; if (p >= 40) u++; });
+  return { n, h, m, l, q: n ? Math.round(q / n * 100) : 0, u: n ? Math.round(u / n * 100) : 0, avg: n ? sum / n : 0 };
+}
+// тоқсандық баға: ҚБ 25% + БЖБ 25% + ТЖБ 50%; ТЖБ жоқ болса, баға шығарылмайды (2–4 сынып — Q = (F+P)/2)
+function quarter(si) {
+  const fo = +((A.fo || {})[si]); if (!A.useFo || !(A.fo || {})[si]) return null;
+  const idx = t => A.works.map((w, i) => w.type === t ? i : -1).filter(i => i >= 0 && sc(i, si) != null);
+  const sum = ids => ids.reduce((a, i) => a + sc(i, si), 0), mx = ids => ids.reduce((a, i) => a + +A.works[i].max, 0);
+  const ab = idx('ab');
+  let p;
+  if (ab.length) p = (fo + sum(ab) / mx(ab) * 100) / 2;
+  else { const s = idx('bzhb'), c = idx('tzhb'); if (!s.length || !c.length) return null; p = fo * 0.25 + sum(s) / mx(s) * 25 + sum(c) / mx(c) * 50; }
+  return p >= 85 ? 5 : p >= 65 ? 4 : p >= 40 ? 3 : 2;
+}
+
+// ---- ① жұмыстар
+function renderS1() {
+  ['subject', 'cls', 'teacher', 'year'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = A[k]; });
+  $('term').value = A.term; $('docLang').value = A.docLang;
+  $('subjList').innerHTML = SUBJ[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
+  $('works').innerHTML = A.works.map((w, i) => '<div class="work"><b>' + esc(wName(w)) + '</b>' +
+    '<input type="number" min="1" data-w="' + i + ':max" value="' + w.max + '" title="' + esc(t('wMax')) + '">' +
+    '<input type="text" data-w="' + i + ':unit" value="' + esc(w.unit) + '" placeholder="' + esc(t('wUnit')) + '">' +
+    '<button class="btn sm" data-rmw="' + i + '">✕</button></div>').join('');
+}
+['subject', 'cls', 'teacher', 'year'].forEach(k => $(k).oninput = () => { A[k] = $(k).value; save(); });
+$('term').onchange = () => { A.term = +$('term').value; save(); };
+$('docLang').onchange = () => { A.docLang = $('docLang').value; save(); };
+$('works').oninput = e => { const k = e.target.dataset.w; if (!k) return; const [i, f] = k.split(':'); A.works[i][f] = e.target.value; save(); };
+$('works').onclick = e => { const b = e.target.closest('[data-rmw]'); if (!b) return; A.works.splice(+b.dataset.rmw, 1); renum(); save(); renderS1(); };
+document.querySelectorAll('[data-addw]').forEach(b => b.onclick = () => { const ty = b.dataset.addw; A.works.push(work(ty, 0, ty === 'tzhb' ? 20 : ty === 'ab' ? 14 : 10)); renum(); save(); renderS1(); });
+function renum() { const c = {}; A.works.forEach(w => { c[w.type] = (c[w.type] || 0) + 1; w.n = c[w.type]; }); }
+
+// ---- ② баллдар
+function renderGrid() {
+  const st = students();
+  if (!st.length) { $('grid').innerHTML = ''; $('kpis').innerHTML = ''; return; }
+  let h = '<table class="sc"><thead><tr><th>№</th><th>' + t('name') + '</th>' + A.works.map(w => '<th>' + esc(wName(w)) + '<br><span class="pct">max ' + w.max + '</span></th>').join('') +
+    (A.useFo ? '<th>ҚБ %</th><th>' + t('qGrade') + '</th>' : '') + '</tr></thead><tbody>';
+  st.forEach((s, si) => {
+    h += '<tr><td>' + (si + 1) + '</td><td>' + esc(s) + '</td>' + A.works.map((w, wi) => {
+      const p = pct(wi, si);
+      return '<td><input type="number" min="0" max="' + w.max + '" data-c="' + wi + ':' + si + '" value="' + (sc(wi, si) ?? '') + '"> <span class="pct ' + (p == null ? '' : 'lv-' + lvOf(p)) + '" data-p="' + wi + ':' + si + '">' + (p == null ? '' : Math.round(p) + '%') + '</span></td>';
+    }).join('') + (A.useFo ? '<td><input type="number" min="0" max="100" data-fo="' + si + '" value="' + ((A.fo || {})[si] ?? '') + '"></td><td><b data-q="' + si + '">' + (quarter(si) ?? '') + '</b></td>' : '') + '</tr>';
+  });
+  $('grid').innerHTML = h + '</tbody></table>';
+  renderKpis();
+}
+function renderKpis() {
+  $('kpis').innerHTML = A.works.map((w, wi) => { const s = stats(wi); return '<div class="kpi"><b>' + esc(wName(w)) + '</b>' + t('quality') + ' ' + s.q + '% · ' + t('perf') + ' ' + s.u + '%<br><span class="lv-h">' + s.h + '</span> / <span class="lv-m">' + s.m + '</span> / <span class="lv-l">' + s.l + '</span></div>'; }).join('');
+}
+$('roster').oninput = () => { A.roster = $('roster').value; save(); renderGrid(); };
+$('useFo').onchange = () => { A.useFo = $('useFo').checked; save(); renderGrid(); };
+$('grid').oninput = e => {
+  const el = e.target;
+  if (el.dataset.c) {
+    const [wi, si] = el.dataset.c.split(':');
+    (A.scores[wi] = A.scores[wi] || {})[si] = el.value;
+    const p = pct(wi, si), sp = $('grid').querySelector('[data-p="' + wi + ':' + si + '"]');
+    sp.textContent = p == null ? '' : Math.round(p) + '%'; sp.className = 'pct ' + (p == null ? '' : 'lv-' + lvOf(p));
+  } else if (el.dataset.fo) { (A.fo = A.fo || {})[el.dataset.fo] = el.value; } else return;
+  save(); renderKpis();
+  if (A.useFo) students().forEach((_, si) => { const q = $('grid').querySelector('[data-q="' + si + '"]'); if (q) q.textContent = quarter(si) ?? ''; });
+};
+// Excel-ден бағанды қою
+$('grid').addEventListener('paste', e => {
+  const el = e.target; const txt = (e.clipboardData || window.clipboardData).getData('text');
+  if (!txt || !/\n/.test(txt.trim())) return;
+  e.preventDefault();
+  const vals = txt.trim().split(/\r?\n/).map(r => r.split('\t')[0].trim().replace(',', '.'));
+  if (el.dataset.c) { const [wi, si] = el.dataset.c.split(':').map(Number); vals.forEach((v, k) => { if (si + k < students().length) (A.scores[wi] = A.scores[wi] || {})[si + k] = v; }); }
+  else if (el.dataset.fo) { const si = +el.dataset.fo; vals.forEach((v, k) => { (A.fo = A.fo || {})[si + k] = v; }); }
+  save(); renderGrid();
+});
+
+// ---- ③ мақсаттар, ④ мәтін
+function renderGoals() {
+  $('goals').innerHTML = A.works.map((w, i) => '<h3>' + esc(wName(w)) + (w.unit ? ' — ' + esc(w.unit) : '') + '</h3><div class="g4">' +
+    '<label class="fld"><span>' + t('achieved') + '</span><textarea rows="4" data-g="' + i + ':ach">' + esc(w.ach) + '</textarea></label>' +
+    '<label class="fld"><span>' + t('difficult') + '</span><textarea rows="4" data-g="' + i + ':dif">' + esc(w.dif) + '</textarea></label></div>').join('');
+}
+$('goals').oninput = e => { const k = e.target.dataset.g; if (!k) return; const [i, f] = k.split(':'); A.works[i][f] = e.target.value; save(); };
+function renderTexts() {
+  const L = A.docLang;
+  $('texts').innerHTML = '<label class="fld"><span>' + t('tGoal') + '</span><textarea rows="2" data-t="goal">' + esc(A.goal) + '</textarea></label>' +
+    ['t2', 't3', 't4'].map(k => '<label class="fld"><span>' + t(k) + '</span><div class="chips">' + PHR[k][L].map((p, j) => '<button type="button" data-ph="' + k + ':' + j + '">+ ' + esc(p) + '</button>').join('') + '</div><textarea rows="3" data-t="' + k + '">' + esc(A[k]) + '</textarea></label>').join('');
+}
+$('texts').oninput = e => { const k = e.target.dataset.t; if (k) { A[k] = e.target.value; save(); } };
+$('texts').onclick = e => {
+  const b = e.target.closest('[data-ph]'); if (!b) return;
+  const [k, j] = b.dataset.ph.split(':'); const p = PHR[k][A.docLang][j];
+  A[k] = (A[k] ? A[k].trim() + ' ' : '') + p; save(); renderTexts();
+};
+
+// ---- ⑤ құжат
+function chartSvg() {
+  const st = students(); if (!st.length) return '';
+  const W = Math.max(640, st.length * (A.works.length * 9 + 10) + 60), H = 300, x0 = 40, y0 = 20, ph = 180;
+  const colors = ['#4472c4', '#ed7d31', '#a5a5a5', '#ffc000', '#5b9bd5', '#70ad47'];
+  let s = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" font-family="Arial" font-size="10"><rect width="100%" height="100%" fill="#fff"/>';
+  [0, 20, 40, 60, 80, 100].forEach(v => { const y = y0 + ph - v / 100 * ph; s += '<line x1="' + x0 + '" x2="' + (W - 10) + '" y1="' + y + '" y2="' + y + '" stroke="#ddd"/><text x="' + (x0 - 4) + '" y="' + (y + 3) + '" text-anchor="end" fill="#555">' + v + '</text>'; });
+  const gw = (W - x0 - 20) / st.length, bw = Math.min(14, (gw - 6) / A.works.length);
+  st.forEach((name, si) => {
+    const gx = x0 + si * gw + (gw - bw * A.works.length) / 2;
+    A.works.forEach((w, wi) => { const p = pct(wi, si); if (p == null) return; const h = p / 100 * ph; s += '<rect x="' + (gx + wi * bw) + '" y="' + (y0 + ph - h) + '" width="' + (bw - 1) + '" height="' + h + '" fill="' + colors[wi % colors.length] + '"/>'; });
+    const short = name.length > 16 ? name.slice(0, 15) + '…' : name;
+    s += '<text transform="translate(' + (x0 + si * gw + gw / 2 + 3) + ',' + (y0 + ph + 6) + ') rotate(60)" fill="#333">' + esc(short) + '</text>';
+  });
+  let lx = x0;
+  A.works.forEach((w, wi) => { s += '<rect x="' + lx + '" y="2" width="10" height="10" fill="' + colors[wi % colors.length] + '"/><text x="' + (lx + 14) + '" y="11" fill="#333">' + esc(wName(w, A.docLang)) + '</text>'; lx += 70; });
+  return s + '</svg>';
+}
+function docHtml(imgSrc) {
+  const L = DL[A.docLang], st = students(), wn = w => wName(w, A.docLang);
+  const units = A.works.map(w => w.unit).filter(Boolean);
+  const goal = A.goal || L.goalAuto(A.subject, [...new Set(units)].join(', '), A.works.map(wn).join(', '));
+  let h = '<h1>' + L.title + '</h1><p style="text-align:center"><b>' + ['I', 'II', 'III', 'IV'][A.term - 1] + ' ' + L.term + ' · ' + esc(A.subject) + (L.subjWord ? ' ' + L.subjWord : '') + (A.year ? ' · ' + esc(A.year) : '') + '</b></p>' +
+    '<p>' + L.cls + ': <b>' + esc(A.cls) + '</b> &nbsp; ' + L.count + ': <b>' + st.length + '</b> &nbsp; ' + L.teacher + ': <b>' + esc(A.teacher) + '</b></p>' +
+    '<p><b>' + L.goalW + ':</b> ' + esc(goal) + '</p>';
+  h += '<table><tr><th rowspan="3">' + L.subject + '</th><th rowspan="3">' + L.students + '</th><th rowspan="3">' + L.maxS + '</th><th colspan="3">' + L.pctC + '</th><th rowspan="3">' + L.qual + '</th><th rowspan="3">' + L.perf + '</th></tr>' +
+    '<tr><th>' + L.low + '</th><th>' + L.mid + '</th><th>' + L.high + '</th></tr><tr><th>0–39%</th><th>40–84%</th><th>85–100%</th></tr>' +
+    A.works.map((w, wi) => { const s = stats(wi); return '<tr><td class="l">' + esc(wn(w)) + '</td><td>' + s.n + '</td><td>' + w.max + '</td><td>' + (s.l || '-') + '</td><td>' + (s.m || '-') + '</td><td>' + (s.h || '-') + '</td><td>' + s.q + '</td><td>' + s.u + '</td></tr>'; }).join('') + '</table>';
+  h += '<table><tr><th></th><th>' + L.ach + '</th><th>' + L.dif + '</th></tr>' +
+    A.works.map(w => '<tr><td class="l"><b>' + esc(wn(w)) + '</b>' + (w.unit ? '<br>' + esc(w.unit) : '') + '</td><td class="l">' + esc(w.ach).replace(/\n/g, '<br>') + '</td><td class="l">' + esc(w.dif).replace(/\n/g, '<br>') + '</td></tr>').join('') + '</table>';
+  // деңгей бойынша тізім — соңғы ТЖБ (болмаса соңғы жұмыс)
+  let li = A.works.map((w, i) => w.type === 'tzhb' ? i : -1).filter(i => i >= 0).pop(); if (li == null) li = A.works.length - 1;
+  if (li >= 0) {
+    const g = { h: [], m: [], l: [] };
+    st.forEach((s, si) => { const p = pct(li, si); if (p != null) g[lvOf(p)].push(s); });
+    h += '<p>' + L.lv1(wn(A.works[li])) + '</p><p><b>' + L.H + ': 85–100%</b> ' + (esc(g.h.join(', ')) || L.no) + '</p><p><b>' + L.M + ': 40–84%</b> ' + (esc(g.m.join(', ')) || L.no) + '</p><p><b>' + L.L + ': 0–39%</b> ' + (esc(g.l.join(', ')) || L.no) + '</p>';
+  }
+  const tl = DL[A.docLang] === DL.ru ? { t2: '2. Затруднения, возникшие у обучающихся при выполнении заданий:', t3: '3. Причины затруднений:', t4: '4. Планируемая коррекционная работа:' } : { t2: '2. Тапсырмаларды орындау барысында білім алушыларға туындаған қиындықтар тізбесі:', t3: '3. Тапсырмаларды орындау барысында білім алушыларға аталған қиындықтардың себептері:', t4: '4. Жоспарланған түзету жұмысы:' };
+  ['t2', 't3', 't4'].forEach(k => { h += '<p><b>' + tl[k] + '</b><br>' + esc(A[k]).replace(/\n/g, '<br>') + '</p>'; });
+  if (st.length) {
+    const q = A.useFo;
+    h += '<p style="text-align:center"><b>' + L.mon + '</b></p><p>' + L.monGoal + '</p><table><tr><th rowspan="2">№</th><th rowspan="2">' + L.nameC + '</th>' + A.works.map(w => '<th colspan="2">' + esc(wn(w)) + '</th>').join('') + (q ? '<th rowspan="2">' + A.term + ' ' + L.qC + '</th>' : '') + '</tr>' +
+      '<tr>' + A.works.map(w => '<th>' + w.max + '</th><th>%</th>').join('') + '</tr>' +
+      st.map((s, si) => '<tr><td>' + (si + 1) + '</td><td class="l">' + esc(s) + '</td>' + A.works.map((w, wi) => { const v = sc(wi, si), p = pct(wi, si); return '<td>' + (v ?? '') + '</td><td>' + (p == null ? '' : fmtN(p)) + '</td>'; }).join('') + (q ? '<td>' + (quarter(si) ?? '') + '</td>' : '') + '</tr>').join('') +
+      '<tr><td></td><td class="l"><b>' + L.avg + '</b></td>' + A.works.map((w, wi) => { const s = stats(wi); return '<td></td><td><b>' + (s.n ? fmtN(s.avg) : '') + '</b></td>'; }).join('') + (q ? '<td></td>' : '') + '</tr></table>';
+    if (A.charts) h += '<p style="text-align:center"><b>' + L.chart + '</b></p>' + (imgSrc ? '<img src="' + imgSrc + '" width="640">' : chartSvg());
+  }
+  return h;
+}
+function svgToPng() {
+  return new Promise(res => {
+    const svg = chartSvg(); if (!svg || !A.charts) return res(null);
+    const img = new Image();
+    img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); try { res(c.toDataURL('image/png')); } catch (e) { res(null); } };
+    img.onerror = () => res(null);
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+}
+async function exportWord() {
+  const png = await svgToPng();
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>' +
+    'body{font-family:"Times New Roman";font-size:12pt} h1{font-size:13pt;text-align:center} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:2pt 4pt;vertical-align:top;text-align:center;font-size:11pt} td.l{text-align:left}' +
+    '@page{size:21cm 29.7cm;margin:1.5cm 1.5cm 1.5cm 2cm}</style></head><body>' + docHtml(png) + '</body></html>';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + html], { type: 'application/msword' }));
+  a.download = ((A.docLang === 'ru' ? 'Анализ_' : 'Талдау_') + A.term + 'тқс_' + (A.subject || '') + '_' + (A.cls || '')).replace(/[\\/:*?"<>|\s]+/g, '_') + '.doc';
+  document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+$('word').onclick = exportWord;
+$('print').onclick = () => print();
+$('charts').onchange = () => { A.charts = $('charts').checked; save(); $('paper').innerHTML = docHtml(); };
+
+// ---- сақтау / үлгі
+function renderSaved() {
+  $('savedList').innerHTML = saved.length ? saved.map((s, i) => '<li><span><b>' + esc(s.subject || '—') + '</b> · ' + esc(s.cls) + ' · ' + s.term + ' ' + (App.lang === 'ru' ? 'четв.' : 'тоқсан') + ' <span class="muted">· ' + esc(s.when || '') + '</span></span><span class="row"><button class="btn sm primary" data-op="' + i + '">' + t('open') + '</button><button class="btn sm" data-rm="' + i + '">' + t('del') + '</button></span></li>').join('') : '<li class="muted">' + t('none') + '</li>';
+}
+$('savedList').onclick = e => {
+  const o = e.target.closest('[data-op]'), r = e.target.closest('[data-rm]');
+  if (o) { A = JSON.parse(JSON.stringify(saved[+o.dataset.op])); save(); all(); step('1'); }
+  else if (r && confirm(t('sure'))) { saved.splice(+r.dataset.rm, 1); App.store.set('mt-an-saved', saved); renderSaved(); }
+};
+$('saveDoc').onclick = () => {
+  const c = JSON.parse(JSON.stringify(A)); c.when = new Date().toLocaleDateString();
+  const i = saved.findIndex(s => s.id === A.id); if (i >= 0) saved[i] = c; else saved.unshift(c);
+  App.store.set('mt-an-saved', saved); renderSaved();
+  $('saveDoc').textContent = t('saved'); setTimeout(() => $('saveDoc').textContent = t('saveDoc'), 1500);
+};
+$('newDoc').onclick = () => { if (confirm(t('sureNew'))) { A = blank(); save(); all(); } };
+$('sample').onclick = () => {
+  if (!confirm(t('sureNew'))) return;
+  const ru = App.lang === 'ru';
+  A = Object.assign(blank(), { subject: ru ? 'Естествознание' : 'Жаратылыстану', cls: '5А', teacher: ru ? 'Иванова А.' : 'Сейтқали А.', docLang: App.lang,
+    works: [Object.assign(work('bzhb', 1, 8), { unit: ru ? '«Мир науки»' : '«Ғылым әлемі»', ach: '5.1.1.1\n5.1.2.1', dif: '5.1.5.1' }), Object.assign(work('bzhb', 2, 10), { unit: ru ? '«Вселенная. Земля. Человек»' : '«Ғалам. Жер. Адам»', ach: '5.2.1.1\n5.2.2.2', dif: '5.2.5.3' }), work('tzhb', 1, 20)],
+    roster: (ru ? 'Ученик 1\nУченик 2\nУченик 3\nУченик 4\nУченик 5\nУченик 6' : 'Оқушы 1\nОқушы 2\nОқушы 3\nОқушы 4\nОқушы 5\nОқушы 6'),
+    scores: { 0: { 0: 6, 1: 7, 2: 8, 3: 5, 4: 3, 5: 7 }, 1: { 0: 8, 1: 8, 2: 10, 3: 6, 4: 5, 5: 9 }, 2: { 0: 18, 1: 18, 2: 19, 3: 12, 4: 9, 5: 17 } } });
+  save(); all();
+};
+
+function step(s) {
+  document.querySelectorAll('#steps .btn').forEach(b => b.classList.toggle('on', b.dataset.s === s));
+  ['1', '2', '3', '4', '5'].forEach(k => $('s' + k).classList.toggle('hide', k !== s));
+  if (s === '2') renderGrid(); if (s === '3') renderGoals(); if (s === '4') renderTexts();
+  if (s === '5') { $('charts').checked = A.charts; $('paper').innerHTML = docHtml(); }
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('steps').onclick = e => { const b = e.target.closest('[data-s]'); if (b) step(b.dataset.s); };
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => step(b.dataset.go));
+function all() { renderS1(); $('roster').value = A.roster; $('useFo').checked = A.useFo; renderGrid(); renderGoals(); renderTexts(); renderSaved(); }
+App.onLang.push(all);
+all();
+</script>
+</body>
+</html>
