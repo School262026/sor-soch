@@ -20,7 +20,7 @@
   .fld > span { font-weight: 800; font-size: 14px; }
   .fld small { color: var(--muted); font-size: 13px; }
   .works { display: grid; gap: 10px; }
-  .work { display: grid; grid-template-columns: 1.2fr 90px 1.6fr auto; gap: 6px; align-items: center; }
+  .work { display: grid; grid-template-columns: 70px 80px 1.4fr 1fr auto; gap: 6px; align-items: center; }
   @media (max-width: 640px) { .work { grid-template-columns: 1fr 80px; } }
   .scroll { overflow-x: auto; }
   table.sc { border-collapse: collapse; width: 100%; font-size: 15px; }
@@ -43,6 +43,9 @@
   .paper img { max-width: 100%; }
   .saved li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .saved ul { list-style: none; padding: 0; margin: 0; }
+  .tsec { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .tsec .row .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .auto { background: var(--violet-soft); border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .note { background: var(--green-soft); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
   @media print {
     body * { visibility: hidden; }
@@ -89,6 +92,7 @@
     <label class="row"><input type="checkbox" id="useFo"><span data-i="useFo"></span></label>
     <div class="scroll" id="grid"></div>
     <div class="kpis" id="kpis"></div>
+    <div class="tsec" id="tsec"></div>
     <div class="row" style="justify-content:flex-end"><button class="btn primary" data-go="3" data-i="next"></button></div>
   </section>
 
@@ -102,6 +106,7 @@
   <!-- 4. Қорытынды мәтін -->
   <section class="card hide" id="s4">
     <h2 data-i="st4"></h2>
+    <div class="auto"><button class="btn primary" id="autoBtn" data-i="autoBtn"></button><span class="muted" data-i="autoHint"></span></div>
     <div id="texts"></div>
     <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" data-go="5" data-i="next"></button></div>
   </section>
@@ -136,6 +141,17 @@ App.init({
   wName: { kk: 'Атауы', ru: 'Название' }, wMax: { kk: 'Макс.', ru: 'Макс.' }, wUnit: { kk: 'Бөлім (мыс.: «Ғылым әлемі»)', ru: 'Раздел (напр.: «Мир науки»)' },
   addBzhb: { kk: '＋ БЖБ', ru: '＋ СОР' }, addTzhb: { kk: '＋ ТЖБ', ru: '＋ СОЧ' }, addAb: { kk: '＋ Аралық бағалау (2–4)', ru: '＋ Промежуточное (2–4)' },
   next: { kk: 'Келесі →', ru: 'Далее →' },
+  tmaxPh: { kk: 'Тапсырма балдары: 2 2 1 2', ru: 'Баллы заданий: 2 2 1 2' },
+  tmaxHint: { kk: 'Әр тапсырманың ең жоғары балын жазсаңыз (бос орын арқылы), тапсырма бойынша талдау және автоматты мәтін жасалады.', ru: 'Если указать максимальный балл каждого задания (через пробел), будет анализ по заданиям и автоматический текст.' },
+  byTask: { kk: 'Тапсырмалар бойынша баллдар (міндетті емес)', ru: 'Баллы по заданиям (необязательно)' },
+  byTaskHint: { kk: 'Әр оқушының әр тапсырмадан алған балын енгізіңіз — жалпы балл өзі қосылады. Осыдан қай мақсатқа қол жеткізілгені анықталады.', ru: 'Введите баллы каждого ученика за каждое задание — общий балл сложится сам. По ним определяется, какие цели достигнуты.' },
+  tcrit: { kk: 'Тапсырмалар критерийлері (тапсырма ретімен, әр жолға біреу)', ru: 'Критерии заданий (по порядку заданий, по одному в строке)' },
+  task: { kk: 'Тапсырма', ru: 'Задание' },
+  autoBtn: { kk: '✨ Талдауды автоматты жазу', ru: '✨ Написать анализ автоматически' },
+  autoHint: { kk: 'Баллдар мен критерийлер бойынша мақсаттар, қиындықтар, себептер және түзету жұмысы жазылады. Кейін өзіңіз түзете аласыз.', ru: 'По баллам и критериям будут заполнены цели, затруднения, причины и коррекционная работа. Потом можно исправить.' },
+  autoSure: { kk: 'Бұрын жазылған мәтін ауыстырылады. Жалғастырасыз ба?', ru: 'Ранее написанный текст будет заменён. Продолжить?' },
+  importQ: { kk: 'Генератордан жұмыс келді: ', ru: 'Из генератора получена работа: ' },
+  importAdd: { kk: '\n\nОК — ағымдағы талдауға қосу, Болдырмау — жаңа талдау бастау.', ru: '\n\nОК — добавить в текущий анализ, Отмена — начать новый анализ.' },
   roster: { kk: 'Оқушылар тізімі', ru: 'Список учеников' },
   rosterPh: { kk: 'Әр жолға бір оқушы (Excel-ден көшіріп қоюға болады)', ru: 'По одному ученику в строке (можно вставить из Excel)' },
   rosterHint: { kk: 'Кеңес: Excel-ден бір бағанды (баллдарды) көшіріп, бірінші ұяшыққа қойсаңыз — бүкіл баған толады.', ru: 'Совет: скопируйте из Excel столбец баллов и вставьте в первую ячейку — заполнится весь столбец.' },
@@ -191,7 +207,9 @@ const PHR = {
 const SUBJ = { kk: ['Жаратылыстану', 'География', 'Биология', 'Физика', 'Химия', 'Математика', 'Алгебра', 'Геометрия', 'Қазақ тілі', 'Қазақ әдебиеті', 'Орыс тілі', 'Ағылшын тілі', 'Қазақстан тарихы', 'Дүниежүзі тарихы', 'Информатика', 'Дүниетану', 'Әдебиеттік оқу'],
   ru: ['Естествознание', 'География', 'Биология', 'Физика', 'Химия', 'Математика', 'Алгебра', 'Геометрия', 'Русский язык', 'Русская литература', 'Казахский язык', 'Английский язык', 'История Казахстана', 'Всемирная история', 'Информатика', 'Познание мира', 'Литературное чтение'] };
 
-function work(type, n, max) { return { type, n, max, unit: '', ach: '', dif: '' }; }
+function work(type, n, max) { return { type, n, max, unit: '', ach: '', dif: '', tmax: '', tcrit: '', goals: '' }; }
+const tmaxOf = w => (w.tmax || '').split(/[\s,;]+/).map(Number).filter(x => x > 0);
+const tcritOf = w => (w.tcrit || '').split('\n').map(x => x.trim());
 const blank = () => ({ id: Date.now(), subject: '', cls: '', term: 1, teacher: '', year: '2026-2027', docLang: App.lang,
   works: [work('bzhb', 1, 10), work('bzhb', 2, 10), work('tzhb', 1, 20)], roster: '', scores: {}, fo: {}, useFo: false, goal: '', t2: '', t3: '', t4: '', charts: true });
 let A = App.store.get('mt-an-cur') || blank();
@@ -228,12 +246,17 @@ function renderS1() {
   $('works').innerHTML = A.works.map((w, i) => '<div class="work"><b>' + esc(wName(w)) + '</b>' +
     '<input type="number" min="1" data-w="' + i + ':max" value="' + w.max + '" title="' + esc(t('wMax')) + '">' +
     '<input type="text" data-w="' + i + ':unit" value="' + esc(w.unit) + '" placeholder="' + esc(t('wUnit')) + '">' +
-    '<button class="btn sm" data-rmw="' + i + '">✕</button></div>').join('');
+    '<input type="text" data-w="' + i + ':tmax" value="' + esc(w.tmax || '') + '" placeholder="' + esc(t('tmaxPh')) + '">' +
+    '<button class="btn sm" data-rmw="' + i + '">✕</button></div>').join('') + '<small class="muted">' + t('tmaxHint') + '</small>';
 }
 ['subject', 'cls', 'teacher', 'year'].forEach(k => $(k).oninput = () => { A[k] = $(k).value; save(); });
 $('term').onchange = () => { A.term = +$('term').value; save(); };
 $('docLang').onchange = () => { A.docLang = $('docLang').value; save(); };
-$('works').oninput = e => { const k = e.target.dataset.w; if (!k) return; const [i, f] = k.split(':'); A.works[i][f] = e.target.value; save(); };
+$('works').oninput = e => {
+  const k = e.target.dataset.w; if (!k) return; const [i, f] = k.split(':'); A.works[i][f] = e.target.value;
+  if (f === 'tmax') { const m = tmaxOf(A.works[i]); if (m.length) A.works[i].max = m.reduce((a, b) => a + b, 0); const inp = $('works').querySelector('[data-w="' + i + ':max"]'); if (inp && m.length) inp.value = A.works[i].max; }
+  save();
+};
 $('works').onclick = e => { const b = e.target.closest('[data-rmw]'); if (!b) return; A.works.splice(+b.dataset.rmw, 1); renum(); save(); renderS1(); };
 document.querySelectorAll('[data-addw]').forEach(b => b.onclick = () => { const ty = b.dataset.addw; A.works.push(work(ty, 0, ty === 'tzhb' ? 20 : ty === 'ab' ? 14 : 10)); renum(); save(); renderS1(); });
 function renum() { const c = {}; A.works.forEach(w => { c[w.type] = (c[w.type] || 0) + 1; w.n = c[w.type]; }); }
@@ -251,8 +274,41 @@ function renderGrid() {
     }).join('') + (A.useFo ? '<td><input type="number" min="0" max="100" data-fo="' + si + '" value="' + ((A.fo || {})[si] ?? '') + '"></td><td><b data-q="' + si + '">' + (quarter(si) ?? '') + '</b></td>' : '') + '</tr>';
   });
   $('grid').innerHTML = h + '</tbody></table>';
-  renderKpis();
+  renderKpis(); renderTGrid();
 }
+let tw = null; // тапсырма бойынша енгізілетін жұмыс
+function renderTGrid() {
+  const st = students(), withT = A.works.map((w, i) => tmaxOf(w).length ? i : -1).filter(i => i >= 0);
+  if (!st.length || !withT.length) { $('tsec').innerHTML = ''; return; }
+  if (!withT.includes(tw)) tw = withT[0];
+  const w = A.works[tw], tm = tmaxOf(w), ts = ((A.tscores || {})[tw]) || {};
+  let h = '<h3>' + t('byTask') + '</h3><p class="muted" style="margin:0 0 8px">' + t('byTaskHint') + '</p><div class="row" style="margin-bottom:8px">' +
+    withT.map(i => '<button class="btn sm' + (i === tw ? ' on' : '') + '" data-tw="' + i + '">' + esc(wName(A.works[i])) + '</button>').join('') + '</div>';
+  h += '<div class="scroll"><table class="sc"><thead><tr><th>№</th><th>' + t('name') + '</th>' + tm.map((m, k) => '<th>' + (k + 1) + '<br><span class="pct">max ' + m + '</span></th>').join('') + '<th>Σ</th></tr></thead><tbody>' +
+    st.map((s, si) => '<tr><td>' + (si + 1) + '</td><td>' + esc(s) + '</td>' + tm.map((m, k) => '<td><input type="number" min="0" max="' + m + '" data-tc="' + si + ':' + k + '" value="' + ((ts[si] || {})[k] ?? '') + '"></td>').join('') + '<td><b data-ts="' + si + '">' + (sc(tw, si) ?? '') + '</b></td></tr>').join('') +
+    '<tr><td></td><td><b>%</b></td>' + tm.map((m, k) => '<td><b>' + (taskPct(tw, k) == null ? '' : Math.round(taskPct(tw, k)) + '%') + '</b></td>').join('') + '<td></td></tr></tbody></table></div>';
+  $('tsec').innerHTML = h;
+}
+function taskPct(wi, k) {
+  const m = tmaxOf(A.works[wi])[k], ts = ((A.tscores || {})[wi]) || {}; let sum = 0, n = 0;
+  students().forEach((_, si) => { const v = (ts[si] || {})[k]; if (v !== '' && v != null) { sum += +v; n++; } });
+  return n ? sum / (n * m) * 100 : null;
+}
+function setTask(si, k, v) {
+  const ts = ((A.tscores = A.tscores || {})[tw] = A.tscores[tw] || {}); (ts[si] = ts[si] || {})[k] = v;
+  const vals = Object.values(ts[si]).filter(x => x !== '' && x != null);
+  (A.scores[tw] = A.scores[tw] || {})[si] = vals.length ? vals.reduce((a, b) => a + +b, 0) : '';
+}
+$('tsec').onclick = e => { const b = e.target.closest('[data-tw]'); if (b) { tw = +b.dataset.tw; renderTGrid(); } };
+$('tsec').onchange = e => { const k = e.target.dataset.tc; if (!k) return; const [si, ti] = k.split(':').map(Number); setTask(si, ti, e.target.value); save(); renderGrid(); };
+$('tsec').addEventListener('paste', e => {
+  const el = e.target, txt = (e.clipboardData || window.clipboardData).getData('text');
+  if (!el.dataset.tc || !txt || !/[\n\t]/.test(txt.trim())) return;
+  e.preventDefault();
+  const [si, ti] = el.dataset.tc.split(':').map(Number), n = tmaxOf(A.works[tw]).length;
+  txt.trim().split(/\r?\n/).forEach((row, r) => row.split('\t').forEach((v, c) => { if (si + r < students().length && ti + c < n) setTask(si + r, ti + c, v.trim().replace(',', '.')); }));
+  save(); renderGrid();
+});
 function renderKpis() {
   $('kpis').innerHTML = A.works.map((w, wi) => { const s = stats(wi); return '<div class="kpi"><b>' + esc(wName(w)) + '</b>' + t('quality') + ' ' + s.q + '% · ' + t('perf') + ' ' + s.u + '%<br><span class="lv-h">' + s.h + '</span> / <span class="lv-m">' + s.m + '</span> / <span class="lv-l">' + s.l + '</span></div>'; }).join('');
 }
@@ -284,7 +340,8 @@ $('grid').addEventListener('paste', e => {
 function renderGoals() {
   $('goals').innerHTML = A.works.map((w, i) => '<h3>' + esc(wName(w)) + (w.unit ? ' — ' + esc(w.unit) : '') + '</h3><div class="g4">' +
     '<label class="fld"><span>' + t('achieved') + '</span><textarea rows="4" data-g="' + i + ':ach">' + esc(w.ach) + '</textarea></label>' +
-    '<label class="fld"><span>' + t('difficult') + '</span><textarea rows="4" data-g="' + i + ':dif">' + esc(w.dif) + '</textarea></label></div>').join('');
+    '<label class="fld"><span>' + t('difficult') + '</span><textarea rows="4" data-g="' + i + ':dif">' + esc(w.dif) + '</textarea></label></div>' +
+    (tmaxOf(w).length ? '<label class="fld"><span>' + t('tcrit') + '</span><textarea rows="' + Math.min(8, tmaxOf(w).length + 1) + '" data-g="' + i + ':tcrit">' + esc(w.tcrit || '') + '</textarea></label>' : '')).join('');
 }
 $('goals').oninput = e => { const k = e.target.dataset.g; if (!k) return; const [i, f] = k.split(':'); A.works[i][f] = e.target.value; save(); };
 function renderTexts() {
@@ -297,6 +354,49 @@ $('texts').onclick = e => {
   const b = e.target.closest('[data-ph]'); if (!b) return;
   const [k, j] = b.dataset.ph.split(':'); const p = PHR[k][A.docLang][j];
   A[k] = (A[k] ? A[k].trim() + ' ' : '') + p; save(); renderTexts();
+};
+
+// ---- автоматты талдау: тапсырма ≥ 65% — қол жеткізілген, < 65% — қиындық тудырған
+function taskList(wi) {
+  const w = A.works[wi], cr = tcritOf(w);
+  return tmaxOf(w).map((m, k) => ({ k, crit: cr[k] || '', p: taskPct(wi, k) })).filter(x => x.p != null);
+}
+function autoWrite() {
+  const ru = A.docLang === 'ru', st = students();
+  const tl = n => ru ? 'Задание ' + n : n + '-тапсырма';
+  const difAll = [], lowNames = new Set();
+  A.works.forEach((w, wi) => {
+    const tk = taskList(wi);
+    if (tk.length) {
+      const good = tk.filter(x => x.p >= 65), bad = tk.filter(x => x.p < 65).sort((a, b) => a.p - b.p);
+      w.ach = good.map(x => (x.crit || tl(x.k + 1)) + ' (' + Math.round(x.p) + '%)').join('\n');
+      w.dif = bad.map(x => (x.crit || tl(x.k + 1)) + ' (' + Math.round(x.p) + '%)').join('\n');
+      bad.forEach(x => difAll.push({ w: wName(w, A.docLang), k: x.k + 1, crit: x.crit, p: x.p }));
+    } else if (w.goals && !w.ach) w.ach = w.goals;
+    st.forEach((s, si) => { const p = pct(wi, si); if (p != null && p < 40) lowNames.add(s); });
+  });
+  const midLow = new Set();
+  A.works.forEach((w, wi) => st.forEach((s, si) => { const p = pct(wi, si); if (p != null && p < 65 && !lowNames.has(s)) midLow.add(s); }));
+  if (ru) {
+    A.t2 = difAll.length ? difAll.map(d => d.w + ', задание ' + d.k + (d.crit ? ' («' + d.crit + '»)' : '') + ' — выполнение ' + Math.round(d.p) + '%.').join('\n') : 'Все задания выполнены более чем на 65%, существенных затруднений не выявлено. Встречаются отдельные неточности в оформлении ответов.';
+    A.t3 = difAll.length ? 'Недостаточное закрепление материала по указанным целям обучения; невнимательное чтение условия задания; затруднения при применении знаний в новой ситуации и при обосновании ответа.' : 'Отдельные неточности связаны с невнимательностью и недостатком времени на проверку работы.';
+    A.t4 = [difAll.length ? 'На уроках повторения провести работу над ошибками по целям: ' + [...new Set(difAll.map(d => d.crit || ('задание ' + d.k)))].join('; ') + '.' : 'Продолжить работу по закреплению пройденного материала.',
+      lowNames.size ? 'Организовать индивидуальную работу и консультации с обучающимися низкого уровня: ' + [...lowNames].join(', ') + '.' : '',
+      midLow.size ? 'Дать дополнительные разноуровневые задания обучающимся: ' + [...midLow].join(', ') + '.' : '',
+      'Включать в уроки задания на применение и анализ, учить проверять свою работу.'].filter(Boolean).join('\n');
+  } else {
+    A.t2 = difAll.length ? difAll.map(d => d.w + ', ' + d.k + '-тапсырма' + (d.crit ? ' («' + d.crit + '»)' : '') + ' — орындалуы ' + Math.round(d.p) + '%.').join('\n') : 'Барлық тапсырма 65%-дан жоғары орындалды, елеулі қиындық байқалмады. Жауапты рәсімдеуде жекелеген қателіктер кездеседі.';
+    A.t3 = difAll.length ? 'Аталған оқу мақсаттары бойынша материалдың жеткілікті бекітілмеуі; тапсырманың шартын мұқият оқымау; білімді жаңа жағдаятта қолдануда және жауапты негіздеуде қиналу.' : 'Жекелеген қателіктер ұқыпсыздыққа және жұмысты тексеруге уақыттың жетпеуіне байланысты.';
+    A.t4 = [difAll.length ? 'Қайталау сабақтарында келесі мақсаттар бойынша қателікпен жұмыс жүргізу: ' + [...new Set(difAll.map(d => d.crit || (d.k + '-тапсырма')))].join('; ') + '.' : 'Өтілген материалды бекіту жұмысын жалғастыру.',
+      lowNames.size ? 'Төмен деңгейдегі білім алушылармен жеке жұмыс және кеңес беру: ' + [...lowNames].join(', ') + '.' : '',
+      midLow.size ? 'Келесі білім алушыларға деңгейлік қосымша тапсырмалар беру: ' + [...midLow].join(', ') + '.' : '',
+      'Сабақта қолдану және талдау деңгейіндегі тапсырмаларды көбейту, өз жұмысын тексеруге үйрету.'].filter(Boolean).join('\n');
+  }
+  save();
+}
+$('autoBtn').onclick = () => {
+  if ((A.t2 || A.t3 || A.t4) && !confirm(t('autoSure'))) return;
+  autoWrite(); renderTexts(); renderGoals();
 };
 
 // ---- ⑤ құжат
@@ -329,6 +429,12 @@ function docHtml(imgSrc) {
     A.works.map((w, wi) => { const s = stats(wi); return '<tr><td class="l">' + esc(wn(w)) + '</td><td>' + s.n + '</td><td>' + w.max + '</td><td>' + (s.l || '-') + '</td><td>' + (s.m || '-') + '</td><td>' + (s.h || '-') + '</td><td>' + s.q + '</td><td>' + s.u + '</td></tr>'; }).join('') + '</table>';
   h += '<table><tr><th></th><th>' + L.ach + '</th><th>' + L.dif + '</th></tr>' +
     A.works.map(w => '<tr><td class="l"><b>' + esc(wn(w)) + '</b>' + (w.unit ? '<br>' + esc(w.unit) : '') + '</td><td class="l">' + esc(w.ach).replace(/\n/g, '<br>') + '</td><td class="l">' + esc(w.dif).replace(/\n/g, '<br>') + '</td></tr>').join('') + '</table>';
+  A.works.forEach((w, wi) => {
+    const tk = taskList(wi); if (!tk.length) return;
+    const ru = A.docLang === 'ru';
+    h += '<p><b>' + esc(wn(w)) + ': ' + (ru ? 'выполнение заданий' : 'тапсырмалардың орындалуы') + '</b></p><table><tr><th>№</th><th>' + (ru ? 'Критерий оценивания' : 'Бағалау критерийі') + '</th><th>' + (ru ? 'Балл' : 'Балл') + '</th><th>%</th><th>' + (ru ? 'Вывод' : 'Қорытынды') + '</th></tr>' +
+      tk.map(x => '<tr><td>' + (x.k + 1) + '</td><td class="l">' + esc(x.crit) + '</td><td>' + tmaxOf(w)[x.k] + '</td><td>' + Math.round(x.p) + '</td><td>' + (x.p >= 65 ? (ru ? 'достигнута' : 'қол жеткізілді') : (ru ? 'затруднение' : 'қиындық')) + '</td></tr>').join('') + '</table>';
+  });
   // деңгей бойынша тізім — соңғы ТЖБ (болмаса соңғы жұмыс)
   let li = A.works.map((w, i) => w.type === 'tzhb' ? i : -1).filter(i => i >= 0).pop(); if (li == null) li = A.works.length - 1;
   if (li >= 0) {
@@ -394,6 +500,12 @@ $('sample').onclick = () => {
     works: [Object.assign(work('bzhb', 1, 8), { unit: ru ? '«Мир науки»' : '«Ғылым әлемі»', ach: '5.1.1.1\n5.1.2.1', dif: '5.1.5.1' }), Object.assign(work('bzhb', 2, 10), { unit: ru ? '«Вселенная. Земля. Человек»' : '«Ғалам. Жер. Адам»', ach: '5.2.1.1\n5.2.2.2', dif: '5.2.5.3' }), work('tzhb', 1, 20)],
     roster: (ru ? 'Ученик 1\nУченик 2\nУченик 3\nУченик 4\nУченик 5\nУченик 6' : 'Оқушы 1\nОқушы 2\nОқушы 3\nОқушы 4\nОқушы 5\nОқушы 6'),
     scores: { 0: { 0: 6, 1: 7, 2: 8, 3: 5, 4: 3, 5: 7 }, 1: { 0: 8, 1: 8, 2: 10, 3: 6, 4: 5, 5: 9 }, 2: { 0: 18, 1: 18, 2: 19, 3: 12, 4: 9, 5: 17 } } });
+  // БЖБ 2 тапсырмалар бойынша (сіздің БЖБ-2 үлгісі: 2+2+1+2+2+1 = 10)
+  A.works[1].tmax = '2 2 1 2 2 1';
+  A.works[1].tcrit = ru ? 'Знает мега-, макро- и микромир\nЗнает оболочки Земли\nЗнает движение Земли вокруг оси\nОпределяет гипотезы происхождения жизни\nЗнает координаты и масштаб\nЗнает условные знаки'
+    : 'Мегаәлем, макроәлем, микроәлем туралы біледі\nЖер қабаттарын біледі\nЖердің өз өсі арқылы қозғалуын біледі\nТіршіліктің пайда болуы туралы гипотезаларды анықтайды\nГеографиялық координаталарды және масштабты біледі\nШартты белгілерді біледі';
+  A.tscores = { 1: { 0: { 0: 2, 1: 2, 2: 1, 3: 2, 4: 0, 5: 1 }, 1: { 0: 2, 1: 2, 2: 1, 3: 2, 4: 1, 5: 0 }, 2: { 0: 2, 1: 2, 2: 1, 3: 2, 4: 2, 5: 1 }, 3: { 0: 2, 1: 1, 2: 1, 3: 1, 4: 1, 5: 0 }, 4: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 0 }, 5: { 0: 2, 1: 2, 2: 1, 3: 2, 4: 1, 5: 1 } } };
+  autoWrite();
   save(); all();
 };
 
@@ -408,7 +520,18 @@ $('steps').onclick = e => { const b = e.target.closest('[data-s]'); if (b) step(
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => step(b.dataset.go));
 function all() { renderS1(); $('roster').value = A.roster; $('useFo').checked = A.useFo; renderGrid(); renderGoals(); renderTexts(); renderSaved(); }
 App.onLang.push(all);
+// генератордан келген жұмыс
+(function importFromGen() {
+  const im = App.store.get('mt-an-import'); if (!im || location.hash !== '#import') return;
+  App.store.set('mt-an-import', null); history.replaceState(null, '', location.pathname + location.search);
+  const w = Object.assign(work(im.kind === 'soch' ? 'tzhb' : im.kind === 'ao' ? 'ab' : 'bzhb', 0, im.max || 10), { unit: im.unit || '', tmax: im.tmax || '', tcrit: im.tcrit || '', goals: im.goals || '' });
+  const empty = !students().length && !A.works.some(x => x.ach || x.unit || x.tmax);
+  if (empty || !confirm(t('importQ') + im.title + t('importAdd'))) { A = blank(); A.works = []; }
+  if (!A.works.length) Object.assign(A, { subject: im.subject, cls: im.cls, term: im.term, docLang: im.docLang || A.docLang });
+  A.works.push(w); renum(); save();
+})();
 all();
+if (A.works.some(w => w.tmax) && !students().length) step('2');
 </script>
 </body>
 </html>

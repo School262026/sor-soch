@@ -105,6 +105,7 @@
       <div class="actions no-print">
         <button class="btn primary" id="word" data-i="word"></button>
         <button class="btn" id="print" data-i="print"></button>
+        <button class="btn green" id="toAn" data-i="toAn"></button>
       </div>
       <div class="paper" id="paper"></div>
     </div>
@@ -174,6 +175,7 @@ App.init({
   total: { kk: 'Жалпы балл', ru: 'Всего баллов' },
   maxNeed: { kk: 'Аралық бағалаудың ең жоғары баллы: ', ru: 'Максимум промежуточного оценивания: ' },
   word: { kk: '⬇ Word (.doc)', ru: '⬇ Word (.doc)' },
+  toAn: { kk: '📊 Жұмыс біткен соң — талдау жасау', ru: '📊 После работы — сделать анализ' },
   print: { kk: '🖨 Басып шығару / PDF', ru: '🖨 Печать / PDF' },
   open: { kk: 'Ашу', ru: 'Открыть' },
   del: { kk: 'Өшіру', ru: 'Удалить' },
@@ -390,6 +392,17 @@ $('saveDoc').onclick = () => {
   renderSaved();
 };
 $('word').onclick = exportWord;
+// талдау бетіне жұмысты беру: тапсырма балдары мен критерийлері бірге кетеді
+$('toAn').onclick = () => {
+  const L = DL[W.docLang] || DL.kk, cr = lines(W.crit);
+  App.store.set('mt-an-import', {
+    title: L[W.kind + 'S'] + (W.kind !== 'soch' ? ' №' + W.num : '') + ' · ' + W.subject + ' · ' + W.grade + (W.cls || ''),
+    kind: W.kind, subject: W.subject, cls: W.grade + (W.cls || ''), term: W.term, unit: W.unit, docLang: W.docLang, goals: W.goals,
+    max: totalPts(), tmax: W.tasks.map(tk => tk.desc.reduce((a, d) => a + (+d.p || 0), 0)).join(' '),
+    tcrit: W.tasks.map(tk => cr[+tk.crit] || '').join(String.fromCharCode(10))
+  });
+  location.href = 'bzhb-tzhb-taldau.html#import';
+};
 $('print').onclick = () => print();
 
 function renderSaved() {
