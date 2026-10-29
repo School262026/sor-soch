@@ -85,6 +85,8 @@
         <label class="fld"><span data-i="num"></span><input type="number" id="num" min="1" max="5"></label>
       </div>
       <label class="fld"><span data-i="unit"></span><input type="text" id="unit" data-ip="unitPh"></label>
+      <label class="fld"><span data-i="wtitle"></span><input type="text" id="wtitle"><small data-i="wtitleHint"></small></label>
+      <label class="row"><input type="checkbox" id="v2"><span data-i="v2"></span></label>
       <div class="g2c">
         <label class="fld"><span data-i="time"></span><input type="number" id="time" min="5" max="90"></label>
         <label class="fld"><span data-i="docLang"></span><select id="docLang"><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label>
@@ -147,6 +149,11 @@ App.init({
   term: { kk: 'Тоқсан', ru: 'Четверть' },
   num: { kk: 'Нөмірі', ru: 'Номер' },
   unit: { kk: 'Бөлім / тақырып', ru: 'Раздел / тема' },
+  wtitle: { kk: 'Жұмыстың атауы (міндетті емес)', ru: 'Название работы (необязательно)' },
+  wtitleHint: { kk: 'Бос болса — автоматты. Мыс.: «2-сыныптарға арналған әкімшілік бақылау жұмысы»', ru: 'Если пусто — автоматически. Напр.: «Административная контрольная работа для 2 классов»' },
+  v2: { kk: 'Екі нұсқа (1-нұсқа, 2-нұсқа)', ru: 'Два варианта (1-й, 2-й вариант)' },
+  text2: { kk: '2-нұсқаның мәтіні', ru: 'Текст 2-го варианта' },
+  opts2: { kk: '2-нұсқаның жауап нұсқалары', ru: 'Варианты ответа (2-й вариант)' },
   unitPh: { kk: 'мыс.: «Ғылым әлемі»', ru: 'напр.: «Мир науки»' },
   time: { kk: 'Орындау уақыты (мин)', ru: 'Время выполнения (мин)' },
   docLang: { kk: 'Құжат тілі', ru: 'Язык документа' },
@@ -225,8 +232,8 @@ const SUBJ = {
   ru: ['Русский язык', 'Литературное чтение', 'Русская литература', 'Казахский язык', 'Казахский язык и литература', 'Английский язык', 'Математика', 'Алгебра', 'Геометрия', 'Информатика', 'Цифровая грамотность', 'Естествознание', 'Познание мира', 'Физика', 'Химия', 'Биология', 'География', 'История Казахстана', 'Всемирная история', 'Основы права', 'Музыка', 'Художественный труд', 'Физическая культура']
 };
 const AO_MAX = { 2: 12, 3: 14, 4: 16 };
-const blank = () => ({ id: Date.now(), grade: 5, kind: 'sor', subject: '', cls: '', term: 1, num: 1, unit: '', time: 20, docLang: App.lang, goals: '', crit: '', levels: [true, true, false], tasks: [newTask()], rubric: true, answers: false, fmt: 'school' });
-function newTask() { return { text: '', opts: '', crit: 0, lines: 3, answer: '', desc: [{ d: '', p: 1 }] }; }
+const blank = () => ({ id: Date.now(), grade: 5, kind: 'sor', subject: '', cls: '', term: 1, num: 1, unit: '', time: 20, docLang: App.lang, goals: '', crit: '', levels: [true, true, false], tasks: [newTask()], rubric: true, answers: false, fmt: 'school', v2: false, wtitle: '' });
+function newTask() { return { text: '', text2: '', opts: '', opts2: '', crit: 0, lines: 3, answer: '', desc: [{ d: '', p: 1 }] }; }
 let W = App.store.get('mt-gen-cur') || blank();
 let saved = App.store.get('mt-gen-saved', []);
 const save = () => App.store.set('mt-gen-cur', W);
@@ -235,7 +242,31 @@ const kinds = () => isPrim() ? ['ao'] : ['sor', 'soch'];
 const totalPts = () => W.tasks.reduce((a, tk) => a + tk.desc.reduce((b, d) => b + (+d.p || 0), 0), 0);
 const lines = s => (s || '').split('\n').map(x => x.trim()).filter(Boolean);
 
+function samplePrim() {
+  const ru = App.lang === 'ru';
+  return Object.assign(blank(), {
+    grade: 2, kind: 'ao', subject: ru ? 'Математика' : 'Математика', term: 1, num: 1, time: 25, docLang: App.lang, v2: true, rubric: false, fmt: 'school',
+    wtitle: ru ? 'Промежуточное оценивание для 2 классов' : '2-сыныптарға арналған аралық бағалау жұмысы',
+    goals: ru ? '2.1.2.5 Устно складывать и вычитать однозначные числа с переходом через десяток\n2.1.2.7 Устно складывать и вычитать числа с переходом через десяток в случаях вида 45 ± 9, 40 – 14\n2.5.1.1 Моделировать задачи в одно и два действия в виде таблицы, схемы, краткой записи'
+      : '2.1.2.5 Бір таңбалы сандарды ондықтан өтіп ауызша қосу және азайту\n2.1.2.7 45 ± 9, 40 – 14 түріндегі жағдайларда ондықтан өтіп сандарды ауызша қосу және азайту\n2.5.1.1 Бір амалды және екі амалды есептерді кесте, сызба, қысқаша жазба түрінде модельдеу',
+    crit: ru ? 'Устно складывает и вычитает однозначные числа с переходом через десяток\nСкладывает и вычитает числа вида 45 ± 9, 40 – 14\nМоделирует задачу в одно действие кратко записью'
+      : 'Бір таңбалы сандарды ондықтан өтіп ауызша қосу және азайту\n45 ± 9, 40 – 14 түріндегі жағдайларда ондықтан өтіп сандарды ауызша қосу және азайту\nБір амалды есепті кесте, сызба, қысқаша жазба түрінде модельдеу',
+    tasks: [
+      { text: ru ? 'Вычисли.\n8 + 7 =      70 – 8 =      25 + 34 =      50 + 27 =      14 – 7 =' : 'Есепте.\n8 + 7 =      70 – 8 =      25 + 34 =      50 + 27 =      14 – 7 =',
+        text2: ru ? 'Вычисли.\n9 + 6 =      60 – 8 =      35 + 24 =      40 + 27 =      12 – 6 =' : 'Есепте.\n9 + 6 =      60 – 8 =      35 + 24 =      40 + 27 =      12 – 6 =',
+        opts: '', opts2: '', crit: 0, lines: 0, answer: '15, 62, 59, 77, 7 / 15, 52, 59, 67, 6',
+        desc: [{ d: ru ? 'устно складывает и вычитает с переходом через десяток (по 1 баллу за пример)' : 'ондықтан өтіп сандарды ауызша қосады және азайтады (әр мысалға 1 балл)', p: 5 }] },
+      { text: ru ? 'Реши уравнение.\n18 + х = 40' : 'Теңдеуді шеш.\n18 + х = 40', text2: ru ? 'Реши уравнение.\n28 + х = 60' : 'Теңдеуді шеш.\n28 + х = 60', opts: '', opts2: '', crit: 1, lines: 3, answer: 'х = 22 / х = 32',
+        desc: [{ d: ru ? 'правильно выбирает действие для нахождения неизвестного' : 'белгісізді табу үшін амалды дұрыс таңдайды', p: 1 }, { d: ru ? 'выполняет вычисления без ошибок' : 'есептеулерді қатесіз орындайды', p: 1 }, { d: ru ? 'выполняет проверку' : 'тексеру жасайды', p: 1 }] },
+      { text: ru ? 'Реши задачу.\nВся семья пошла на концерт. В концерте участвовали 11 певцов и 19 танцоров. Сколько всего человек участвовало в концерте?' : 'Есепті шеш.\nБүкіл отбасымен концертке барды. Концертке 11 әнші және 19 биші қатысты. Концертке барлығы неше адам қатысты?',
+        text2: ru ? 'Реши задачу.\nВся семья пошла на концерт. В концерте участвовали 12 певцов и 18 танцоров. Сколько всего человек участвовало в концерте?' : 'Есепті шеш.\nБүкіл отбасымен концертке барды. Концертке 12 әнші және 18 биші қатысты. Концертке барлығы неше адам қатысты?',
+        opts: '', opts2: '', crit: 2, lines: 4, answer: '30 / 30',
+        desc: [{ d: ru ? 'составляет краткую запись' : 'қысқаша жазбасын жасайды', p: 1 }, { d: ru ? 'правильно выбирает арифметическое действие' : 'арифметикалық амалды дұрыс таңдайды', p: 1 }, { d: ru ? 'выполняет вычисление без ошибок' : 'есептеуді қатесіз орындайды', p: 1 }, { d: ru ? 'записывает ответ' : 'жауабын жазады', p: 1 }] }
+    ]
+  });
+}
 function sample() {
+  if (isPrim()) return samplePrim();
   const ru = App.lang === 'ru';
   return Object.assign(blank(), {
     grade: 5, kind: 'sor', subject: ru ? 'Естествознание' : 'Жаратылыстану', term: 1, num: 1, unit: ru ? '«Мир науки»' : '«Ғылым әлемі»', time: 20, docLang: App.lang,
@@ -257,7 +288,8 @@ function renderForm() {
   const L = DL[App.lang];
   $('kind').innerHTML = kinds().map(k => '<button type="button" data-k="' + k + '" class="' + (k === W.kind ? 'on' : '') + '">' + L[k + 'S'] + '</button>').join('');
   $('subjList').innerHTML = SUBJ[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
-  ['subject', 'cls', 'unit', 'goals', 'crit', 'num', 'time'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = W[k]; });
+  ['subject', 'cls', 'unit', 'goals', 'crit', 'num', 'time', 'wtitle'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = W[k] || ''; });
+  $('v2').checked = !!W.v2;
   $('term').value = W.term; $('docLang').value = W.docLang;
   $('num').closest('.fld').style.visibility = W.kind === 'soch' ? 'hidden' : '';
   $('levels').innerHTML = DL[App.lang].lv.map((n, i) => '<label class="row"><input type="checkbox" data-lv="' + i + '"' + (W.levels[i] ? ' checked' : '') + '>' + n + '</label>').join('');
@@ -272,6 +304,8 @@ function renderTasks() {
     '<button class="btn sm" data-up="' + i + '"' + (i ? '' : ' disabled') + '>↑</button><button class="btn sm" data-dup="' + i + '">⧉</button><button class="btn sm" data-rmt="' + i + '">✕</button></span></div>' +
     '<textarea rows="2" data-tk="' + i + ':text" placeholder="' + esc(t('taskText')) + '">' + esc(tk.text) + '</textarea>' +
     '<label class="fld"><span>' + t('opts') + '</span><textarea rows="2" data-tk="' + i + ':opts" placeholder="Литосфера&#10;Атмосфера&#10;Гидросфера">' + esc(tk.opts || '') + '</textarea></label>' +
+    (W.v2 ? '<label class="fld"><span>' + t('text2') + '</span><textarea rows="2" data-tk="' + i + ':text2">' + esc(tk.text2 || '') + '</textarea></label>' +
+      '<label class="fld"><span>' + t('opts2') + '</span><textarea rows="2" data-tk="' + i + ':opts2">' + esc(tk.opts2 || '') + '</textarea></label>' : '') +
     '<div class="g2c"><label class="fld"><span>' + t('critOf') + '</span><select data-tk="' + i + ':crit">' + (cr.length ? cr : ['—']).map((c, j) => '<option value="' + j + '"' + (j === +tk.crit ? ' selected' : '') + '>' + (j + 1) + '. ' + esc(c.slice(0, 50)) + '</option>').join('') + '</select></label>' +
     '<label class="fld"><span>' + t('lines') + '</span><input type="number" min="0" max="20" data-tk="' + i + ':lines" value="' + tk.lines + '"></label></div>' +
     '<div class="fld"><span>' + t('descr') + '</span>' + tk.desc.map((d, j) =>
@@ -296,12 +330,32 @@ function docHtml() {
   const title = L[W.kind] + (W.kind === 'soch' ? '' : '') ;
   const short = L[W.kind + 'S'] + (W.kind !== 'soch' && W.num ? ' №' + W.num : '');
   const lv = L.lv.filter((_, i) => W.levels[i]).join(', ');
+  const varW = v => W.v2 ? (W.docLang === 'ru' ? v + '-й вариант' : v + '-нұсқа') : '';
+  const tasksHtml = v => W.tasks.map((tk, i) => {
+    const txt = v === 2 && tk.text2 ? tk.text2 : tk.text, op = v === 2 && tk.text2 ? (tk.opts2 || '') : (tk.opts || '');
+    let x = '<div class="tk"><b>' + (W.docLang === 'ru' ? 'Задание ' + (i + 1) : (i + 1) + '-' + L.task) + '.</b> ' + esc(txt).replace(/\n/g, '<br>') +
+      (op ? '<br>' + lines(op).map((o, j) => (/^[A-DА-Г][).]/.test(o) ? '' : 'ABCDEFGH'[j] + ') ') + esc(o)).join(' &nbsp;&nbsp; ') : '') + '</div>';
+    for (let k = 0; k < (+tk.lines || 0); k++) x += '<div class="ln">&nbsp;</div>';
+    return x;
+  }).join('');
   let h;
+  if (W.fmt === 'school') {
+    const ttl = W.wtitle || (isPrim() ? (W.docLang === 'ru' ? 'Промежуточное оценивание для ' + W.grade + ' классов, ' + W.term + ' четверть' : W.grade + '-сыныптарға арналған аралық бағалау жұмысы, ' + W.term + '-тоқсан') : '');
+    if (isPrim() || W.wtitle) {
+      const sheet = v => '<h1 style="text-transform:none">' + esc(ttl) + (W.subject ? ' (' + esc(W.subject) + ')' : '') + '</h1>' +
+        '<p>' + L.date + ' __________ &nbsp;&nbsp; <b>' + varW(v) + '</b></p><p>' + (W.docLang === 'ru' ? 'Фамилия, имя' : 'Тегі, аты') + ' ______________________ &nbsp; ' + L.cls + ' ______</p>' + tasksHtml(v);
+      h = sheet(1) + (W.v2 ? '<div style="page-break-before:always"></div>' + sheet(2) : '') +
+        '<div style="page-break-before:always"></div><h1 style="text-transform:none">' + esc(ttl) + '</h1><p><b>' + (W.docLang === 'ru' ? 'Цели обучения:' : 'Оқу мақсаты:') + '</b><br>' + gl.map(esc).join('<br>') + '</p>';
+      return h + specHtml();
+    }
+  }
   if (W.fmt === 'school') {
     const head = W.docLang === 'ru'
       ? (W.kind === 'soch' ? 'Задания суммативного оценивания за ' + W.term + ' четверть по предмету «' + esc(W.subject) + '», ' + W.grade + ' класс' : (W.unit ? 'Суммативное оценивание за раздел ' + esc(W.unit) : esc(title)) + ', ' + W.term + ' четверть, ' + esc(short))
       : (W.kind === 'soch' ? '«' + esc(W.subject) + '» пәнінен ' + W.term + '-тоқсанға арналған жиынтық бағалаудың тапсырмалары, ' + W.grade + ' сынып' : (W.unit ? esc(W.unit) + ' бөлімі бойынша жиынтық бағалау' : esc(title)) + ', ' + W.term + '-тоқсан, ' + esc(short));
-    h = '<p>' + L.cls + ' ' + esc(W.grade + (W.cls || '')) + ' &nbsp; ' + L.date + ' __________ &nbsp; ' + L.student + ' ______________________</p><h1 style="text-transform:none">' + head + '</h1>';
+    const sh = v => '<p>' + L.cls + ' ' + esc(W.grade + (W.cls || '')) + ' &nbsp; ' + L.date + ' __________ &nbsp; ' + L.student + ' ______________________ &nbsp; <b>' + varW(v) + '</b></p><h1 style="text-transform:none">' + head + '</h1>' + tasksHtml(v);
+    h = sh(1) + (W.v2 ? '<div style="page-break-before:always"></div>' + sh(2) : '');
+    return h + specHtml();
   } else h = '<h1>' + esc(title) + ' (' + esc(short) + ')</h1>' +
     '<table><tr><th style="width:32%">' + L.subject + '</th><td>' + esc(W.subject) + '</td></tr>' +
     '<tr><th>' + L.cls + '</th><td>' + esc(W.grade + (W.cls || '')) + '</td></tr>' +
@@ -313,12 +367,14 @@ function docHtml() {
     '<tr><th>' + L.time + '</th><td>' + esc(W.time) + ' ' + L.min + '</td></tr></table>' +
     '<p>' + L.student + ': ______________________________ &nbsp; ' + L.date + ': ___________</p>' +
     '<h4>' + L.tasks + '</h4>';
-  // мектеп үлгісінде спецификация кестесі жоқ
-  W.tasks.forEach((tk, i) => {
-    h += '<div class="tk"><b>' + (W.docLang === 'ru' ? 'Задание ' + (i + 1) : (i + 1) + '-' + L.task) + '.</b> ' + esc(tk.text).replace(/\n/g, '<br>') +
-      (tk.opts ? '<br>' + lines(tk.opts).map((o, j) => (/^[A-DА-Г][).]/.test(o) ? '' : 'ABCDEFGH'[j] + ') ') + esc(o)).join(' &nbsp;&nbsp; ') : '') + '</div>';
-    for (let k = 0; k < (+tk.lines || 0); k++) h += '<div class="ln">&nbsp;</div>';
-  });
+  h += (W.v2 ? '<p><b>' + varW(1) + '</b></p>' : '') + tasksHtml(1) + (W.v2 ? '<p><b>' + varW(2) + '</b></p>' + tasksHtml(2) : '');
+  return h + specHtml();
+}
+// дескрипторлар кестесі, рубрика, жауаптар — барлық үлгіге ортақ
+function specHtml() {
+  const L = DL[W.docLang] || DL.kk, cr = lines(W.crit);
+  const short = L[W.kind + 'S'] + (W.kind !== 'soch' && W.num ? ' №' + W.num : '');
+  let h = '';
   h += '<h4>' + L.tbl + '</h4><table><tr><th>' + L.critCol + '</th><th style="width:60px">' + L.taskCol + '</th><th>' + L.descCol + '</th><th style="width:50px">' + L.ptsCol + '</th></tr>';
   W.tasks.forEach((tk, i) => {
     const ds = tk.desc.length ? tk.desc : [{ d: '', p: 0 }];
@@ -352,7 +408,8 @@ function exportWord() {
 function changed(full) { save(); if (full) renderForm(); else renderSum(); draw(); }
 $('grade').onchange = () => { W.grade = +$('grade').value; if (!kinds().includes(W.kind)) { W.kind = kinds()[0]; } changed(true); };
 $('kind').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; W.kind = b.dataset.k; W.time = W.kind === 'soch' ? 40 : W.time; changed(true); };
-['subject', 'cls', 'unit', 'goals', 'num', 'time'].forEach(k => $(k).oninput = () => { W[k] = $(k).value; changed(false); });
+['subject', 'cls', 'unit', 'goals', 'num', 'time', 'wtitle'].forEach(k => $(k).oninput = () => { W[k] = $(k).value; changed(false); });
+$('v2').onchange = () => { W.v2 = $('v2').checked; save(); renderTasks(); draw(); };
 $('crit').oninput = () => { W.crit = $('crit').value; save(); draw(); };
 $('crit').onchange = () => renderTasks();
 $('term').onchange = () => { W.term = +$('term').value; changed(false); };
