@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 минуттық таймер</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⏳%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  body { background: #101828; }
+  .footer { color: #8a94a6; }
+  .stage {
+    min-height: calc(100vh - 57px); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; text-align: center; padding: 20px 16px; position: relative; overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, #1f3b73 0%, #101828 70%);
+  }
+  :fullscreen.stage { min-height: 100vh; }
+  .big { font-size: min(42vh, 60vw); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; position: relative; z-index: 1; }
+  .pop { animation: pop .9s ease-out both; }
+  @keyframes pop { 0% { transform: scale(2.2); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(.9); opacity: .15; } }
+  .wheel { position: absolute; width: min(80vh, 92vw); aspect-ratio: 1; }
+  .wheel svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .wheel circle { fill: none; stroke-width: 6; }
+  .wheel .bgc { stroke: rgba(255,255,255,.08); }
+  .wheel .fg { stroke: #4dabf7; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke .4s; }
+  .stage.warn .fg { stroke: #ff6b6b; }
+  .stage.warn .big { color: #ff8787; }
+  .mtitle { font-size: clamp(26px, 5vw, 56px); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+  .durs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
+  .durs button { border: 2px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); color: #fff; border-radius: 14px; padding: 12px 20px; font-size: 20px; font-weight: 800; cursor: pointer; }
+  .durs button.on { background: #4dabf7; border-color: #4dabf7; }
+  .go { border: 0; background: #fff; color: #1f3b73; font-size: clamp(22px, 4vw, 34px); font-weight: 900; padding: 18px 42px; border-radius: 999px; cursor: pointer; box-shadow: 0 10px 40px rgba(77,171,247,.5); }
+  .end { font-size: clamp(48px, 12vw, 150px); font-weight: 900; animation: endIn .8s cubic-bezier(.2,1.6,.4,1) both; color: #ffd43b; }
+  @keyframes endIn { from { transform: scale(.2) rotate(-20deg); opacity: 0; } }
+  .tools { position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px; z-index: 2; }
+  .tools button { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
+  .hint { color: #8a94a6; font-size: 15px; }
+</style>
+</head>
+<body>
+<section class="stage" id="stage">
+  <div id="menu">
+    <div class="mtitle" data-i="countdown"></div>
+    <div class="durs" id="durs"></div>
+    <button class="go" id="go" data-i="go"></button>
+    <p class="hint" data-i="hint"></p>
+  </div>
+  <div class="wheel hide" id="wheel"><svg viewBox="0 0 220 220"><circle class="bgc" cx="110" cy="110" r="104"/><circle class="fg" id="arc" cx="110" cy="110" r="104"/></svg></div>
+  <div class="big hide" id="big"></div>
+  <div class="hide" id="end"><div class="end" data-i="done"></div><button class="go" id="again" data-i="again" style="margin-top:28px"></button></div>
+  <div class="tools">
+    <button id="stop" class="hide" data-i="stop"></button>
+    <button id="fs">⛶</button>
+  </div>
+</section>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: '1 минуттық таймер', ru: 'Таймер на 1 минуту', en: '1-minute timer' },
+  countdown: { kk: 'Кері санақ', ru: 'Начало отсчёта', en: 'Countdown' },
+  go: { kk: '▶ Бастау', ru: '▶ Начать', en: '▶ Start' },
+  again: { kk: '↻ Қайтадан', ru: '↻ Ещё раз', en: '↻ Again' },
+  stop: { kk: '■ Тоқтату', ru: '■ Стоп', en: '■ Stop' },
+  done: { kk: 'Уақыт бітті!', ru: 'Время вышло!', en: 'Time\'s up!' },
+  sec: { kk: 'сек', ru: 'сек', en: 'sec' },
+  min: { kk: 'мин', ru: 'мин', en: 'min' },
+  hint: { kk: 'Бос орын пернесі — бастау. F — толық экран.', ru: 'Пробел — начать. F — полный экран.', en: 'Space — start. F — full screen.' }
+});
+const $ = id => document.getElementById(id);
+const DURS = [15, 30, 60, 90, 120, 180, 300];
+let dur = App.store.get('mt-minute', 60), timers = [], state = 'menu';
+function renderDurs() {
+  $('durs').innerHTML = DURS.map(s => '<button data-s="' + s + '" class="' + (s === dur ? 'on' : '') + '">' +
+    (s < 60 ? s + ' ' + App.t('sec') : (s / 60) + ' ' + App.t('min')) + '</button>').join('');
+}
+renderDurs(); App.onLang.push(renderDurs);
+$('durs').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; dur = +b.dataset.s; App.store.set('mt-minute', dur); renderDurs(); };
+const C = 2 * Math.PI * 104; $('arc').style.strokeDasharray = C;
+
+function show(id, on) { $(id).classList.toggle('hide', !on); }
+function clear() { timers.forEach(clearTimeout); timers = []; }
+function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+function bigNum(n, cls) { const b = $('big'); b.textContent = n; b.className = 'big ' + (cls || ''); void b.offsetWidth; }
+
+function go() {
+  clear(); state = 'run';
+  show('menu', false); show('end', false); show('stop', true); show('big', true); show('wheel', false);
+  $('stage').classList.remove('warn');
+  [3, 2, 1].forEach((n, i) => later(() => { bigNum(n, 'pop'); App.beep(660, 0.15); }, i * 1000));
+  later(run, 3000);
+}
+function run() {
+  const t0 = Date.now();
+  show('wheel', true);
+  $('arc').style.transition = 'none'; $('arc').style.strokeDashoffset = 0; void $('arc').offsetWidth; $('arc').style.transition = '';
+  App.beep(990, 0.3);
+  const tick = () => {
+    const left = dur - Math.floor((Date.now() - t0) / 1000);
+    if (left <= 0) return finish();
+    const m = Math.floor(left / 60), s = left % 60;
+    bigNum(dur >= 60 && left >= 60 ? m + ':' + String(s).padStart(2, '0') : left);
+    $('arc').style.strokeDashoffset = C * (1 - (left - 1) / dur);
+    $('stage').classList.toggle('warn', left <= Math.min(10, dur / 3));
+    if (left <= 5) App.beep(800, 0.08, 'square');
+    later(tick, 1000 - ((Date.now() - t0) % 1000));
+  };
+  tick();
+}
+function finish() {
+  clear(); state = 'end';
+  show('big', false); show('wheel', false); show('stop', false); show('end', true);
+  App.fanfare();
+}
+function stop() { clear(); state = 'menu'; ['big', 'wheel', 'end', 'stop'].forEach(i => show(i, false)); show('menu', true); $('stage').classList.remove('warn'); }
+$('go').onclick = go; $('again').onclick = go; $('stop').onclick = stop;
+$('fs').onclick = () => App.fullscreen($('stage'));
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); state === 'run' ? stop() : go(); }
+  else if (e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') App.fullscreen($('stage'));
+  else if (e.key === 'Escape' && state !== 'menu') stop();
+});
+</script>
+</body>
+</html>

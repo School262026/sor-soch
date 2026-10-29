@@ -22,6 +22,22 @@
     <button class="btn edit-only" data-v="set" data-i="vSet"></button>
   </div>
 
+  <details class="card quick edit-only no-print" id="quick">
+    <summary data-i="qTitle"></summary>
+    <div class="qrow">
+      <b data-i="qClasses"></b>
+      <div class="qchips" id="qClasses"></div>
+      <form class="row" id="qcForm"><input type="text" id="qcIn" data-ip="qClassesPh"><button class="btn sm primary" data-i="add"></button></form>
+      <small class="muted" data-i="qClassesHint"></small>
+    </div>
+    <div class="qrow">
+      <b data-i="qSubjects"></b>
+      <div class="qchips" id="qSubjects"></div>
+      <form class="row" id="qsForm"><input type="text" id="qsIn" list="subjList" data-ip="qSubjectsPh"><datalist id="subjList"></datalist><button class="btn sm primary" data-i="add"></button><button type="button" class="btn sm" id="stdBtn" data-i="stdBtn"></button></form>
+      <div class="row std hide" id="stdList"></div>
+    </div>
+  </details>
+
   <section id="v-grid">
     <div class="card">
       <div class="row no-print" style="justify-content:space-between;margin-bottom:12px">
@@ -83,8 +99,10 @@
   <h3 id="dlgTitle"></h3>
   <div id="dlgList"></div>
   <div class="row" id="dlgAddBtns" style="margin:12px 0"></div>
+  <div id="dlgCopy">
   <label class="row small"><input type="checkbox" id="dlgAll"><span data-i="copyPar"></span></label>
   <label class="row small"><input type="checkbox" id="dlgAllAll" disabled><span data-i="copyAll"></span></label>
+  </div>
   <div class="row" style="justify-content:flex-end;margin-top:14px">
     <button class="btn" id="dlgCancel" data-i="cancel"></button>
     <button class="btn primary" id="dlgSave" data-i="saveBtn"></button>
@@ -93,6 +111,15 @@
 
   const css = document.createElement('style');
   css.textContent = `
+  .quick { margin-bottom: 14px; }
+  .quick summary { font-weight: 900; font-size: 17px; cursor: pointer; }
+  .qrow { display: grid; gap: 8px; margin-top: 14px; }
+  .qrow input { flex: 1; min-width: 160px; font-size: 16px; }
+  .qchips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qchip { display: inline-flex; align-items: center; gap: 4px; background: var(--primary-soft); color: var(--text); border-radius: 999px; padding: 4px 6px 4px 12px; font-weight: 700; }
+  .qchip button { border: 0; background: transparent; cursor: pointer; color: var(--muted); font-size: 13px; padding: 2px 4px; }
+  .std .btn.on { background: var(--green-soft); border-color: var(--green); }
+  .fill { border: 0; background: var(--amber-soft); border-radius: 6px; cursor: pointer; padding: 1px 5px; float: right; }
   .phead { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
   .phead h1 { margin: 0; font-size: clamp(22px, 3.4vw, 30px); font-weight: 900; }
   #terms .btn.on, .views .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -114,8 +141,8 @@
   .chip.t-sor b, .chip.t-kr b { color: var(--primary); }
   .chip.t-soch, .chip.t-dict { background: var(--violet-soft); border-color: transparent; }
   .chip.t-soch b, .chip.t-dict b { color: var(--violet); }
-  .chip.t-test, .chip.t-essay { background: var(--green-soft); border-color: transparent; }
-  .chip.t-test b, .chip.t-essay b { color: var(--green); }
+  .chip.t-test, .chip.t-essay, .chip.t-ao { background: var(--green-soft); border-color: transparent; }
+  .chip.t-test b, .chip.t-essay b, .chip.t-ao b { color: var(--green); }
   .chip.t-lab, .chip.t-pr { background: var(--amber-soft); border-color: transparent; }
   .chip.t-lab b, .chip.t-pr b { color: var(--amber); }
   #stats { gap: 6px; }
@@ -174,7 +201,7 @@
     total: { kk: 'Барлығы', ru: 'Всего', en: 'Total' },
     allTerms: { kk: 'Барлық тоқсан', ru: 'Все четверти', en: 'All terms' },
     nothing: { kk: 'Әзірге жазба жоқ.', ru: 'Пока записей нет.', en: 'No entries yet.' },
-    emptyGrid: { kk: 'Алдымен «Баптаулар» бөлімінде сыныптар мен пәндерді енгізіңіз.', ru: 'Сначала укажите классы и предметы в «Настройках».', en: 'First add classes and subjects in Settings.' },
+    emptyGrid: { kk: 'Жоғарыдағы ① бөлімде сыныптар мен пәндерді қосыңыз.', ru: 'Добавьте классы и предметы в блоке ① выше.', en: 'First add classes and subjects in Settings.' },
     problems: { kk: 'Назар аударыңыз', ru: 'Обратите внимание', en: 'Check these' },
     noProblems: { kk: 'Қайшылық жоқ', ru: 'Накладок нет', en: 'No clashes' },
     perDay: { kk: 'жұмыс бір күнде', ru: 'работ(ы) в один день', en: 'assessments on one day' },
@@ -210,10 +237,22 @@
     copied: { kk: 'Көшірілді ✓', ru: 'Скопировано ✓', en: 'Copied ✓' },
     shareHint: { kk: 'Сілтемені WhatsApp/Telegram-ға жіберіңіз: ата-ана мен оқушы «Сынып бойынша» кестені көреді. Өзгерткен соң жаңа сілтеме жіберіңіз.', ru: 'Отправьте ссылку в WhatsApp/Telegram: родители и ученики увидят график своего класса. После изменений отправьте новую ссылку.', en: 'Send the link via WhatsApp/Telegram: parents and students will see their class schedule. After changes, send a new link.' },
     howTo: { kk: 'Қалай қолдану керек?', ru: 'Как пользоваться?', en: 'How to use' },
-    h1: { kk: '«Баптаулар»: мектеп, сыныптар, пәндер, тоқсан мерзімдері.', ru: '«Настройки»: школа, классы, предметы, сроки четвертей.', en: 'Settings: school, classes, subjects, term dates.' },
-    h2: { kk: 'Тоқсанды таңдап, кестедегі ұяшықты басыңыз да, жұмыс түрі мен күнін қосыңыз. «Параллельге көшіру» — уақыт үнемдейді.', ru: 'Выберите четверть, нажмите ячейку и добавьте вид работы и дату. «Копировать на параллель» экономит время.', en: 'Pick a term, tap a cell and add the type and date. "Copy to the same grade" saves time.' },
+    h1: { kk: '① бөлімде сыныптар мен пәндерді қосыңыз (пәнді өзіңіз жазасыз не тізімнен таңдайсыз).', ru: 'В блоке ① добавьте классы и предметы (впишите свой или выберите из списка).', en: 'Settings: school, classes, subjects, term dates.' },
+    h2: { kk: 'Тоқсанды таңдаңыз. ⚡ батырмасы — пәннің күндерін барлық сыныпқа бірден қояды; бір сынып үшін — ұяшықты басыңыз.', ru: 'Выберите четверть. Кнопка ⚡ ставит даты предмета сразу всем классам; для одного класса — нажмите ячейку.', en: 'Pick a term, tap a cell and add the type and date. "Copy to the same grade" saves time.' },
     h3: { kk: 'Қызыл ұяшық — бір сыныпта бір күнге тым көп жұмыс; сары — тоқсаннан тыс не жексенбі.', ru: 'Красная ячейка — слишком много работ у класса в один день; жёлтая — вне четверти или воскресенье.', en: 'Red cell — too many assessments for a class on one day; yellow — outside the term or on Sunday.' },
     h4: { kk: 'Дайын кестені басып шығарыңыз, Excel-ге жүктеңіз немесе сілтемемен бөлісіңіз. Деректер тек сіздің браузеріңізде сақталады.', ru: 'Готовый график распечатайте, скачайте в Excel или отправьте ссылкой. Данные хранятся только в вашем браузере.', en: 'Print it, download for Excel or share a link. Data is stored only in your browser.' },
+    qTitle: { kk: '① Сыныптар мен пәндер (өзіңіз қосасыз)', ru: '① Классы и предметы (добавьте свои)' },
+    qClasses: { kk: 'Сыныптар', ru: 'Классы' },
+    qClassesPh: { kk: 'мыс.: 5А 5Ә немесе тек 5', ru: 'напр.: 5А 5Б или просто 5' },
+    qClassesHint: { kk: 'Тек санды жазсаңыз (мыс. 5), 4 сынып бірден қосылады — артығын ✕ арқылы өшіресіз. 2–4 сыныптарға автоматты түрде «Аралық бағалау» беріледі.', ru: 'Если ввести только число (напр. 5), добавятся сразу 4 класса — лишние удалите ✕. Для 2–4 классов автоматически «Промежуточное оценивание».' },
+    qSubjects: { kk: 'Пәндер', ru: 'Предметы' },
+    qSubjectsPh: { kk: 'Пән атауын жазыңыз', ru: 'Введите название предмета' },
+    stdBtn: { kk: '☰ Тізімнен таңдау', ru: '☰ Выбрать из списка' },
+    add: { kk: 'Қосу', ru: 'Добавить' },
+    noClasses: { kk: 'Әзірге сынып жоқ', ru: 'Пока нет классов' },
+    noSubjects: { kk: 'Әзірге пән жоқ', ru: 'Пока нет предметов' },
+    fillRow: { kk: 'Бүкіл жолды бірден толтыру', ru: 'Заполнить всю строку сразу' },
+    allClasses: { kk: 'барлық сынып', ru: 'все классы' },
     copyPar: { kk: 'Осы параллельдің барлық сыныбына көшіру', ru: 'Копировать на все классы этой параллели', en: 'Copy to all classes of this grade' },
     copyAll: { kk: '…немесе барлық сыныпқа', ru: '…или на все классы', en: '…or to all classes' },
     noEntries: { kk: 'Төмендегі батырмамен жұмыс қосыңыз.', ru: 'Добавьте работу кнопкой ниже.', en: 'Add an entry with a button below.' },

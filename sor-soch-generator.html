@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>СОР және СОЧ генераторы</title>
+<meta name="description" content="БЖБ, ТЖБ, аралық бағалау (СОР, СОЧ) құрастыру: оқу мақсаттары, критерийлер, тапсырмалар, дескрипторлар, балл, ата-анаға рубрика. Word және PDF. Тегін.">
+<meta property="og:title" content="Генератор СОР и СОЧ / СОР және СОЧ генераторы">
+<meta property="og:description" content="Тапсырма, дескриптор, балл, рубрика → Word / PDF. Тегін, қазақша/орысша.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .steps { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .steps .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .lay { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .lay { grid-template-columns: 1fr; } }
+  h2 { margin: 0 0 10px; font-size: 20px; }
+  h3 { margin: 18px 0 8px; font-size: 16px; }
+  .g2c { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .g2c { grid-template-columns: 1fr; } }
+  .fld { display: grid; gap: 4px; margin: 8px 0; }
+  .fld > span { font-weight: 800; font-size: 14px; }
+  .fld small { color: var(--muted); font-size: 13px; }
+  .seg { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { flex: 1; border: 0; background: var(--card); padding: 9px 6px; font-weight: 800; cursor: pointer; }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .task { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin: 10px 0; background: var(--bg); }
+  .task .th { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .task .th b { font-size: 17px; }
+  .desc { display: grid; grid-template-columns: 1fr 70px auto; gap: 6px; margin: 4px 0; }
+  .desc input[type=number] { text-align: center; }
+  .total { position: sticky; bottom: 0; background: var(--card); border-top: 1px solid var(--line); margin: 12px -20px -20px; padding: 12px 20px; border-radius: 0 0 var(--radius) var(--radius); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .total .sum { font-size: 20px; font-weight: 900; }
+  .ok { color: var(--green); } .bad { color: var(--red); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .paper { background: #fff; color: #000; border-radius: 6px; padding: 28px 30px; box-shadow: var(--shadow); font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.35; max-height: 80vh; overflow: auto; }
+  .paper h1 { font-size: 16px; text-align: center; margin: 0 0 10px; text-transform: uppercase; }
+  .paper h4 { font-size: 14px; margin: 14px 0 6px; }
+  .paper table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  .paper td, .paper th { border: 1px solid #000; padding: 4px 6px; vertical-align: top; text-align: left; }
+  .paper th { background: #f0f0f0; }
+  .paper .ln { border-bottom: 1px solid #888; height: 22px; }
+  .paper .tk { margin: 10px 0; }
+  .saved li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .saved ul { list-style: none; padding: 0; margin: 0; }
+  .an table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 10px; }
+  .an td, .an th { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; }
+  .lv-h { color: var(--green); font-weight: 800; } .lv-m { color: var(--amber); font-weight: 800; } .lv-l { color: var(--red); font-weight: 800; }
+  .kpis { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .kpi { background: var(--bg); border-radius: 12px; padding: 10px 14px; } .kpi b { font-size: 22px; display: block; }
+  @media print {
+    body * { visibility: hidden; }
+    #paper, #paper * { visibility: visible; }
+    #paper { position: absolute; left: 0; top: 0; max-height: none; overflow: visible; box-shadow: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="steps no-print" id="steps">
+    <button class="btn on" data-s="make" data-i="sMake"></button>
+    <button class="btn" data-s="saved" data-i="sSaved"></button>
+    <button class="btn" data-s="an" data-i="sAn"></button>
+  </div>
+
+  <section id="s-make" class="lay">
+    <div class="card no-print">
+      <div class="actions">
+        <button class="btn sm" id="newDoc" data-i="newDoc"></button>
+        <button class="btn sm" id="sample" data-i="sample"></button>
+        <button class="btn sm green" id="saveDoc" data-i="saveDoc"></button>
+      </div>
+      <h2 data-i="h1"></h2>
+      <div class="g2c">
+        <label class="fld"><span data-i="grade"></span><select id="grade"></select></label>
+        <div class="fld"><span data-i="kind"></span><div class="seg" id="kind"></div></div>
+      </div>
+      <div class="g2c">
+        <label class="fld"><span data-i="subject"></span><input type="text" id="subject" list="subjList" data-ip="subjectPh"><datalist id="subjList"></datalist></label>
+        <label class="fld"><span data-i="cls"></span><input type="text" id="cls" data-ip="clsPh"></label>
+      </div>
+      <div class="g2c">
+        <label class="fld"><span data-i="term"></span><select id="term"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+        <label class="fld"><span data-i="num"></span><input type="number" id="num" min="1" max="5"></label>
+      </div>
+      <label class="fld"><span data-i="unit"></span><input type="text" id="unit" data-ip="unitPh"></label>
+      <div class="g2c">
+        <label class="fld"><span data-i="time"></span><input type="number" id="time" min="5" max="90"></label>
+        <label class="fld"><span data-i="docLang"></span><select id="docLang"><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label>
+      </div>
+      <label class="fld"><span data-i="goals"></span><textarea id="goals" rows="3" data-ip="goalsPh"></textarea><small data-i="oneLine"></small></label>
+      <label class="fld"><span data-i="crit"></span><textarea id="crit" rows="3" data-ip="critPh"></textarea><small data-i="oneLine"></small></label>
+      <div class="fld"><span data-i="levels"></span><div class="row" id="levels"></div></div>
+
+      <h3 data-i="tasks"></h3>
+      <div id="tasks"></div>
+      <button class="btn primary" id="addTask" data-i="addTask"></button>
+      <label class="row" style="margin-top:12px"><input type="checkbox" id="rubric"><span data-i="rubricOn"></span></label>
+      <label class="row"><input type="checkbox" id="answers"><span data-i="answersOn"></span></label>
+      <div class="total"><span class="sum" id="sum"></span><span id="sumNote"></span></div>
+    </div>
+    <div>
+      <div class="actions no-print">
+        <button class="btn primary" id="word" data-i="word"></button>
+        <button class="btn" id="print" data-i="print"></button>
+      </div>
+      <div class="paper" id="paper"></div>
+    </div>
+  </section>
+
+  <section id="s-saved" class="card saved hide"><h2 data-i="sSaved"></h2><ul id="savedList"></ul></section>
+
+  <section id="s-an" class="card an hide">
+    <h2 data-i="sAn"></h2>
+    <p class="muted" data-i="anHint"></p>
+    <div class="g2c">
+      <label class="fld"><span data-i="maxPts"></span><input type="number" id="anMax" min="1"></label>
+      <label class="fld"><span data-i="anTitle"></span><input type="text" id="anTitle"></label>
+    </div>
+    <label class="fld"><span data-i="anList"></span><textarea id="anIn" rows="8" data-ip="anPh"></textarea></label>
+    <div id="anOut"></div>
+    <button class="btn" id="anPrint" style="margin-top:10px" data-i="print"></button>
+  </section>
+</main>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'СОР және СОЧ генераторы', ru: 'Генератор СОР и СОЧ' },
+  sMake: { kk: '📝 Құрастыру', ru: '📝 Составить' },
+  sSaved: { kk: '📂 Сақталғандар', ru: '📂 Сохранённые' },
+  sAn: { kk: '📊 Нәтижені талдау', ru: '📊 Анализ результатов' },
+  newDoc: { kk: '＋ Жаңа', ru: '＋ Новый' },
+  sample: { kk: '✨ Үлгі', ru: '✨ Образец' },
+  saveDoc: { kk: '💾 Сақтау', ru: '💾 Сохранить' },
+  saved: { kk: 'Сақталды ✓', ru: 'Сохранено ✓' },
+  h1: { kk: '1. Негізгі мәлімет', ru: '1. Основные данные' },
+  grade: { kk: 'Сынып (параллель)', ru: 'Класс (параллель)' },
+  kind: { kk: 'Түрі', ru: 'Вид' },
+  subject: { kk: 'Пән', ru: 'Предмет' },
+  subjectPh: { kk: 'Пәнді жазыңыз не таңдаңыз', ru: 'Введите или выберите предмет' },
+  cls: { kk: 'Сынып әрпі (міндетті емес)', ru: 'Литера класса (необязательно)' },
+  clsPh: { kk: 'мыс.: А, Ә', ru: 'напр.: А, Б' },
+  term: { kk: 'Тоқсан', ru: 'Четверть' },
+  num: { kk: 'Нөмірі', ru: 'Номер' },
+  unit: { kk: 'Бөлім / тақырып', ru: 'Раздел / тема' },
+  unitPh: { kk: 'мыс.: «Ғылым әлемі»', ru: 'напр.: «Мир науки»' },
+  time: { kk: 'Орындау уақыты (мин)', ru: 'Время выполнения (мин)' },
+  docLang: { kk: 'Құжат тілі', ru: 'Язык документа' },
+  goals: { kk: 'Оқу мақсаттары', ru: 'Цели обучения' },
+  goalsPh: { kk: '5.1.2.1 Ғылыми зерттеудің кезеңдерін атау', ru: '5.1.2.1 Называть этапы научного исследования' },
+  crit: { kk: 'Бағалау критерийлері', ru: 'Критерии оценивания' },
+  critPh: { kk: 'Ғылыми зерттеудің кезеңдерін атайды', ru: 'Называет этапы научного исследования' },
+  oneLine: { kk: 'Әр жолға біреуден', ru: 'По одному на строку' },
+  levels: { kk: 'Ойлау дағдыларының деңгейі', ru: 'Уровень мыслительных навыков' },
+  tasks: { kk: '2. Тапсырмалар мен дескрипторлар', ru: '2. Задания и дескрипторы' },
+  addTask: { kk: '＋ Тапсырма қосу', ru: '＋ Добавить задание' },
+  taskText: { kk: 'Тапсырма мәтіні', ru: 'Текст задания' },
+  critOf: { kk: 'Критерий', ru: 'Критерий' },
+  descr: { kk: 'Дескриптор — балл', ru: 'Дескриптор — балл' },
+  addDescr: { kk: '＋ дескриптор', ru: '＋ дескриптор' },
+  descrPh: { kk: 'Білім алушы … анықтайды', ru: 'Обучающийся … определяет' },
+  lines: { kk: 'Жауапқа жол', ru: 'Строк для ответа' },
+  answer: { kk: 'Жауабы (мұғалімге)', ru: 'Ответ (для учителя)' },
+  rubricOn: { kk: 'Ата-анаға арналған рубриканы қосу', ru: 'Добавить рубрику для родителей' },
+  answersOn: { kk: 'Жауаптар бетін қосу (мұғалімге)', ru: 'Добавить страницу ответов (для учителя)' },
+  total: { kk: 'Жалпы балл', ru: 'Всего баллов' },
+  maxNeed: { kk: 'Аралық бағалаудың ең жоғары баллы: ', ru: 'Максимум промежуточного оценивания: ' },
+  word: { kk: '⬇ Word (.doc)', ru: '⬇ Word (.doc)' },
+  print: { kk: '🖨 Басып шығару / PDF', ru: '🖨 Печать / PDF' },
+  open: { kk: 'Ашу', ru: 'Открыть' },
+  del: { kk: 'Өшіру', ru: 'Удалить' },
+  none: { kk: 'Әзірге сақталған жұмыс жоқ.', ru: 'Пока нет сохранённых работ.' },
+  sure: { kk: 'Өшіресіз бе?', ru: 'Удалить?' },
+  sureNew: { kk: 'Ағымдағы жұмыс тазаланады (сақталмаған өзгерістер жоғалады). Жалғастырасыз ба?', ru: 'Текущая работа будет очищена (несохранённые изменения пропадут). Продолжить?' },
+  anHint: { kk: 'Әр жолға: аты-жөні және балл (немесе тек балл). Деңгей: 85–100% жоғары, 40–84% орта, 0–39% төмен.', ru: 'В каждой строке: ФИО и балл (или только балл). Уровень: 85–100% высокий, 40–84% средний, 0–39% низкий.' },
+  maxPts: { kk: 'Ең жоғары балл', ru: 'Максимальный балл' },
+  anTitle: { kk: 'Жұмыс атауы', ru: 'Название работы' },
+  anList: { kk: 'Оқушылар және баллдар', ru: 'Ученики и баллы' },
+  anPh: { kk: 'Әлиев Айбек 15\nБекова Аружан 18\n…', ru: 'Алиев Айбек 15\nБекова Аружан 18\n…' },
+  student: { kk: 'Оқушы', ru: 'Ученик' },
+  score: { kk: 'Балл', ru: 'Балл' },
+  level: { kk: 'Деңгей', ru: 'Уровень' },
+  mark: { kk: 'Баға', ru: 'Оценка' },
+  high: { kk: 'Жоғары', ru: 'Высокий' }, mid: { kk: 'Орта', ru: 'Средний' }, low: { kk: 'Төмен', ru: 'Низкий' },
+  quality: { kk: 'Білім сапасы', ru: 'Качество' }, perf: { kk: 'Үлгерім', ru: 'Успеваемость' }, avg: { kk: 'Орташа балл', ru: 'Средний балл' }, count: { kk: 'Оқушы', ru: 'Учеников' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t, esc = App.esc;
+
+// Құжаттағы мәтіндер (құжат тілі бөлек таңдалады)
+const DL = {
+  kk: {
+    sor: 'Бөлім бойынша жиынтық бағалау', soch: 'Тоқсан бойынша жиынтық бағалау', ao: 'Аралық бағалау',
+    sorS: 'БЖБ', sochS: 'ТЖБ', aoS: 'АБ',
+    subject: 'Пән', cls: 'Сынып', term: 'Тоқсан', unit: 'Бөлім', goals: 'Оқу мақсаттары', crit: 'Бағалау критерийлері', levels: 'Ойлау дағдыларының деңгейі', time: 'Орындау уақыты', min: 'минут',
+    student: 'Білім алушының аты-жөні', date: 'Күні', tasks: 'Тапсырмалар', task: 'тапсырма',
+    tbl: 'Дескрипторлар және балл қою кестесі', critCol: 'Бағалау критерийі', taskCol: 'Тапсырма №', descCol: 'Дескриптор. Білім алушы', ptsCol: 'Балл', total: 'Жалпы балл',
+    rubric: 'Жиынтық бағалау нәтижелері бойынша ата-аналарға ақпарат беруге арналған рубрика', low: 'Төмен', mid: 'Орта', high: 'Жоғары',
+    rLow: 'Орындауда қиналады; мұғалімнің көмегін қажет етеді.', rMid: 'Орындайды, бірақ кейбір қателіктер жібереді.', rHigh: 'Дұрыс және толық орындайды.',
+    answers: 'Жауаптар (мұғалімге арналған)', lv: ['Білу және түсіну', 'Қолдану', 'Жоғары деңгей дағдылары']
+  },
+  ru: {
+    sor: 'Суммативное оценивание за раздел', soch: 'Суммативное оценивание за четверть', ao: 'Промежуточное оценивание',
+    sorS: 'СОР', sochS: 'СОЧ', aoS: 'ПО',
+    subject: 'Предмет', cls: 'Класс', term: 'Четверть', unit: 'Раздел', goals: 'Цели обучения', crit: 'Критерии оценивания', levels: 'Уровень мыслительных навыков', time: 'Время выполнения', min: 'минут',
+    student: 'ФИО обучающегося', date: 'Дата', tasks: 'Задания', task: 'задание',
+    tbl: 'Дескрипторы и схема выставления баллов', critCol: 'Критерий оценивания', taskCol: '№ задания', descCol: 'Дескриптор. Обучающийся', ptsCol: 'Балл', total: 'Общий балл',
+    rubric: 'Рубрика для предоставления информации родителям по итогам суммативного оценивания', low: 'Низкий', mid: 'Средний', high: 'Высокий',
+    rLow: 'Испытывает затруднения; нуждается в помощи учителя.', rMid: 'Выполняет, но допускает отдельные ошибки.', rHigh: 'Выполняет верно и в полном объёме.',
+    answers: 'Ответы (для учителя)', lv: ['Знание и понимание', 'Применение', 'Навыки высокого порядка']
+  }
+};
+const SUBJ = {
+  kk: ['Қазақ тілі', 'Әдебиеттік оқу', 'Қазақ әдебиеті', 'Орыс тілі', 'Орыс тілі мен әдебиеті', 'Ағылшын тілі', 'Математика', 'Алгебра', 'Геометрия', 'Информатика', 'Цифрлық сауаттылық', 'Жаратылыстану', 'Дүниетану', 'Физика', 'Химия', 'Биология', 'География', 'Қазақстан тарихы', 'Дүниежүзі тарихы', 'Құқық негіздері', 'Музыка', 'Көркем еңбек', 'Дене шынықтыру'],
+  ru: ['Русский язык', 'Литературное чтение', 'Русская литература', 'Казахский язык', 'Казахский язык и литература', 'Английский язык', 'Математика', 'Алгебра', 'Геометрия', 'Информатика', 'Цифровая грамотность', 'Естествознание', 'Познание мира', 'Физика', 'Химия', 'Биология', 'География', 'История Казахстана', 'Всемирная история', 'Основы права', 'Музыка', 'Художественный труд', 'Физическая культура']
+};
+const AO_MAX = { 2: 12, 3: 14, 4: 16 };
+const blank = () => ({ id: Date.now(), grade: 5, kind: 'sor', subject: '', cls: '', term: 1, num: 1, unit: '', time: 20, docLang: App.lang, goals: '', crit: '', levels: [true, true, false], tasks: [newTask()], rubric: true, answers: false });
+function newTask() { return { text: '', crit: 0, lines: 3, answer: '', desc: [{ d: '', p: 1 }] }; }
+let W = App.store.get('mt-gen-cur') || blank();
+let saved = App.store.get('mt-gen-saved', []);
+const save = () => App.store.set('mt-gen-cur', W);
+const isPrim = () => W.grade >= 2 && W.grade <= 4;
+const kinds = () => isPrim() ? ['ao'] : ['sor', 'soch'];
+const totalPts = () => W.tasks.reduce((a, tk) => a + tk.desc.reduce((b, d) => b + (+d.p || 0), 0), 0);
+const lines = s => (s || '').split('\n').map(x => x.trim()).filter(Boolean);
+
+function sample() {
+  const ru = App.lang === 'ru';
+  return Object.assign(blank(), {
+    grade: 5, kind: 'sor', subject: ru ? 'Естествознание' : 'Жаратылыстану', term: 1, num: 1, unit: ru ? '«Мир науки»' : '«Ғылым әлемі»', time: 20, docLang: App.lang,
+    goals: ru ? '5.1.1.1 Называть этапы научного исследования\n5.1.1.2 Определять единицы измерения физических величин' : '5.1.1.1 Ғылыми зерттеу кезеңдерін атау\n5.1.1.2 Физикалық шамалардың өлшем бірліктерін анықтау',
+    crit: ru ? 'Называет этапы научного исследования\nОпределяет единицы измерения' : 'Ғылыми зерттеу кезеңдерін атайды\nӨлшем бірліктерін анықтайды',
+    tasks: [
+      { text: ru ? 'Расположите этапы научного исследования в правильном порядке: вывод, гипотеза, наблюдение, эксперимент.' : 'Ғылыми зерттеу кезеңдерін дұрыс ретпен орналастырыңыз: қорытынды, болжам, бақылау, тәжірибе.', crit: 0, lines: 2, answer: ru ? 'наблюдение → гипотеза → эксперимент → вывод' : 'бақылау → болжам → тәжірибе → қорытынды',
+        desc: [{ d: ru ? 'называет первые два этапа' : 'алғашқы екі кезеңді атайды', p: 1 }, { d: ru ? 'называет последние два этапа' : 'соңғы екі кезеңді атайды', p: 1 }] },
+      { text: ru ? 'Соотнесите величину и единицу измерения: длина, масса, время — кг, м, с.' : 'Шама мен өлшем бірлігін сәйкестендіріңіз: ұзындық, масса, уақыт — кг, м, с.', crit: 1, lines: 3, answer: ru ? 'длина — м; масса — кг; время — с' : 'ұзындық — м; масса — кг; уақыт — с',
+        desc: [{ d: ru ? 'определяет единицу длины' : 'ұзындық бірлігін анықтайды', p: 1 }, { d: ru ? 'определяет единицу массы' : 'масса бірлігін анықтайды', p: 1 }, { d: ru ? 'определяет единицу времени' : 'уақыт бірлігін анықтайды', p: 1 }] }
+    ]
+  });
+}
+
+// ---- форма
+function renderForm() {
+  $('grade').innerHTML = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(g => '<option' + (g === +W.grade ? ' selected' : '') + '>' + g + '</option>').join('');
+  if (!kinds().includes(W.kind)) W.kind = kinds()[0];
+  const L = DL[App.lang];
+  $('kind').innerHTML = kinds().map(k => '<button type="button" data-k="' + k + '" class="' + (k === W.kind ? 'on' : '') + '">' + L[k + 'S'] + '</button>').join('');
+  $('subjList').innerHTML = SUBJ[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
+  ['subject', 'cls', 'unit', 'goals', 'crit', 'num', 'time'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = W[k]; });
+  $('term').value = W.term; $('docLang').value = W.docLang;
+  $('num').closest('.fld').style.visibility = W.kind === 'soch' ? 'hidden' : '';
+  $('levels').innerHTML = DL[App.lang].lv.map((n, i) => '<label class="row"><input type="checkbox" data-lv="' + i + '"' + (W.levels[i] ? ' checked' : '') + '>' + n + '</label>').join('');
+  $('rubric').checked = W.rubric; $('answers').checked = W.answers;
+  renderTasks();
+}
+function renderTasks() {
+  const cr = lines(W.crit);
+  $('tasks').innerHTML = W.tasks.map((tk, i) =>
+    '<div class="task"><div class="th"><b>' + (i + 1) + '</b><span class="row">' +
+    '<button class="btn sm" data-up="' + i + '"' + (i ? '' : ' disabled') + '>↑</button><button class="btn sm" data-dup="' + i + '">⧉</button><button class="btn sm" data-rmt="' + i + '">✕</button></span></div>' +
+    '<textarea rows="2" data-tk="' + i + ':text" placeholder="' + esc(t('taskText')) + '">' + esc(tk.text) + '</textarea>' +
+    '<div class="g2c"><label class="fld"><span>' + t('critOf') + '</span><select data-tk="' + i + ':crit">' + (cr.length ? cr : ['—']).map((c, j) => '<option value="' + j + '"' + (j === +tk.crit ? ' selected' : '') + '>' + (j + 1) + '. ' + esc(c.slice(0, 50)) + '</option>').join('') + '</select></label>' +
+    '<label class="fld"><span>' + t('lines') + '</span><input type="number" min="0" max="20" data-tk="' + i + ':lines" value="' + tk.lines + '"></label></div>' +
+    '<div class="fld"><span>' + t('descr') + '</span>' + tk.desc.map((d, j) =>
+      '<div class="desc"><input type="text" data-ds="' + i + ':' + j + ':d" value="' + esc(d.d) + '" placeholder="' + esc(t('descrPh')) + '"><input type="number" min="0" max="20" data-ds="' + i + ':' + j + ':p" value="' + d.p + '"><button class="btn sm" data-rmd="' + i + ':' + j + '">✕</button></div>').join('') +
+    '<button class="btn sm" data-addd="' + i + '" style="justify-self:start">' + t('addDescr') + '</button></div>' +
+    (W.answers ? '<label class="fld"><span>' + t('answer') + '</span><input type="text" data-tk="' + i + ':answer" value="' + esc(tk.answer) + '"></label>' : '') +
+    '</div>').join('');
+  renderSum();
+}
+function renderSum() {
+  const s = totalPts();
+  $('sum').textContent = t('total') + ': ' + s;
+  if (isPrim()) {
+    const m = AO_MAX[W.grade];
+    $('sumNote').innerHTML = '<span class="' + (s === m ? 'ok' : 'bad') + '">' + t('maxNeed') + m + (s === m ? ' ✓' : '') + '</span>';
+  } else $('sumNote').textContent = '';
+}
+
+// ---- құжат
+function docHtml() {
+  const L = DL[W.docLang] || DL.kk, cr = lines(W.crit), gl = lines(W.goals);
+  const title = L[W.kind] + (W.kind === 'soch' ? '' : '') ;
+  const short = L[W.kind + 'S'] + (W.kind !== 'soch' && W.num ? ' №' + W.num : '');
+  const lv = L.lv.filter((_, i) => W.levels[i]).join(', ');
+  let h = '<h1>' + esc(title) + ' (' + esc(short) + ')</h1>' +
+    '<table><tr><th style="width:32%">' + L.subject + '</th><td>' + esc(W.subject) + '</td></tr>' +
+    '<tr><th>' + L.cls + '</th><td>' + esc(W.grade + (W.cls || '')) + '</td></tr>' +
+    '<tr><th>' + L.term + '</th><td>' + esc(W.term) + '</td></tr>' +
+    (W.unit ? '<tr><th>' + L.unit + '</th><td>' + esc(W.unit) + '</td></tr>' : '') +
+    '<tr><th>' + L.goals + '</th><td>' + gl.map(esc).join('<br>') + '</td></tr>' +
+    '<tr><th>' + L.crit + '</th><td>' + cr.map((c, i) => (i + 1) + '. ' + esc(c)).join('<br>') + '</td></tr>' +
+    (lv ? '<tr><th>' + L.levels + '</th><td>' + esc(lv) + '</td></tr>' : '') +
+    '<tr><th>' + L.time + '</th><td>' + esc(W.time) + ' ' + L.min + '</td></tr></table>' +
+    '<p>' + L.student + ': ______________________________ &nbsp; ' + L.date + ': ___________</p>' +
+    '<h4>' + L.tasks + '</h4>';
+  W.tasks.forEach((tk, i) => {
+    h += '<div class="tk"><b>' + (W.docLang === 'ru' ? 'Задание ' + (i + 1) : (i + 1) + '-' + L.task) + '.</b> ' + esc(tk.text).replace(/\n/g, '<br>') + '</div>';
+    for (let k = 0; k < (+tk.lines || 0); k++) h += '<div class="ln">&nbsp;</div>';
+  });
+  h += '<h4>' + L.tbl + '</h4><table><tr><th>' + L.critCol + '</th><th style="width:60px">' + L.taskCol + '</th><th>' + L.descCol + '</th><th style="width:50px">' + L.ptsCol + '</th></tr>';
+  W.tasks.forEach((tk, i) => {
+    const ds = tk.desc.length ? tk.desc : [{ d: '', p: 0 }];
+    ds.forEach((d, j) => {
+      h += '<tr>' + (j === 0 ? '<td rowspan="' + ds.length + '">' + esc(cr[+tk.crit] || '') + '</td><td rowspan="' + ds.length + '">' + (i + 1) + '</td>' : '') + '<td>' + esc(d.d) + '</td><td>' + (+d.p || 0) + '</td></tr>';
+    });
+  });
+  h += '<tr><th colspan="3">' + L.total + '</th><th>' + totalPts() + '</th></tr></table>';
+  if (W.rubric && cr.length) {
+    h += '<h4>' + L.rubric + '</h4><table><tr><th>' + L.critCol + '</th><th>' + L.low + '</th><th>' + L.mid + '</th><th>' + L.high + '</th></tr>' +
+      cr.map(c => '<tr><td>' + esc(c) + '</td><td>' + L.rLow + '</td><td>' + L.rMid + '</td><td>' + L.rHigh + '</td></tr>').join('') + '</table>';
+  }
+  if (W.answers && W.tasks.some(tk => tk.answer)) {
+    h += '<div style="page-break-before:always"></div><h4>' + L.answers + ' — ' + esc(short) + ', ' + esc(W.subject) + ', ' + esc(W.grade + (W.cls || '')) + '</h4><ol>' + W.tasks.map(tk => '<li>' + esc(tk.answer || '—') + '</li>').join('') + '</ol>';
+  }
+  return h;
+}
+let drawT;
+function draw() { clearTimeout(drawT); drawT = setTimeout(() => { $('paper').innerHTML = docHtml(); }, 120); }
+function fileName() { const L = DL[W.docLang] || DL.kk; return (L[W.kind + 'S'] + (W.kind !== 'soch' ? W.num : '') + '_' + (W.subject || 'pan') + '_' + W.grade + (W.cls || '') + '_' + W.term).replace(/[\\/:*?"<>|\s]+/g, '_'); }
+function exportWord() {
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>' +
+    'body{font-family:"Times New Roman";font-size:12pt} h1{font-size:13pt;text-align:center;text-transform:uppercase} h4{font-size:12pt} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:3pt 5pt;vertical-align:top;text-align:left} th{background:#eee} .ln{border-bottom:1px solid #888;height:18pt}' +
+    '@page{size:21cm 29.7cm;margin:2cm 1.5cm 2cm 2cm}</style></head><body>' + docHtml() + '</body></html>';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + html], { type: 'application/msword' }));
+  a.download = fileName() + '.doc'; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+// ---- оқиғалар
+function changed(full) { save(); if (full) renderForm(); else renderSum(); draw(); }
+$('grade').onchange = () => { W.grade = +$('grade').value; if (!kinds().includes(W.kind)) { W.kind = kinds()[0]; } changed(true); };
+$('kind').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; W.kind = b.dataset.k; W.time = W.kind === 'soch' ? 40 : W.time; changed(true); };
+['subject', 'cls', 'unit', 'goals', 'num', 'time'].forEach(k => $(k).oninput = () => { W[k] = $(k).value; changed(false); });
+$('crit').oninput = () => { W.crit = $('crit').value; save(); draw(); };
+$('crit').onchange = () => renderTasks();
+$('term').onchange = () => { W.term = +$('term').value; changed(false); };
+$('docLang').onchange = () => { W.docLang = $('docLang').value; changed(false); };
+$('levels').onchange = e => { const i = e.target.dataset.lv; if (i != null) { W.levels[i] = e.target.checked; changed(false); } };
+$('rubric').onchange = () => { W.rubric = $('rubric').checked; changed(false); };
+$('answers').onchange = () => { W.answers = $('answers').checked; save(); renderTasks(); draw(); };
+$('addTask').onclick = () => { W.tasks.push(newTask()); save(); renderTasks(); draw(); const ta = $('tasks').querySelectorAll('textarea'); ta[ta.length - 1].focus(); };
+$('tasks').oninput = e => {
+  const el = e.target;
+  if (el.dataset.tk) { const [i, k] = el.dataset.tk.split(':'); W.tasks[i][k] = k === 'crit' || k === 'lines' ? +el.value : el.value; }
+  else if (el.dataset.ds) { const [i, j, k] = el.dataset.ds.split(':'); W.tasks[i].desc[j][k] = k === 'p' ? +el.value : el.value; }
+  else return;
+  save(); renderSum(); draw();
+};
+$('tasks').onchange = $('tasks').oninput;
+$('tasks').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const d = b.dataset;
+  if (d.addd != null) W.tasks[d.addd].desc.push({ d: '', p: 1 });
+  else if (d.rmd) { const [i, j] = d.rmd.split(':'); W.tasks[i].desc.splice(j, 1); }
+  else if (d.rmt != null) { W.tasks.splice(d.rmt, 1); if (!W.tasks.length) W.tasks.push(newTask()); }
+  else if (d.dup != null) W.tasks.splice(+d.dup + 1, 0, JSON.parse(JSON.stringify(W.tasks[d.dup])));
+  else if (d.up != null) { const i = +d.up; [W.tasks[i - 1], W.tasks[i]] = [W.tasks[i], W.tasks[i - 1]]; }
+  else return;
+  save(); renderTasks(); draw();
+};
+$('newDoc').onclick = () => { if (!confirm(t('sureNew'))) return; W = blank(); changed(true); };
+$('sample').onclick = () => { if (!confirm(t('sureNew'))) return; W = sample(); changed(true); };
+$('saveDoc').onclick = () => {
+  const i = saved.findIndex(s => s.id === W.id);
+  const copy = JSON.parse(JSON.stringify(W)); copy.when = new Date().toLocaleDateString();
+  if (i >= 0) saved[i] = copy; else saved.unshift(copy);
+  App.store.set('mt-gen-saved', saved);
+  $('saveDoc').textContent = t('saved'); setTimeout(() => $('saveDoc').textContent = t('saveDoc'), 1500);
+  renderSaved();
+};
+$('word').onclick = exportWord;
+$('print').onclick = () => print();
+
+function renderSaved() {
+  const L = DL[App.lang];
+  $('savedList').innerHTML = saved.length ? saved.map((s, i) => '<li><span><b>' + esc(L[s.kind + 'S'] + (s.kind !== 'soch' ? ' №' + s.num : '')) + '</b> · ' + esc(s.subject) + ' · ' + esc(s.grade + (s.cls || '')) + ' · ' + s.term + ' ' + (App.lang === 'ru' ? 'четв.' : 'тоқсан') + ' <span class="muted">· ' + esc(s.when || '') + '</span></span>' +
+    '<span class="row"><button class="btn sm primary" data-op="' + i + '">' + t('open') + '</button><button class="btn sm" data-rm="' + i + '">' + t('del') + '</button></span></li>').join('') : '<li class="muted">' + t('none') + '</li>';
+}
+$('savedList').onclick = e => {
+  const o = e.target.closest('[data-op]'), r = e.target.closest('[data-rm]');
+  if (o) { W = JSON.parse(JSON.stringify(saved[+o.dataset.op])); changed(true); step('make'); }
+  else if (r && confirm(t('sure'))) { saved.splice(+r.dataset.rm, 1); App.store.set('mt-gen-saved', saved); renderSaved(); }
+};
+
+// ---- талдау
+function analyse() {
+  const max = +$('anMax').value || totalPts() || 1;
+  const rows = $('anIn').value.split('\n').map(l => l.trim()).filter(Boolean).map((l, i) => {
+    const m = l.match(/^(.*?)[\s;,:\t]*(\d+(?:[.,]\d+)?)\s*$/);
+    return m ? { n: m[1] || (i + 1) + '', s: parseFloat(m[2].replace(',', '.')) } : null;
+  }).filter(Boolean);
+  App.store.set('mt-gen-an', { max: $('anMax').value, title: $('anTitle').value, list: $('anIn').value });
+  if (!rows.length) { $('anOut').innerHTML = ''; return; }
+  const cnt = { h: 0, m: 0, l: 0 }, marks = { 5: 0, 4: 0, 3: 0, 2: 0 };
+  const body = rows.map(r => {
+    const p = r.s / max * 100, lv = p >= 85 ? 'h' : p >= 40 ? 'm' : 'l', g = p >= 85 ? 5 : p >= 65 ? 4 : p >= 40 ? 3 : 2;
+    cnt[lv]++; marks[g]++;
+    return '<tr><td>' + esc(r.n) + '</td><td>' + r.s + ' / ' + max + '</td><td>' + Math.round(p) + '%</td><td class="lv-' + lv + '">' + t({ h: 'high', m: 'mid', l: 'low' }[lv]) + '</td><td>' + g + '</td></tr>';
+  }).join('');
+  const n = rows.length, avg = rows.reduce((a, r) => a + r.s, 0) / n;
+  $('anOut').innerHTML = '<div class="kpis">' +
+    '<div class="kpi">' + t('count') + '<b>' + n + '</b></div>' +
+    '<div class="kpi">' + t('avg') + '<b>' + (Math.round(avg * 10) / 10) + '</b></div>' +
+    '<div class="kpi">' + t('quality') + '<b>' + Math.round((marks[5] + marks[4]) / n * 100) + '%</b></div>' +
+    '<div class="kpi">' + t('perf') + '<b>' + Math.round((n - marks[2]) / n * 100) + '%</b></div>' +
+    '<div class="kpi"><span class="lv-h">' + t('high') + '</span> ' + cnt.h + ' · <span class="lv-m">' + t('mid') + '</span> ' + cnt.m + ' · <span class="lv-l">' + t('low') + '</span> ' + cnt.l + '<br>«5» ' + marks[5] + ' · «4» ' + marks[4] + ' · «3» ' + marks[3] + ' · «2» ' + marks[2] + '</div></div>' +
+    '<table><tr><th>' + t('student') + '</th><th>' + t('score') + '</th><th>%</th><th>' + t('level') + '</th><th>' + t('mark') + '</th></tr>' + body + '</table>';
+}
+const an = App.store.get('mt-gen-an', { max: '', title: '', list: '' });
+$('anMax').value = an.max; $('anTitle').value = an.title; $('anIn').value = an.list;
+['anMax', 'anTitle', 'anIn'].forEach(k => $(k).oninput = analyse);
+$('anPrint').onclick = () => {
+  const w = window.open('', '_blank'); if (!w) return;
+  w.document.write('<html><head><meta charset="utf-8"><title>' + esc($('anTitle').value) + '</title><style>body{font-family:Arial;padding:20px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:5px;text-align:left}.kpis{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0}.kpi b{display:block;font-size:20px}</style></head><body><h2>' + esc($('anTitle').value) + '</h2>' + $('anOut').innerHTML + '</body></html>');
+  w.document.close(); w.print();
+};
+
+function step(s) {
+  document.querySelectorAll('#steps .btn').forEach(b => b.classList.toggle('on', b.dataset.s === s));
+  ['make', 'saved', 'an'].forEach(k => $('s-' + k).classList.toggle('hide', k !== s));
+  if (s === 'an') { if (!$('anMax').value) $('anMax').placeholder = totalPts(); analyse(); }
+}
+$('steps').onclick = e => { const b = e.target.closest('[data-s]'); if (b) step(b.dataset.s); };
+App.onLang.push(() => { renderForm(); renderSaved(); analyse(); });
+renderForm(); renderSaved(); draw();
+</script>
+</body>
+</html>

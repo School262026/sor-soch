@@ -1,7 +1,7 @@
 // Ортақ: тіл ауыстыру, жоғарғы панель, localStorage көмекшілері
 (function () {
-  const LANGS = ['kk', 'ru', 'en'];
-  const LABELS = { kk: 'ҚАЗ', ru: 'РУС', en: 'ENG' };
+  const LANGS = ['kk', 'ru'];
+  const LABELS = { kk: 'ҚАЗ', ru: 'РУС' };
 
   const store = {
     get(k, def) { try { const v = localStorage.getItem(k); return v == null ? def : JSON.parse(v); } catch (e) { return def; } },
@@ -14,7 +14,7 @@
     const saved = store.get('mt-lang');
     if (LANGS.includes(saved)) return saved;
     const nav = (navigator.language || 'kk').slice(0, 2);
-    return nav === 'ru' ? 'ru' : nav === 'en' ? 'en' : 'kk';
+    return nav === 'ru' || q === 'en' ? 'ru' : 'kk';
   }
 
   const COMMON = {

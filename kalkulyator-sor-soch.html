@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>БЖБ/ТЖБ калькуляторы</title>
+<meta name="description" content="СОР және СОЧ калькуляторы: тоқсандық, жылдық баға, 2–4 сынып Q формуласы, білім сапасы. Тегін, қазақша/орысша.">
+<meta property="og:title" content="Калькулятор СОР и СОЧ / БЖБ-ТЖБ калькуляторы">
+<meta property="og:description" content="Тоқсандық және жылдық баға, 2–4 сынып, білім сапасы. Тегін.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧮%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs .btn.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .lay { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 820px) { .lay { grid-template-columns: 1fr; } }
+  h2 { margin: 0 0 6px; font-size: 22px; }
+  .fld { display: grid; gap: 4px; margin: 14px 0; }
+  .fld > span { font-weight: 800; }
+  .fld small { color: var(--muted); }
+  .fld input[type=text] { font-size: 18px; }
+  .pair { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+  .pair input { width: 80px; font-size: 18px; text-align: center; }
+  .pair b { min-width: 64px; }
+  .res { position: sticky; top: 72px; text-align: center; }
+  .grade { font-size: 96px; font-weight: 900; line-height: 1; margin: 6px 0; }
+  .g5 { color: var(--green); } .g4 { color: var(--primary); } .g3 { color: var(--amber); } .g2 { color: var(--red); }
+  .pct { font-size: 28px; font-weight: 900; }
+  .parts { display: grid; gap: 6px; margin-top: 14px; text-align: left; }
+  .parts div { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding: 4px 0; }
+  .need { margin-top: 14px; text-align: left; background: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: 15px; }
+  .need b { color: var(--primary); }
+  .scale { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+  .scale td { border-bottom: 1px solid var(--line); padding: 5px; }
+  .info { background: var(--amber-soft); border-radius: 12px; padding: 10px 12px; font-size: 15px; margin-top: 12px; }
+  .qs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .qs select { font-size: 20px; text-align: center; }
+  .hide { display: none !important; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="btn on" data-t="q511" data-i="tab1"></button>
+    <button class="btn" data-t="q24" data-i="tab2"></button>
+    <button class="btn" data-t="year" data-i="tab3"></button>
+    <button class="btn" data-t="qual" data-i="tab4"></button>
+  </div>
+
+  <!-- 5–11 -->
+  <section class="lay" id="t-q511">
+    <div class="card">
+      <h2 data-i="tab1"></h2>
+      <label class="fld"><span data-i="fo"></span><input type="text" id="fo" inputmode="decimal" placeholder="8 9 10 7 9"><small data-i="foHint"></small></label>
+      <div class="fld"><span data-i="sor"></span>
+        <div id="sors"></div>
+        <button class="btn sm" id="addSor" style="justify-self:start" data-i="addSor"></button>
+        <small data-i="sorHint"></small>
+      </div>
+      <div class="fld"><span data-i="soch"></span>
+        <div class="pair"><input type="number" id="sochS" min="0" placeholder="0"> / <input type="number" id="sochM" min="1" value="25"> <span data-i="pts"></span></div>
+        <label class="row"><input type="checkbox" id="noSoch"><span data-i="noSoch"></span></label>
+      </div>
+      <p class="muted" data-i="w511"></p>
+    </div>
+    <div class="card res" id="r511"></div>
+  </section>
+
+  <!-- 2–4 -->
+  <section class="lay hide" id="t-q24">
+    <div class="card">
+      <h2 data-i="tab2"></h2>
+      <div class="info" data-i="info24"></div>
+      <label class="fld"><span data-i="grade"></span>
+        <select id="g24"><option value="12">2</option><option value="14" selected>3</option><option value="16">4</option></select>
+      </label>
+      <label class="fld"><span data-i="lessons"></span><input type="text" id="f24" inputmode="decimal" placeholder="8 7 9 10 8 6"><small data-i="foHint"></small></label>
+      <label class="fld"><span data-i="ao"></span><input type="text" id="p24" inputmode="decimal" placeholder="11 12"><small id="aoHint"></small></label>
+      <p class="muted" data-i="w24"></p>
+    </div>
+    <div class="card res" id="r24"></div>
+  </section>
+
+  <!-- жылдық -->
+  <section class="lay hide" id="t-year">
+    <div class="card">
+      <h2 data-i="tab3"></h2>
+      <div class="qs" id="qs"></div>
+      <label class="row" style="margin-top:14px"><input type="checkbox" id="yPrim"><span data-i="yPrim"></span></label>
+      <p class="muted" data-i="wYear"></p>
+    </div>
+    <div class="card res" id="rYear"></div>
+  </section>
+
+  <!-- сапа -->
+  <section class="lay hide" id="t-qual">
+    <div class="card">
+      <h2 data-i="tab4"></h2>
+      <div id="cnts"></div>
+      <p class="muted" data-i="wQual"></p>
+    </div>
+    <div class="card res" id="rQual"></div>
+  </section>
+</main>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'БЖБ/ТЖБ калькуляторы', ru: 'Калькулятор СОР и СОЧ' },
+  tab1: { kk: 'Тоқсан · 5–11 сынып', ru: 'Четверть · 5–11 классы' },
+  tab2: { kk: 'Тоқсан · 2–4 сынып', ru: 'Четверть · 2–4 классы' },
+  tab3: { kk: 'Жылдық баға', ru: 'Годовая оценка' },
+  tab4: { kk: 'Білім сапасы', ru: 'Качество знаний' },
+  fo: { kk: 'ҚБ (формативті) баллдары', ru: 'Баллы ФО (формативное)' },
+  foHint: { kk: 'Әр баға 1–10, бос орын не үтір арқылы', ru: 'Каждая оценка 1–10, через пробел или запятую' },
+  sor: { kk: 'БЖБ (СОР): алған балл / ең жоғары балл', ru: 'СОР: набранный балл / максимум' },
+  sorHint: { kk: 'Тоқсанына 3-тен көп емес. Бос жол есептелмейді.', ru: 'Не больше трёх за четверть. Пустые строки не считаются.' },
+  addSor: { kk: '+ БЖБ қосу', ru: '+ Добавить СОР' },
+  soch: { kk: 'ТЖБ (СОЧ): алған балл / ең жоғары балл', ru: 'СОЧ: набранный балл / максимум' },
+  noSoch: { kk: 'Бұл тоқсанда ТЖБ жоқ', ru: 'В этой четверти СОЧ нет' },
+  pts: { kk: 'балл', ru: 'балл.' },
+  w511: { kk: 'Салмақ (Ереженің 28-т., №257-НҚ): ҚБ 25% + БЖБ 25% + ТЖБ 50%.', ru: 'Веса (п. 28 Правил, № 257-НҚ): ФО 25% + СОР 25% + СОЧ 50%.' },
+  noSochMsg: { kk: 'ТЖБ болмаған жағдайдағы салмақты Ереже белгілемейді — мектептің шешімі бойынша қойылады.', ru: 'Для четверти без СОЧ Правила не задают веса — оценка выставляется по решению школы.' },
+  result: { kk: 'Тоқсандық баға', ru: 'Четвертная оценка' },
+  enter: { kk: 'Баллдарды енгізіңіз', ru: 'Введите баллы' },
+  need: { kk: 'ТЖБ-дан қанша керек?', ru: 'Сколько нужно на СОЧ?' },
+  needFor: { kk: 'алу үшін', ru: 'для оценки' },
+  needOf: { kk: 'балл кем дегенде', ru: 'балл. минимум' },
+  impossible: { kk: 'мүмкін емес', ru: 'невозможно' },
+  scale: { kk: 'Шкала', ru: 'Шкала' },
+  info24: { kk: '2026–2027 оқу жылынан 2–4 сыныптарда БЖБ мен ТЖБ жоқ. Олардың орнына аралық бағалау өткізіледі, тоқсан Q формуласымен есептеледі (2-9, 2-14 тт., №257-НҚ).', ru: 'С 2026–2027 учебного года во 2–4 классах нет СОР и СОЧ. Вместо них — промежуточное оценивание, четверть считается по формуле Q (пп. 2-9, 2-14, № 257-НҚ).' },
+  grade: { kk: 'Сынып', ru: 'Класс' },
+  lessons: { kk: 'Сабақтағы баллдар (F)', ru: 'Баллы за уроки (F)' },
+  ao: { kk: 'Аралық бағалау баллдары (P)', ru: 'Баллы промежуточного оценивания (P)' },
+  aoMax: { kk: 'Әр жұмыстың ең жоғары баллы: ', ru: 'Максимум за каждую работу: ' },
+  w24: { kk: 'F = сабақ баллдарының қосындысы ÷ (сабақ саны × 10); P = жұмыс баллдарының қосындысы ÷ (жұмыс саны × max); Q = (F + P) / 2.', ru: 'F = сумма баллов за уроки ÷ (число уроков × 10); P = сумма баллов за работы ÷ (число работ × max); Q = (F + P) / 2.' },
+  qWord: { kk: 'тоқсан', ru: 'четв.' },
+  yPrim: { kk: '2–4 сынып', ru: '2–4 класс' },
+  wYear: { kk: 'Жылдық баға = тоқсандық бағалардың арифметикалық ортасы, бүтін санға дөңгелектенеді (3,5 → 4). Жарты жылдық пән болса, екі тоқсанды бос қалдырыңыз.', ru: 'Годовая = среднее арифметическое четвертных, округление до целого (3,5 → 4). Если предмет по полугодиям, оставьте две четверти пустыми.' },
+  yNo2: { kk: '2–4 сыныпта жылдық «2» қойылмайды.', ru: 'Во 2–4 классах годовая «2» не выставляется.' },
+  yearRes: { kk: 'Жылдық баға', ru: 'Годовая оценка' },
+  avg: { kk: 'Орташа', ru: 'Среднее' },
+  wQual: { kk: 'Сапа = («5» + «4») ÷ барлық оқушы. Үлгерім = («5» + «4» + «3») ÷ барлық оқушы. (Мектептегі жалпы формула.)', ru: 'Качество = («5» + «4») ÷ всего учеников. Успеваемость = («5» + «4» + «3») ÷ всего. (Общепринятая школьная формула.)' },
+  cnt: { kk: 'оқушы саны', ru: 'кол-во учеников' },
+  quality: { kk: 'Білім сапасы', ru: 'Качество знаний' },
+  perf: { kk: 'Үлгерім', ru: 'Успеваемость' },
+  total: { kk: 'Барлығы', ru: 'Всего' },
+  sum: { kk: 'Жиынтық', ru: 'Итого' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t;
+const nums = s => (s || '').split(/[\s,;]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => !isNaN(x));
+// 85/65/40 шкаласы, пайыз дөңгелектенбейді
+const toGrade = p => p >= 85 ? 5 : p >= 65 ? 4 : p >= 40 ? 3 : 2;
+const pf = p => (Math.round(p * 10) / 10).toString().replace('.', App.lang === 'ru' ? ',' : ',') + '%';
+const st = App.store.get('mt-calc', { fo: '', sors: [['', 20], ['', 20]], sochS: '', sochM: 25, noSoch: false, g24: '14', f24: '', p24: '', qs: ['', '', '', ''], yPrim: false, cnt: [0, 0, 0, 0], tab: 'q511' });
+const save = () => App.store.set('mt-calc', st);
+const scaleHtml = () => '<table class="scale"><tr><td><b class="g5">5</b></td><td>85–100%</td><td><b class="g4">4</b></td><td>65–84%</td></tr><tr><td><b class="g3">3</b></td><td>40–64%</td><td><b class="g2">2</b></td><td>0–39%</td></tr></table>';
+const gradeBox = (title, p, g) => '<div class="muted"><b>' + title + '</b></div><div class="grade g' + g + '">' + g + '</div><div class="pct">' + pf(p) + '</div>';
+
+// --- 5–11
+function renderSors() {
+  $('sors').innerHTML = st.sors.map((s, i) => '<div class="pair"><b>' + (App.lang === 'ru' ? 'СОР ' : 'БЖБ ') + (i + 1) + '</b><input type="number" min="0" data-sor="' + i + ':0" value="' + s[0] + '"> / <input type="number" min="1" data-sor="' + i + ':1" value="' + s[1] + '"> ' + t('pts') +
+    (st.sors.length > 1 ? ' <button class="btn sm" data-rm="' + i + '">✕</button>' : '') + '</div>').join('');
+  $('addSor').classList.toggle('hide', st.sors.length >= 3);
+}
+$('sors').oninput = e => { const k = e.target.dataset.sor; if (!k) return; const [i, j] = k.split(':'); st.sors[i][j] = e.target.value; save(); calc511(); };
+$('sors').onclick = e => { const b = e.target.closest('[data-rm]'); if (b) { st.sors.splice(+b.dataset.rm, 1); save(); renderSors(); calc511(); } };
+$('addSor').onclick = () => { if (st.sors.length < 3) st.sors.push(['', 20]); save(); renderSors(); };
+function calc511() {
+  const fo = nums(st.fo).filter(x => x >= 0 && x <= 10);
+  const sr = st.sors.filter(s => s[0] !== '' && +s[1] > 0);
+  const F = fo.length ? fo.reduce((a, b) => a + b, 0) / (fo.length * 10) * 100 : null;
+  const S = sr.length ? sr.reduce((a, s) => a + +s[0], 0) / sr.reduce((a, s) => a + +s[1], 0) * 100 : null;
+  const C = !st.noSoch && st.sochS !== '' && +st.sochM > 0 ? +st.sochS / +st.sochM * 100 : null;
+  let h = '';
+  const parts = '<div class="parts"><div><span>' + t('fo') + '</span><b>' + (F == null ? '—' : pf(F)) + '</b></div><div><span>' + (App.lang === 'ru' ? 'СОР' : 'БЖБ') + '</span><b>' + (S == null ? '—' : pf(S)) + '</b></div>' +
+    (st.noSoch ? '' : '<div><span>' + (App.lang === 'ru' ? 'СОЧ' : 'ТЖБ') + '</span><b>' + (C == null ? '—' : pf(C)) + '</b></div>') + '</div>';
+  if (st.noSoch) h = '<div class="info">' + t('noSochMsg') + '</div>' + parts;
+  else if (F != null && S != null && C != null) {
+    const p = F * 0.25 + S * 0.25 + C * 0.5;
+    h = gradeBox(t('result'), p, toGrade(p)) + parts;
+  } else {
+    h = '<div class="muted">' + t('enter') + '</div>' + parts;
+    if (F != null && S != null && +st.sochM > 0) {
+      h += '<div class="need"><b>' + t('need') + '</b><br>' + [5, 4, 3].map(g => {
+        const thr = { 5: 85, 4: 65, 3: 40 }[g];
+        const needP = (thr - F * 0.25 - S * 0.25) / 0.5;
+        const pts = Math.max(0, Math.ceil(needP / 100 * +st.sochM - 1e-9));
+        return '«' + g + '» ' + t('needFor') + ': ' + (needP > 100 ? t('impossible') : t('needOf') + ' <b>' + pts + '</b> / ' + st.sochM);
+      }).join('<br>') + '</div>';
+    }
+  }
+  $('r511').innerHTML = h + scaleHtml();
+}
+['fo', 'sochS', 'sochM'].forEach(k => { $(k).value = st[k]; $(k).oninput = () => { st[k] = $(k).value; save(); calc511(); }; });
+$('noSoch').checked = st.noSoch; $('noSoch').onchange = () => { st.noSoch = $('noSoch').checked; save(); calc511(); };
+
+// --- 2–4
+function calc24() {
+  const max = +st.g24;
+  $('aoHint').textContent = t('aoMax') + max;
+  const f = nums(st.f24).filter(x => x >= 0 && x <= 10), p = nums(st.p24).filter(x => x >= 0 && x <= max);
+  const F = f.length ? f.reduce((a, b) => a + b, 0) / (f.length * 10) * 100 : null;
+  const P = p.length ? p.reduce((a, b) => a + b, 0) / (p.length * max) * 100 : null;
+  const parts = '<div class="parts"><div><span>F</span><b>' + (F == null ? '—' : pf(F)) + '</b></div><div><span>P</span><b>' + (P == null ? '—' : pf(P)) + '</b></div></div>';
+  $('r24').innerHTML = (F != null && P != null ? gradeBox(t('result') + ' (Q)', (F + P) / 2, toGrade((F + P) / 2)) : '<div class="muted">' + t('enter') + '</div>') + parts + scaleHtml();
+}
+['g24', 'f24', 'p24'].forEach(k => { $(k).value = st[k]; $(k).oninput = () => { st[k] = $(k).value; save(); calc24(); }; });
+
+// --- жылдық
+function renderQs() {
+  $('qs').innerHTML = [0, 1, 2, 3].map(i => '<label class="fld"><span>' + (i + 1) + ' ' + t('qWord') + '</span><select data-q="' + i + '"><option value="">—</option>' +
+    [5, 4, 3, 2].map(g => '<option' + (String(st.qs[i]) === String(g) ? ' selected' : '') + '>' + g + '</option>').join('') + '</select></label>').join('');
+}
+$('qs').onchange = e => { const i = e.target.dataset.q; if (i == null) return; st.qs[i] = e.target.value; save(); calcYear(); };
+$('yPrim').checked = st.yPrim; $('yPrim').onchange = () => { st.yPrim = $('yPrim').checked; save(); calcYear(); };
+function calcYear() {
+  const g = st.qs.filter(x => x !== '').map(Number);
+  if (!g.length) { $('rYear').innerHTML = '<div class="muted">' + t('enter') + '</div>'; return; }
+  const avg = g.reduce((a, b) => a + b, 0) / g.length;
+  const r = Math.floor(avg + 0.5);
+  $('rYear').innerHTML = '<div class="muted"><b>' + t('yearRes') + '</b></div><div class="grade g' + r + '">' + r + '</div><div class="pct">' + t('avg') + ': ' + (Math.round(avg * 100) / 100).toString().replace('.', ',') + '</div>' +
+    (st.yPrim && r === 2 ? '<div class="info">' + t('yNo2') + '</div>' : '');
+}
+
+// --- сапа
+function renderCnts() {
+  $('cnts').innerHTML = [5, 4, 3, 2].map((g, i) => '<div class="pair"><b class="g' + g + '" style="font-size:24px">«' + g + '»</b><input type="number" min="0" data-c="' + i + '" value="' + st.cnt[i] + '"> <span class="muted">' + t('cnt') + '</span></div>').join('');
+}
+$('cnts').oninput = e => { const i = e.target.dataset.c; if (i == null) return; st.cnt[i] = Math.max(0, +e.target.value || 0); save(); calcQual(); };
+function calcQual() {
+  const [a, b, c, d] = st.cnt, n = a + b + c + d;
+  if (!n) { $('rQual').innerHTML = '<div class="muted">' + t('enter') + '</div>'; return; }
+  $('rQual').innerHTML = '<div class="muted"><b>' + t('quality') + '</b></div><div class="grade g4" style="font-size:64px">' + pf((a + b) / n * 100) + '</div>' +
+    '<div class="parts"><div><span>' + t('perf') + '</span><b>' + pf((a + b + c) / n * 100) + '</b></div><div><span>' + t('total') + '</span><b>' + n + '</b></div></div>';
+}
+
+function tab(v) {
+  st.tab = v; save();
+  document.querySelectorAll('#tabs .btn').forEach(b => b.classList.toggle('on', b.dataset.t === v));
+  ['q511', 'q24', 'year', 'qual'].forEach(k => $('t-' + k).classList.toggle('hide', k !== v));
+}
+$('tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (b) tab(b.dataset.t); };
+function all() { renderSors(); renderQs(); renderCnts(); calc511(); calc24(); calcYear(); calcQual(); }
+App.onLang.push(all);
+all(); tab(st.tab || 'q511');
+</script>
+</body>
+</html>

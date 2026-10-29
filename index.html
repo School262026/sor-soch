@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Мұғалім құралдары</title>
-<meta name="description" content="Тегін мұғалім құралдары: сабақ таймері, рефлексия, интерактивті сабақ, БЖБ/ТЖБ (СОР/СОЧ) кестесі. Қазақша, орысша, ағылшынша.">
+<title>Мұғалім құралдары — СОР/СОЧ генераторы, калькулятор, таймер</title>
+<meta name="description" content="Тегін: СОР және СОЧ генераторы, БЖБ/ТЖБ калькуляторы, БЖБ/ТЖБ кестесі, сабақ таймері, рефлексия. Қазақша және орысша.">
+<meta property="og:title" content="Мұғалім құралдары: СОР/СОЧ генераторы, калькулятор, сабақ таймері">
+<meta property="og:description" content="Тегін, тіркелусіз. Қазақша / орысша.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✏️%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="common.css">
@@ -14,6 +16,7 @@
   .hero p { margin: 0 auto; max-width: 640px; color: var(--muted); font-size: 18px; }
   .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 16px 0 28px; }
   .badge { background: var(--green-soft); color: var(--green); font-weight: 800; padding: 5px 12px; border-radius: 999px; font-size: 14px; }
+  h2.sec { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 26px 0 12px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
   .tool { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--text); transition: transform .15s, box-shadow .15s; }
   .tool:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(28,36,52,.14); }
@@ -21,6 +24,7 @@
   .tool h3 { margin: 4px 0 0; font-size: 20px; }
   .tool p { margin: 0; color: var(--muted); font-size: 15px; }
   .tool .new { align-self: flex-start; background: var(--red); color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 6px; }
+  .note { margin-top: 24px; background: var(--amber-soft); border-color: transparent; }
 </style>
 </head>
 <body>
@@ -28,40 +32,51 @@
   <section class="hero">
     <h1 data-i="h1"></h1>
     <p data-i="lead"></p>
-    <div class="badges">
-      <span class="badge" data-i="b1"></span><span class="badge" data-i="b2"></span><span class="badge" data-i="b3"></span>
-    </div>
+    <div class="badges"><span class="badge" data-i="b1"></span><span class="badge" data-i="b2"></span><span class="badge">✓ ҚАЗ · РУС</span></div>
   </section>
+
+  <h2 class="sec" data-i="sAssess"></h2>
   <section class="grid">
-    <a class="card tool" href="timer.html"><span class="ic" style="background:var(--primary-soft)">⏱️</span><h3 data-i="t1"></h3><p data-i="d1"></p></a>
-    <a class="card tool" href="minute.html"><span class="ic" style="background:var(--amber-soft)">⏳</span><h3 data-i="t2"></h3><p data-i="d2"></p></a>
-    <a class="card tool" href="reflection.html"><span class="ic" style="background:var(--green-soft)">🙋</span><h3 data-i="t3"></h3><p data-i="d3"></p></a>
-    <a class="card tool" href="lesson.html"><span class="ic" style="background:var(--green-soft)">🌿</span><h3 data-i="t4"></h3><p data-i="d4"></p></a>
-    <a class="card tool" href="sor-soch.html"><span class="new">NEW</span><span class="ic" style="background:var(--violet-soft)">📅</span><h3 data-i="t5"></h3><p data-i="d5"></p></a>
-    <a class="card tool" href="tests.html"><span class="ic" style="background:var(--red-soft)">📋</span><h3 data-i="t6"></h3><p data-i="d6"></p></a>
+    <a class="card tool" href="sor-soch-generator.html"><span class="new">NEW</span><span class="ic" style="background:var(--violet-soft)">📝</span><h3 data-i="t1"></h3><p data-i="d1"></p></a>
+    <a class="card tool" href="kalkulyator-sor-soch.html"><span class="new">NEW</span><span class="ic" style="background:var(--green-soft)">🧮</span><h3 data-i="t2"></h3><p data-i="d2"></p></a>
+    <a class="card tool" href="sor-soch-kestesi.html"><span class="ic" style="background:var(--primary-soft)">📅</span><h3 data-i="t3"></h3><p data-i="d3"></p></a>
+    <a class="card tool" href="baqylau-zhumystary-kestesi.html"><span class="ic" style="background:var(--red-soft)">📋</span><h3 data-i="t4"></h3><p data-i="d4"></p></a>
   </section>
+
+  <h2 class="sec" data-i="sLesson"></h2>
+  <section class="grid">
+    <a class="card tool" href="sabak-taimeri.html"><span class="ic" style="background:var(--primary-soft)">⏱️</span><h3 data-i="t5"></h3><p data-i="d5"></p></a>
+    <a class="card tool" href="taimer-1-minut.html"><span class="ic" style="background:var(--amber-soft)">⏳</span><h3 data-i="t6"></h3><p data-i="d6"></p></a>
+    <a class="card tool" href="refleksiya.html"><span class="ic" style="background:var(--green-soft)">🙋</span><h3 data-i="t7"></h3><p data-i="d7"></p></a>
+  </section>
+
+  <div class="card note" data-ih="primary"></div>
 </main>
 <script src="common.js"></script>
 <script>
 App.init({
-  h1: { kk: 'Мұғалімге арналған тегін құралдар', ru: 'Бесплатные инструменты для учителя', en: 'Free tools for teachers' },
-  lead: { kk: 'Сабақта бірден қолдануға болады: интерактивті тақтада, компьютерде, телефонда.', ru: 'Можно сразу использовать на уроке: на интерактивной доске, компьютере, телефоне.', en: 'Ready to use in class: on an interactive whiteboard, computer or phone.' },
-  b1: { kk: '✓ Тегін', ru: '✓ Бесплатно', en: '✓ Free' },
-  b2: { kk: '✓ Тіркелусіз', ru: '✓ Без регистрации', en: '✓ No sign-up' },
-  b3: { kk: '✓ ҚАЗ · РУС · ENG', ru: '✓ ҚАЗ · РУС · ENG', en: '✓ ҚАЗ · РУС · ENG' },
-  t1: { kk: 'Сабақ таймері', ru: 'Таймер для урока', en: 'Lesson timer' },
-  d1: { kk: 'Кез келген уақыт, дайын батырмалар, дыбыс, толық экран.', ru: 'Любое время, готовые кнопки, звук, полный экран.', en: 'Any duration, presets, sound, full screen.' },
-  t2: { kk: '1 минуттық таймер', ru: 'Таймер на 1 минуту', en: '1-minute timer' },
-  d2: { kk: '3-2-1 бастау, үлкен сандар, «Уақыт бітті!» — жұмыс, ойлану үшін.', ru: 'Старт 3-2-1, крупные цифры, «Время вышло!» — для заданий и обдумывания.', en: '3-2-1 start, big digits, "Time\'s up!" — for tasks and think time.' },
-  t3: { kk: 'Рефлексия', ru: 'Рефлексия', en: 'Reflection' },
-  d3: { kk: '«Түсіндім / Түсінбедім / Сұрағым бар» — дауыс беру және нәтиже.', ru: '«Понял / Не понял / Есть вопрос» — голосование и итоги.', en: '"Got it / Didn\'t get it / I have a question" — vote and results.' },
-  t4: { kk: 'Интерактивті сабақ: Фотосинтез', ru: 'Интерактивный урок: Фотосинтез', en: 'Interactive lesson: Photosynthesis' },
-  d4: { kk: 'Анықтама, процесс, викторина, тест, сәйкестендіру ойыны.', ru: 'Определение, процесс, викторина, тест, игра на соответствие.', en: 'Definition, process, quiz, test, matching game.' },
-  t5: { kk: 'БЖБ және ТЖБ кестесі', ru: 'График СОР и СОЧ', en: 'Summative assessment schedule' },
-  d5: { kk: 'Сыныптар × пәндер кестесі, тоқсандар, қайшылықты тексеру, басып шығару, Excel.', ru: 'Таблица классы × предметы, четверти, проверка накладок, печать, Excel.', en: 'Classes × subjects grid, terms, clash check, print, Excel.' },
-  t6: { kk: 'Бақылау жұмыстарының кестесі', ru: 'График контрольных работ', en: 'Test schedule' },
-  d6: { kk: 'Бақылау, диктант, тест күндерін жоспарлау және сыныпқа бөлісу.', ru: 'Планирование контрольных, диктантов, тестов и отправка классу.', en: 'Plan tests, dictations and quizzes and share with a class.' }
-}, { bar: true });
+  h1: { kk: 'Мұғалімге арналған тегін құралдар', ru: 'Бесплатные инструменты для учителя' },
+  lead: { kk: 'СОР/СОЧ құрастыру, баға есептеу, кесте, сабаққа таймер — бәрі бір жерде.', ru: 'Составление СОР/СОЧ, расчёт оценок, график, таймер для урока — всё в одном месте.' },
+  b1: { kk: '✓ Тегін', ru: '✓ Бесплатно' },
+  b2: { kk: '✓ Тіркелусіз', ru: '✓ Без регистрации' },
+  sAssess: { kk: 'Бағалау', ru: 'Оценивание' },
+  sLesson: { kk: 'Сабақта', ru: 'На уроке' },
+  t1: { kk: 'СОР және СОЧ генераторы', ru: 'Генератор СОР и СОЧ' },
+  d1: { kk: 'БЖБ, ТЖБ, аралық бағалау: мақсат, критерий, тапсырма, дескриптор, балл, ата-анаға рубрика → Word / PDF.', ru: 'СОР, СОЧ, промежуточное оценивание: цели, критерии, задания, дескрипторы, баллы, рубрика для родителей → Word / PDF.' },
+  t2: { kk: 'БЖБ/ТЖБ калькуляторы', ru: 'Калькулятор СОР и СОЧ' },
+  d2: { kk: 'Тоқсандық және жылдық баға, 2–4 сынып (Q формуласы), білім сапасы.', ru: 'Четвертная и годовая оценка, 2–4 классы (формула Q), качество знаний.' },
+  t3: { kk: 'БЖБ/ТЖБ кестесі', ru: 'График СОР и СОЧ' },
+  d3: { kk: 'Пәндерді өзіңіз қосасыз, күндерді параллельге бірден қоясыз, қайшылықты тексереді.', ru: 'Свои предметы, даты сразу на всю параллель, проверка накладок.' },
+  t4: { kk: 'Бақылау жұмыстарының кестесі', ru: 'График контрольных работ' },
+  d4: { kk: 'Бақылау, диктант, тест күндері және сыныпқа сілтеме.', ru: 'Даты контрольных, диктантов, тестов и ссылка для класса.' },
+  t5: { kk: 'Сабақ таймері', ru: 'Таймер для урока' },
+  d5: { kk: 'Кез келген уақыт, дайын батырмалар, дыбыс, толық экран.', ru: 'Любое время, готовые кнопки, звук, полный экран.' },
+  t6: { kk: '1 минуттық таймер', ru: 'Таймер на 1 минуту' },
+  d6: { kk: '3-2-1 бастау, үлкен сандар, «Уақыт бітті!»', ru: 'Старт 3-2-1, крупные цифры, «Время вышло!»' },
+  t7: { kk: 'Рефлексия', ru: 'Рефлексия' },
+  d7: { kk: '«Түсіндім / Түсінбедім / Сұрағым бар» — дауыс беру және нәтиже.', ru: '«Понял / Не понял / Есть вопрос» — голосование и итоги.' },
+  primary: { kk: '<b>2026–2027 оқу жылынан:</b> 2–4 сыныптарда БЖБ мен ТЖБ жоқ — олардың орнына <b>аралық бағалау</b> өткізіледі (ең жоғары балл: 2-сынып 12, 3-сынып 14, 4-сынып 16), тоқсандық баға Q = (F + P) / 2 формуласымен шығады (№257-НҚ бұйрық). Барлық құрал осыны ескереді.', ru: '<b>С 2026–2027 учебного года:</b> во 2–4 классах нет СОР и СОЧ — вместо них <b>промежуточное оценивание</b> (максимум: 2 класс — 12, 3 класс — 14, 4 класс — 16 баллов), четвертная оценка по формуле Q = (F + P) / 2 (приказ № 257-НҚ). Все инструменты это учитывают.' }
+});
 </script>
 </body>
 </html>

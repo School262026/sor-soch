@@ -16,12 +16,15 @@
   const DEF_TERMS = { 1: ['2026-09-01', '2026-10-30'], 2: ['2026-11-09', '2026-12-30'], 3: ['2027-01-11', '2027-03-19'], 4: ['2027-03-30', '2027-05-25'] };
 
   function blank() {
-    return { school: '', year: '2026-2027', term: 1, classes: ['5А', '5Ә', '5Б'], subjects: SUBJECTS[App.lang].slice(4, 7), terms: DEF_TERMS, cells: {}, maxDay: 2 };
+    return { school: '', year: '2026-2027', term: 1, classes: [], subjects: [], terms: DEF_TERMS, cells: {}, maxDay: 2 };
   }
   let D = App.store.get(KEY) || blank();
   let readonly = false;
   const save = () => { if (!readonly) App.store.set(KEY, D); };
   const ck = (term, s, c) => term + '|' + s + '|' + c;
+  const gradeOf = c => parseInt(c, 10) || 0;
+  // 2–4 сыныпқа тек аралық бағалау, 5–11-ге БЖБ/ТЖБ (type.grades бойынша)
+  const allowed = c => CFG.types.filter(ty => !ty.grades || !gradeOf(c) || ty.grades.includes(gradeOf(c)));
   const typeOf = id => CFG.types.find(x => x.id === id) || CFG.types[0];
   const fmtD = d => d ? d.slice(8, 10) + '.' + d.slice(5, 7) : '—';
   const fmtFull = d => d ? d.slice(8, 10) + '.' + d.slice(5, 7) + '.' + d.slice(0, 4) : '';
@@ -69,7 +72,7 @@
     const cls = D.classes;
     let h = '<table class="grid"><thead><tr><th class="sticky">' + t('subject') + ' \\ ' + t('class') + '</th>' + cls.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>';
     D.subjects.forEach((s, si) => {
-      h += '<tr><th class="sticky">' + esc(s) + '</th>';
+      h += '<tr><th class="sticky">' + esc(s) + (readonly ? '' : ' <button class="fill" data-fill="' + si + '" title="' + esc(t('fillRow')) + '">⚡</button>') + '</th>';
       cls.forEach((c, ci) => {
         const list = sorted(D.cells[ck(D.term, s, c)] || []);
         const f = flags[ck(D.term, s, c)];
@@ -131,23 +134,55 @@
     $('hTitle').textContent = L(CFG.title) + ' · ' + D.year + ' · ' + D.term + ' ' + t('termWord');
     document.querySelectorAll('#terms button').forEach(b => b.classList.toggle('on', +b.dataset.t === D.term));
   }
-  function renderAll() { renderHead(); renderGrid(); renderLists(); fillSettings(); }
+  // ---- жылдам баптау: сыныптар мен пәндер чиптері
+  function renderQuick() {
+    $('qClasses').innerHTML = D.classes.map((c, i) => '<span class="qchip">' + esc(c) + '<button data-rc="' + i + '">✕</button></span>').join('') || '<span class="muted">' + t('noClasses') + '</span>';
+    $('qSubjects').innerHTML = D.subjects.map((s, i) => '<span class="qchip">' + esc(s) + '<button data-rs="' + i + '">✕</button></span>').join('') || '<span class="muted">' + t('noSubjects') + '</span>';
+    $('subjList').innerHTML = SUBJECTS[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
+    $('stdList').innerHTML = SUBJECTS[App.lang].map(s => '<button class="btn sm' + (D.subjects.includes(s) ? ' on' : '') + '" data-std="' + esc(s) + '">' + (D.subjects.includes(s) ? '✓ ' : '+ ') + esc(s) + '</button>').join('');
+    $('quick').open = !D.classes.length || !D.subjects.length || $('quick').open;
+  }
+  function addClasses(v) {
+    const toks = splitList(v.replace(/\s+/g, ','));
+    const letters = (App.lang === 'ru' ? 'АБВГДЕ' : 'АӘБВГД').split('');
+    toks.forEach(x => { if (/^\d+$/.test(x)) letters.slice(0, 4).forEach(l => D.classes.push(x + l)); else D.classes.push(x.toUpperCase()); });
+    D.classes = [...new Set(D.classes)].sort((a, b) => gradeOf(a) - gradeOf(b) || a.localeCompare(b, 'kk'));
+    save(); renderAll();
+  }
+  function bindQuick() {
+    $('qcForm').onsubmit = e => { e.preventDefault(); addClasses($('qcIn').value); $('qcIn').value = ''; $('qcIn').focus(); };
+    $('qsForm').onsubmit = e => { e.preventDefault(); const v = $('qsIn').value.trim(); if (v) { D.subjects = [...new Set(D.subjects.concat(splitList(v)))]; save(); renderAll(); } $('qsIn').value = ''; $('qsIn').focus(); };
+    $('quick').onclick = e => {
+      const rc = e.target.closest('[data-rc]'), rs = e.target.closest('[data-rs]'), std = e.target.closest('[data-std]');
+      if (rc) D.classes.splice(+rc.dataset.rc, 1);
+      else if (rs) D.subjects.splice(+rs.dataset.rs, 1);
+      else if (std) { const v = std.dataset.std; D.subjects = D.subjects.includes(v) ? D.subjects.filter(x => x !== v) : D.subjects.concat(v); }
+      else if (e.target.id === 'stdBtn') { $('stdList').classList.toggle('hide'); return; }
+      else return;
+      save(); renderAll();
+    };
+  }
+  function renderAll() { renderHead(); renderQuick(); renderGrid(); renderLists(); fillSettings(); }
 
   // ---- ұяшық редакторы
   let edit = null;
-  function openCell(si, ci) {
+  function openCell(si, ci, all) {
     if (readonly) return;
     const s = D.subjects[si], c = D.classes[ci];
-    edit = { s, c, list: JSON.parse(JSON.stringify(D.cells[ck(D.term, s, c)] || [])) };
-    $('dlgTitle').textContent = s + ' · ' + c + ' · ' + D.term + ' ' + t('termWord');
-    $('dlgAll').checked = false;
-    $('dlgAddBtns').innerHTML = CFG.types.map(ty => '<button type="button" class="btn sm" data-add="' + ty.id + '">+ ' + esc(L(ty.name)) + '</button>').join('');
+    edit = { s, c, all, list: JSON.parse(JSON.stringify(D.cells[ck(D.term, s, c)] || [])) };
+    $('dlgTitle').textContent = s + ' · ' + (all ? t('allClasses') : c) + ' · ' + D.term + ' ' + t('termWord');
+    $('dlgAll').checked = !!all; $('dlgAllAll').checked = !!all; $('dlgAllAll').disabled = !all;
+    $('dlgCopy').classList.toggle('hide', !!all);
+    const types = all ? CFG.types : allowed(c);
+    edit.list = edit.list.filter(e => types.some(ty => ty.id === e.type));
+    edit.types = types;
+    $('dlgAddBtns').innerHTML = types.map(ty => '<button type="button" class="btn sm" data-add="' + ty.id + '">+ ' + esc(L(ty.name)) + '</button>').join('');
     renderDlg();
     $('dlg').showModal();
   }
   function renderDlg() {
     $('dlgList').innerHTML = edit.list.length ? edit.list.map((e, i) =>
-      '<div class="erow"><select data-k="type" data-i="' + i + '">' + CFG.types.map(ty => '<option value="' + ty.id + '"' + (ty.id === e.type ? ' selected' : '') + '>' + esc(L(ty.name)) + '</option>').join('') + '</select>' +
+      '<div class="erow"><select data-k="type" data-i="' + i + '">' + edit.types.map(ty => '<option value="' + ty.id + '"' + (ty.id === e.type ? ' selected' : '') + '>' + esc(L(ty.name)) + '</option>').join('') + '</select>' +
       '<input type="date" data-k="d" data-i="' + i + '" value="' + (e.d || '') + '">' +
       '<input type="text" data-k="note" data-i="' + i + '" value="' + esc(e.note || '') + '" placeholder="' + esc(t('notePh')) + '">' +
       '<button type="button" class="btn sm" data-del="' + i + '">✕</button></div>').join('') : '<p class="muted">' + t('noEntries') + '</p>';
@@ -167,7 +202,10 @@
       const list = edit.list.filter(e => e.type);
       const targets = $('dlgAll').checked ? D.classes.filter(c => c.slice(0, -1) === edit.c.slice(0, -1) || $('dlgAllAll').checked) : [edit.c];
       targets.forEach(c => {
-        if (list.length) D.cells[ck(D.term, edit.s, c)] = JSON.parse(JSON.stringify(list));
+        const ok = allowed(c).map(ty => ty.id);
+        const own = list.filter(e => ok.includes(e.type));
+        if (edit.all && !own.length) return;
+        if (own.length) D.cells[ck(D.term, edit.s, c)] = JSON.parse(JSON.stringify(own));
         else delete D.cells[ck(D.term, edit.s, c)];
       });
       save(); $('dlg').close(); renderGrid(); renderLists();
@@ -268,7 +306,7 @@
       ['grid', 'cls', 'subj', 'date', 'set'].forEach(v => $('v-' + v).classList.toggle('hide', v !== b.dataset.v));
     };
     $('terms').onclick = e => { const b = e.target.closest('[data-t]'); if (!b) return; D.term = +b.dataset.t; save(); renderAll(); };
-    $('gridBox').onclick = e => { const td = e.target.closest('td.cell'); if (td) openCell(+td.dataset.s, +td.dataset.c); };
+    $('gridBox').onclick = e => { const f = e.target.closest('[data-fill]'); if (f) { openCell(+f.dataset.fill, 0, true); return; } const td = e.target.closest('td.cell'); if (td) openCell(+td.dataset.s, +td.dataset.c); };
     $('pickClass').onchange = renderLists; $('pickSubj').onchange = renderLists; $('allTerms').onchange = renderLists;
   }
 
@@ -285,7 +323,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     $('terms').innerHTML = TERMS.map(n => '<button class="btn" data-t="' + n + '">' + n + ' <span data-i="termWord"></span></button>').join('');
     App.apply($('terms'));
-    bindViews(); bindDlg(); bindSettings(); bindIO();
+    bindViews(); bindDlg(); bindSettings(); bindIO(); bindQuick();
     App.onLang.push(renderAll);
     window.addEventListener('hashchange', () => location.reload());
     start();
