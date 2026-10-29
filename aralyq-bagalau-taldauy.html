@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аралық бағалау талдауы (2–4 сынып)</title>
+<meta name="description" content="Бастауыш сынып (2–4): аралық бағалау (ПО) нәтижелерін талдау — деңгейлер, мақсаттар, қиындықтар, себептер, түзету жұмысы автоматты жазылады. Word және PDF. Тегін, қазақша/орысша.">
+<meta property="og:title" content="Анализ ПО (2–4 классы) / Аралық бағалау талдауы">
+<meta property="og:description" content="Белгілеңіз — талдау өзі жазылады. Word, PDF. Тегін.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎒%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .steps { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .steps .btn.on { background: var(--green); color: #fff; border-color: var(--green); }
+  h2 { margin: 0 0 10px; font-size: 20px; }
+  h3 { margin: 16px 0 8px; font-size: 16px; }
+  .g4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .fld { display: grid; gap: 4px; margin: 6px 0; }
+  .fld > span { font-weight: 800; font-size: 14px; }
+  .fld small, small.muted { color: var(--muted); font-size: 13px; }
+  .po { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin: 10px 0; background: var(--bg); }
+  .po .ph { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .po .ph b { font-size: 18px; }
+  .trow { display: grid; grid-template-columns: 90px 1fr 80px auto; gap: 6px; align-items: center; margin: 4px 0; }
+  .scroll { overflow-x: auto; }
+  table.sc { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.sc th, table.sc td { border-bottom: 1px solid var(--line); padding: 4px 6px; text-align: center; white-space: nowrap; }
+  table.sc th:nth-child(2), table.sc td:nth-child(2) { text-align: left; }
+  table.sc input { width: 64px; text-align: center; padding: 5px; }
+  .pct { color: var(--muted); font-size: 13px; }
+  .lv-h { color: var(--green); font-weight: 800; } .lv-m { color: var(--amber); font-weight: 800; } .lv-l { color: var(--red); font-weight: 800; }
+  .kpis { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+  .kpi { background: var(--bg); border-radius: 12px; padding: 10px 14px; font-size: 14px; } .kpi b { font-size: 18px; display: block; }
+  .goal { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .goal .gp { margin-left: auto; white-space: nowrap; font-weight: 800; font-size: 13px; }
+  .pick { display: grid; gap: 4px; }
+  .pick label { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 10px; cursor: pointer; }
+  .pick label:hover { background: var(--bg); }
+  .pick label.auto { background: var(--green-soft); }
+  .pick input { margin-top: 3px; }
+  .bar { background: var(--green-soft); border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+  .paper { background: #fff; color: #000; border-radius: 6px; padding: 28px 30px; box-shadow: var(--shadow); font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.35; overflow-x: auto; }
+  .paper h1 { font-size: 15px; text-align: center; margin: 0 0 8px; }
+  .paper p { margin: 5px 0; }
+  .paper table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .paper td, .paper th { border: 1px solid #000; padding: 3px 5px; vertical-align: top; text-align: center; }
+  .paper td.l { text-align: left; }
+  .saved li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .saved ul { list-style: none; padding: 0; margin: 0; }
+  .note { background: var(--green-soft); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+  .info { background: var(--amber-soft); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 10px; }
+  @media print {
+    body * { visibility: hidden; }
+    #paper, #paper * { visibility: visible; }
+    #paper { position: absolute; left: 0; top: 0; box-shadow: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="steps no-print" id="steps">
+    <button class="btn on" data-s="1" data-i="st1"></button>
+    <button class="btn" data-s="2" data-i="st2"></button>
+    <button class="btn" data-s="3" data-i="st3"></button>
+    <button class="btn" data-s="4" data-i="st4"></button>
+    <button class="btn" data-s="5" data-i="st5"></button>
+  </div>
+
+  <section class="card" id="s1">
+    <div class="actions"><button class="btn sm" id="newDoc" data-i="newDoc"></button><button class="btn sm" id="sample" data-i="sample"></button><button class="btn sm green" id="saveDoc" data-i="saveDoc"></button></div>
+    <div class="info" data-i="rule"></div>
+    <h2 data-i="st1"></h2>
+    <div class="g4">
+      <label class="fld"><span data-i="grade"></span><select id="grade"><option>2</option><option>3</option><option>4</option></select></label>
+      <label class="fld"><span data-i="letter"></span><input type="text" id="letter" placeholder="А"></label>
+      <label class="fld"><span data-i="subject"></span><input type="text" id="subject" list="subjList"><datalist id="subjList"></datalist></label>
+      <label class="fld"><span data-i="term"></span><select id="term"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      <label class="fld"><span data-i="teacher"></span><input type="text" id="teacher"></label>
+      <label class="fld"><span data-i="date"></span><input type="date" id="date"></label>
+      <label class="fld"><span data-i="docLang"></span><select id="docLang"><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label>
+      <label class="fld"><span data-i="qualMode"></span><select id="qualMode"><option value="dash" data-i="qDash"></option><option value="calc" data-i="qCalc"></option></select></label>
+    </div>
+    <label class="fld"><span data-i="roster"></span><textarea id="roster" rows="6" data-ip="rosterPh"></textarea><small data-i="rosterHint"></small></label>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn green" data-go="2" data-i="next"></button></div>
+  </section>
+
+  <section class="card hide" id="s2">
+    <h2 data-i="st2"></h2>
+    <p class="muted" style="margin:0 0 6px" data-i="poHint"></p>
+    <div id="pos"></div>
+    <button class="btn primary" id="addPo" data-i="addPo"></button>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn green" data-go="3" data-i="next"></button></div>
+  </section>
+
+  <section class="card hide" id="s3">
+    <h2 data-i="st3"></h2>
+    <div class="scroll" id="grid"></div>
+    <div class="kpis" id="kpis"></div>
+    <div id="tsec"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn green" data-go="4" data-i="next"></button></div>
+  </section>
+
+  <section class="card hide" id="s4">
+    <h2 data-i="st4"></h2>
+    <div class="bar"><button class="btn green" id="autoBtn" data-i="autoBtn"></button><span class="muted" data-i="autoHint"></span></div>
+    <h3 data-i="goalsT"></h3>
+    <label class="row"><input type="checkbox" id="allAch"><span data-i="allAch"></span></label>
+    <div id="goals"></div>
+    <h3 data-i="dT"></h3><div class="pick" id="pd"></div><textarea id="cd" rows="2" data-ip="ownPh"></textarea>
+    <h3 data-i="rT"></h3><div class="pick" id="pr"></div><textarea id="cr" rows="2" data-ip="ownPh"></textarea>
+    <h3 data-i="cT"></h3><div class="pick" id="pc"></div><textarea id="cc" rows="2" data-ip="ownPh"></textarea>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn green" data-go="5" data-i="next"></button></div>
+  </section>
+
+  <section class="hide" id="s5">
+    <div class="actions no-print">
+      <button class="btn primary" id="word" data-i="word"></button>
+      <button class="btn green" id="pdf" data-i="pdf"></button>
+      <button class="btn" id="print" data-i="print"></button>
+      <label class="row"><input type="checkbox" id="mon"><span data-i="monOn"></span></label>
+    </div>
+    <div class="paper" id="paper"></div>
+  </section>
+
+  <section class="card saved no-print" style="margin-top:16px"><h2 data-i="savedT"></h2><ul id="savedList"></ul>
+    <p class="note" data-i="privacy"></p></section>
+</main>
+<script src="common.js"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'Аралық бағалау талдауы · 2–4 сынып', ru: 'Анализ промежуточного оценивания · 2–4 классы' },
+  st1: { kk: '① Сынып', ru: '① Класс' }, st2: { kk: '② Аралық бағалау', ru: '② ПО и цели' }, st3: { kk: '③ Баллдар', ru: '③ Баллы' }, st4: { kk: '④ Белгілеу', ru: '④ Отметить' }, st5: { kk: '⑤ Талдау', ru: '⑤ Анализ' },
+  newDoc: { kk: '＋ Жаңа', ru: '＋ Новый' }, sample: { kk: '✨ Үлгі', ru: '✨ Образец' }, saveDoc: { kk: '💾 Сақтау', ru: '💾 Сохранить' }, saved: { kk: 'Сақталды ✓', ru: 'Сохранено ✓' },
+  rule: { kk: '2026–2027 оқу жылынан 2–4 сыныптарда БЖБ мен ТЖБ жоқ — бөлімдер бойынша аралық бағалау (АБ / ПО) өткізіледі. Ең жоғары балл: 2-сынып — 12, 3-сынып — 14, 4-сынып — 16.', ru: 'С 2026–2027 учебного года во 2–4 классах нет СОР и СОЧ — проводится промежуточное оценивание (ПО) за разделы. Максимальный балл: 2 класс — 12, 3 класс — 14, 4 класс — 16.' },
+  grade: { kk: 'Сынып', ru: 'Класс' }, letter: { kk: 'Әрпі', ru: 'Литера' }, subject: { kk: 'Пән', ru: 'Предмет' }, term: { kk: 'Тоқсан', ru: 'Четверть' }, teacher: { kk: 'Педагог (аты-жөні)', ru: 'Педагог (ФИО)' }, date: { kk: 'Күні', ru: 'Дата' },
+  docLang: { kk: 'Талдау тілі', ru: 'Язык анализа' }, qualMode: { kk: 'Сапа / үлгерім бағаны', ru: 'Столбцы качества / успеваемости' }, qDash: { kk: '«—» (баға қойылмайды)', ru: '«—» (без отметок)' }, qCalc: { kk: 'Пайызбен есептеу', ru: 'Рассчитать в %' },
+  roster: { kk: 'Оқушылар тізімі', ru: 'Список учеников' }, rosterPh: { kk: 'Әр жолға бір оқушы (Excel-ден көшіріп қоюға болады)', ru: 'По одному в строке (можно вставить из Excel)' },
+  rosterHint: { kk: '🔒 Аты-жөндер ешқайда жіберілмейді — тек сіздің браузеріңізде.', ru: '🔒 ФИО никуда не отправляются — только в вашем браузере.' },
+  next: { kk: 'Келесі →', ru: 'Далее →' },
+  poHint: { kk: 'Әр аралық бағалауға: бөлім, оқу мақсаттары (әр жолға біреу) және тапсырмалар (қай мақсатқа, неше балл). Тапсырмаларды жазу міндетті емес, бірақ сонда талдау дәлірек болады.', ru: 'Для каждого ПО: раздел, цели обучения (по одной в строке) и задания (к какой цели, сколько баллов). Задания необязательны, но с ними анализ точнее.' },
+  addPo: { kk: '＋ Аралық бағалау қосу', ru: '＋ Добавить ПО' },
+  unit: { kk: 'Бөлім', ru: 'Раздел' }, maxPts: { kk: 'Ең жоғары балл', ru: 'Макс. балл' },
+  goalsF: { kk: 'Оқу мақсаттары', ru: 'Цели обучения' }, goalsPh: { kk: '4.1.1.3 Көп таңбалы сандардың разрядтық құрамын анықтау', ru: '4.1.1.3 Определять разрядный состав многозначных чисел' },
+  tasksF: { kk: 'Тапсырмалар', ru: 'Задания' }, task: { kk: 'Тапсырма', ru: 'Задание' }, addTask: { kk: '＋ тапсырма', ru: '＋ задание' },
+  sumOk: { kk: 'Тапсырмалар қосындысы', ru: 'Сумма заданий' },
+  name: { kk: 'Аты-жөні', ru: 'ФИО' }, byTask: { kk: 'Тапсырмалар бойынша баллдар (міндетті емес — талдау дәлірек болады)', ru: 'Баллы по заданиям (необязательно — анализ будет точнее)' },
+  pasteHint: { kk: 'Кеңес: Excel-ден бағанды (немесе бүкіл кестені) бірінші ұяшыққа қойсаңыз, бәрі толады.', ru: 'Совет: вставьте столбец (или всю таблицу) из Excel в первую ячейку — заполнится всё.' },
+  autoBtn: { kk: '✨ Автоматты белгілеу', ru: '✨ Отметить автоматически' },
+  autoHint: { kk: 'Баллдар бойынша қиындық тудырған мақсаттар, қиындықтар, себептер және түзету жұмысы белгіленеді (жасыл). Артығын алып, керегін қосыңыз.', ru: 'По баллам будут отмечены цели с затруднениями, затруднения, причины и коррекционная работа (зелёным). Снимите лишнее, добавьте нужное.' },
+  goalsT: { kk: 'Оқу мақсаттары: қиындық тудырғанын белгілеңіз', ru: 'Цели обучения: отметьте вызвавшие затруднения' },
+  allAch: { kk: '«Қол жеткізілген» бағанына барлық мақсатты жазу (мектеп үлгісі)', ru: 'В «Достигнутые цели» писать все цели (школьный образец)' },
+  difW: { kk: 'қиындық', ru: 'затруднение' },
+  dT: { kk: '2. Оқушыларда туындаған қиындықтар', ru: '2. Затруднения, возникшие у обучающихся' },
+  rT: { kk: '3. Қиындықтардың себептері', ru: '3. Причины затруднений' },
+  cT: { kk: '4. Жоспарланған түзету жұмысы', ru: '4. Планируемая коррекционная работа' },
+  ownPh: { kk: 'Өз сөйлемдеріңіз (әр жолға біреу)', ru: 'Свои пункты (по одному в строке)' },
+  word: { kk: '⬇ Word', ru: '⬇ Word' }, pdf: { kk: '⬇ PDF', ru: '⬇ PDF' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
+  monOn: { kk: 'Оқушылар нәтижесінің кестесін қосу', ru: 'Добавить таблицу результатов учеников' },
+  pdfWait: { kk: 'PDF дайындалуда…', ru: 'Готовим PDF…' },
+  savedT: { kk: '📂 Сақталған талдаулар', ru: '📂 Сохранённые анализы' }, open: { kk: 'Ашу', ru: 'Открыть' }, del: { kk: 'Өшіру', ru: 'Удалить' }, none: { kk: 'Әзірге жоқ.', ru: 'Пока нет.' },
+  sure: { kk: 'Өшіресіз бе?', ru: 'Удалить?' }, sureNew: { kk: 'Ағымдағы талдау тазаланады. Жалғастырасыз ба?', ru: 'Текущий анализ будет очищен. Продолжить?' },
+  privacy: { kk: '🔒 Барлық дерек тек сіздің браузеріңізде сақталады.', ru: '🔒 Все данные хранятся только в вашем браузере.' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t, esc = App.esc;
+const AO_MAX = { 2: 12, 3: 14, 4: 16 };
+const lvOf = p => p >= 85 ? 'h' : p >= 40 ? 'm' : 'l';
+
+const SUBJ = { kk: ['Математика', 'Әдебиеттік оқу', 'Қазақ тілі', 'Жаратылыстану', 'Дүниетану', 'Орыс тілі', 'Ағылшын тілі', 'Цифрлық сауаттылық'],
+  ru: ['Математика', 'Литературное чтение', 'Русский язык', 'Естествознание', 'Познание мира', 'Казахский язык', 'Английский язык', 'Цифровая грамотность'] };
+const subjKey = s => { s = (s || '').toLowerCase();
+  return /матем/.test(s) ? 'math' : /әдебиет|литер|чтени/.test(s) ? 'lit' : /жаратылыс|естеств|дүниетан|познан/.test(s) ? 'sci' : /тіл|язык|english|ағылшын/.test(s) ? 'lang' : 'gen'; };
+
+// Пәндер бойынша дайын сөйлемдер: d — қиындық, r — себеп, c — түзету. kw — мақсат мәтінімен сәйкестендіру үшін
+const BANK = {
+  math: {
+    d: [{ kk: 'Көп таңбалы сандармен жазбаша есептеулерді орындауда және нәтижені тексеруде қиналады.', ru: 'Затрудняются выполнять письменные вычисления с многозначными числами и проверять результаты.', kw: ['есепте', 'вычисл', 'қосу', 'азайт', 'сложен', 'вычитан', 'көбейт', 'умнож', 'бөлу', 'делен', 'алгоритм'] },
+      { kk: 'Шама бірліктерін (уақыт, ұзындық, масса) түрлендіруде қателіктер жібереді.', ru: 'Допускают неточности при переводе единиц величин (времени, длины, массы).', kw: ['уақыт', 'времен', 'бірлік', 'единиц', 'ұзындық', 'длин', 'масса', 'үлес', 'дол'] },
+      { kk: 'Мәтінді есептің шартын талдауда, қысқаша жазба мен сызба құруда қиналады.', ru: 'Испытывают трудности при анализе условия текстовой задачи, составлении краткой записи и схемы.', kw: ['есеп', 'задач', 'жазба', 'запис', 'сызба', 'схем', 'модель'] },
+      { kk: 'Жылдамдық, уақыт, қашықтық арасындағы тәуелділікті қолдануда қиналады.', ru: 'Затрудняются применять зависимость между скоростью, временем и расстоянием.', kw: ['жылдамдық', 'скорост', 'қашықтық', 'расстоян', 'пути', 'жол'] },
+      { kk: 'Фигуралардың ауданы, периметрі және көлемін табуда қателіктер жібереді.', ru: 'Допускают ошибки при нахождении площади, периметра и объёма фигур.', kw: ['аудан', 'площад', 'периметр', 'фигур', 'көлем', 'объем', 'объём'] },
+      { kk: 'Сандар тізбегіндегі заңдылықты анықтауда қиналады.', ru: 'Затрудняются определять закономерность в последовательности чисел.', kw: ['заңдылық', 'закономерн', 'тізбек', 'последоват'] },
+      { kk: 'Бөлінгіштік белгілерін қолдануда және қалдықпен бөлуде қиналады.', ru: 'Затрудняются применять признаки делимости и выполнять деление с остатком.', kw: ['бөлінгіш', 'делимост', 'қалдық', 'остатк'] }],
+    r: [{ kk: 'Есептеу дағдылары жеткілікті бекітілмеген.', ru: 'Недостаточно закреплены вычислительные навыки.' },
+      { kk: 'Есептің шартын мұқият оқымайды, негізгі деректерді бөліп ала алмайды.', ru: 'Невнимательно читают условие, не выделяют главные данные.' },
+      { kk: 'Шамалар арасындағы байланысты түсіну әлсіз.', ru: 'Слабо понимают связь между величинами.' },
+      { kk: 'Өз жұмысын тексеру дағдысы қалыптаспаған.', ru: 'Не сформирован навык самопроверки.' }],
+    c: [{ kk: 'Күнделікті ауызша және жазбаша есептеу жаттығуларын (5 минут) жүргізу.', ru: 'Проводить ежедневные устные и письменные вычислительные упражнения (5 минут).' },
+      { kk: 'Мәтінді есептерді қысқаша жазба мен сызба арқылы талдауды жүйелі түрде пысықтау.', ru: 'Систематически отрабатывать анализ текстовых задач через краткую запись и схему.' },
+      { kk: 'Шама бірліктерін түрлендіруге арналған кестелер мен карточкалармен жұмыс жасау.', ru: 'Работать с таблицами и карточками на перевод единиц величин.' },
+      { kk: 'Тексеру тәсілдеріне (кері амал, шамалап бағалау) үйрету.', ru: 'Обучать способам проверки (обратное действие, прикидка).' },
+      { kk: 'Қателіктермен жұмыс жүргізу және деңгейлік қосымша тапсырмалар беру.', ru: 'Проводить работу над ошибками и давать разноуровневые дополнительные задания.' }]
+  },
+  lit: {
+    d: [{ kk: 'Шығарманың негізгі ойын анықтауда және сәйкес мақал-мәтел таңдауда қателіктер жібереді.', ru: 'Допускают ошибки при определении основной мысли произведения и подборе соответствующей пословицы.', kw: ['негізгі ой', 'основн', 'мақал', 'послов', 'поговор'] },
+      { kk: 'Мәтін мазмұны бойынша сұрақ құрастыруда және қажетті ақпаратты табуда қиналады.', ru: 'Испытывают затруднения при составлении вопросов по содержанию текста и поиске необходимой информации.', kw: ['сұрақ', 'вопрос', 'ақпарат', 'информац'] },
+      { kk: 'Кейіпкерлердің әрекеттері мен сезімдерін салыстыруда, негізгі оқиғаны анықтауда қиналады.', ru: 'Затрудняются сравнивать поступки и чувства героев, определять ключевое событие произведения.', kw: ['кейіпкер', 'геро', 'салыстыр', 'сравн', 'оқиға', 'событ'] },
+      { kk: 'Жоспар құруда және шығармашылық жұмыс (шығарма-жалғасы) жазуда қателіктер жібереді.', ru: 'Допускают ошибки при составлении плана и написании творческой работы (сочинения-продолжения).', kw: ['шығармашылық', 'творческ', 'жоспар', 'план', 'сочин', 'жанр'] },
+      { kk: 'Көркемдегіш құралдарды (эпитет, теңеу, кейіптеу) табуда және қолдануда қиналады.', ru: 'Затрудняются находить и использовать средства выразительности (эпитеты, сравнения, олицетворения).', kw: ['көркем', 'выразит', 'эпитет', 'теңеу', 'сравнен'] }],
+    r: [{ kk: 'Мәтіндегі негізгі ойды бөліп алу және мағыналық байланыстарды орнату дағдылары әлсіз.', ru: 'Слабо сформированы навыки выделения главной мысли и установления смысловых связей в тексте.' },
+      { kk: 'Сұрақ құрастыру және жауапты дәлелдейтін ақпаратты табу іскерлігі бекітуді қажет етеді.', ru: 'Требуют закрепления умения формулировать вопросы и находить информацию, подтверждающую ответ.' },
+      { kk: 'Кейіпкерлердің әрекет себептерін талдауда және оқиғалар мен сезімдерді салыстыруда қиындықтар бар.', ru: 'Испытывают трудности при анализе мотивов поступков героев и сопоставлении событий и чувств.' },
+      { kk: 'Жоспарлау, байланыстырып жазу және шығармашылық жұмысты өзін-өзі тексеру дағдылары жеткіліксіз.', ru: 'Недостаточно развиты навыки планирования, связного письменного высказывания и самопроверки творческой работы.' }],
+    c: [{ kk: 'Шығарманың негізгі ойын анықтауға және мазмұнына сай мақал-мәтел таңдауға жаттығулар ұйымдастыру.', ru: 'Организовать упражнения на определение основной мысли произведения и подбор пословиц, отражающих его содержание.' },
+      { kk: 'Мәтін бөліктеріне сұрақ құрастыру, жауапты табу және негіздеу жұмысын жүргізу.', ru: 'Проводить работу по составлению вопросов к частям текста, поиску и обоснованию ответов.' },
+      { kk: 'Кейіпкерлердің әрекеттері мен сезімдерін салыстыру кестелерін, негізгі оқиғаны анықтау тапсырмаларын қолдану.', ru: 'Использовать сравнительные таблицы поступков и чувств героев, задания на определение ключевых событий.' },
+      { kk: 'Үш тармақты жоспар құруды, жаңа оқиға мен кейіпкер қосып шығарма-жалғасы жазуды, эпитет пен теңеуді қолдануды пысықтау.', ru: 'Отрабатывать составление плана из трёх пунктов, написание сочинения-продолжения с новым событием и героем, использование эпитетов и сравнений.' },
+      { kk: 'Жазба жұмыстарды өңдеуді және типтік қателермен жеке жұмысты ұйымдастыру.', ru: 'Организовать редактирование письменных работ и индивидуальную работу над типичными ошибками.' }]
+  },
+  sci: {
+    d: [{ kk: 'Тірі ағзалар арасындағы өзара тиімді байланысты (симбиоз) түсіндіруде қиналады.', ru: 'Затрудняются объяснять взаимовыгодное взаимодействие организмов (симбиоз).', kw: ['симбиоз', 'симбиот', 'өзара', 'взаимо', 'ағза', 'организм'] },
+      { kk: 'Өсімдіктер мен жануарлардың тіршілік циклін сипаттауда қателіктер жібереді.', ru: 'Допускают ошибки при описании жизненного цикла растений и животных.', kw: ['цикл', 'жизненн', 'тіршілік', 'өсімдік', 'растен', 'жануар', 'животн'] },
+      { kk: 'Зерттеу нәтижесін кесте, диаграмма түрінде ұсынуда және қорытынды жасауда қиналады.', ru: 'Испытывают трудности при представлении результатов исследования в таблице, диаграмме и формулировании вывода.', kw: ['зерттеу', 'исследов', 'тәжірибе', 'опыт', 'кесте', 'таблиц', 'диаграмм', 'қорытынды', 'вывод'] },
+      { kk: 'Табиғат құбылыстарының себеп-салдарын түсіндіруде қиналады.', ru: 'Затрудняются объяснять причинно-следственные связи природных явлений.', kw: ['құбылыс', 'явлен', 'себеп', 'причин', 'ауа райы', 'погод'] },
+      { kk: 'Заттардың қасиеттері мен күйлерін ажыратуда қателіктер жібереді.', ru: 'Допускают ошибки при различении свойств и состояний веществ.', kw: ['зат', 'веществ', 'қасиет', 'свойств', 'күй', 'состоян'] }],
+    r: [{ kk: 'Тірі ағзалар арасындағы байланыстарды түсіну әлсіз.', ru: 'Слабое понимание взаимосвязей между живыми организмами.' },
+      { kk: 'Ғылыми терминдер жеткілікті меңгерілмеген.', ru: 'Недостаточно усвоены научные термины.' },
+      { kk: 'Бақылау және тәжірибе нәтижелерін талдау дағдысы қалыптаспаған.', ru: 'Не сформирован навык анализа результатов наблюдений и опытов.' },
+      { kk: 'Сызба, кесте, суретпен жұмыс тәжірибесі аз.', ru: 'Мало опыта работы со схемами, таблицами, рисунками.' }],
+    c: [{ kk: 'Тірі ағзалардың өзара тиімді әрекеттесуінің мысалдарын талдау.', ru: 'Разобрать примеры взаимовыгодного взаимодействия организмов.' },
+      { kk: 'Терминдік сөздікпен және сызбалармен жұмыс жүргізу.', ru: 'Проводить работу с терминологическим словарём и схемами.' },
+      { kk: 'Шағын тәжірибелер мен бақылаулар ұйымдастырып, нәтижесін кестеге түсіруге үйрету.', ru: 'Организовать мини-опыты и наблюдения с занесением результатов в таблицу.' },
+      { kk: 'Себеп-салдарлық байланысқа арналған «Неліктен?» тапсырмаларын беру.', ru: 'Давать задания «Почему?» на причинно-следственные связи.' }]
+  },
+  lang: {
+    d: [{ kk: 'Сөздер мен сөйлемдерде емле қателерін жібереді.', ru: 'Допускают орфографические ошибки в словах и предложениях.', kw: ['емле', 'орфограф', 'жаз', 'письм', 'сауат', 'грамот', 'дұрыс жаз'] },
+      { kk: 'Мәтіннің негізгі ойын анықтауда және сұрақтарға толық жауап беруде қиналады.', ru: 'Затрудняются определять основную мысль текста и давать полные ответы на вопросы.', kw: ['мәтін', 'текст', 'негізгі', 'основн', 'сұрақ', 'вопрос', 'оқылым', 'чтени'] },
+      { kk: 'Сөз таптарын және сөйлем мүшелерін ажыратуда қателіктер жібереді.', ru: 'Допускают ошибки при определении частей речи и членов предложения.', kw: ['сөз тап', 'част', 'мүше', 'член', 'есім', 'существ', 'етістік', 'глагол', 'сын есім', 'прилагат'] },
+      { kk: 'Тыңдалым мен айтылым тапсырмаларында ойын толық жеткізе алмайды.', ru: 'В заданиях на слушание и говорение не могут полностью выразить мысль.', kw: ['тыңда', 'слушан', 'айтылым', 'говорен', 'сөйле', 'диалог'] },
+      { kk: 'Берілген тақырыпқа байланыстырып мәтін құрауда қиналады.', ru: 'Испытывают трудности при составлении связного текста на заданную тему.', kw: ['құрау', 'составл', 'құрастыр', 'сочин', 'шағын мәтін', 'эссе', 'жазылым'] }],
+    r: [{ kk: 'Емле ережелері жеткілікті бекітілмеген.', ru: 'Недостаточно закреплены орфографические правила.' },
+      { kk: 'Сөздік қоры аз, оқу техникасы жеткіліксіз.', ru: 'Небольшой словарный запас, недостаточная техника чтения.' },
+      { kk: 'Ауызша сөйлеу тәжірибесі аз.', ru: 'Мало практики устной речи.' },
+      { kk: 'Өз жұмысын тексеру дағдысы қалыптаспаған.', ru: 'Не сформирован навык самопроверки.' }],
+    c: [{ kk: 'Сөздік диктант және емле жаттығуларын жүйелі өткізу.', ru: 'Систематически проводить словарные диктанты и орфографические упражнения.' },
+      { kk: 'Мәтінмен жұмыс: негізгі ойды табу, сұрақтарға толық жауап беру.', ru: 'Работа с текстом: поиск основной мысли, полные ответы на вопросы.' },
+      { kk: 'Сөз таптарын ажыратуға арналған кестелер мен дидактикалық ойындарды қолдану.', ru: 'Использовать таблицы и дидактические игры на различение частей речи.' },
+      { kk: 'Жұптық және топтық диалогтар, тірек сөздер арқылы айтылымды дамыту.', ru: 'Развивать говорение через парные и групповые диалоги, опорные слова.' },
+      { kk: 'Қателіктермен жұмыс және жеке кеңес беру ұйымдастыру.', ru: 'Организовать работу над ошибками и индивидуальные консультации.' }]
+  },
+  gen: {
+    d: [{ kk: 'Білімді жаңа жағдаятта қолдануды талап ететін тапсырмаларда қиналады.', ru: 'Затрудняются в заданиях, требующих применения знаний в новой ситуации.', kw: [] },
+      { kk: 'Жауапты толық негіздей алмайды.', ru: 'Не могут полностью обосновать ответ.', kw: [] },
+      { kk: 'Тапсырманы орындауда ұқыпсыздықтан қателіктер жібереді.', ru: 'Допускают ошибки по невнимательности.', kw: [] }],
+    r: [{ kk: 'Оқу материалы жеткілікті бекітілмеген.', ru: 'Учебный материал недостаточно закреплён.' },
+      { kk: 'Тапсырманың шартын мұқият оқымайды.', ru: 'Невнимательно читают условие задания.' },
+      { kk: 'Өз жұмысын тексеру дағдысы қалыптаспаған.', ru: 'Не сформирован навык самопроверки.' }],
+    c: [{ kk: 'Қиындық тудырған тақырыптар бойынша қайталау және қателіктермен жұмыс жүргізу.', ru: 'Провести повторение и работу над ошибками по темам, вызвавшим затруднения.' },
+      { kk: 'Деңгейлік қосымша тапсырмалар беру.', ru: 'Давать разноуровневые дополнительные задания.' },
+      { kk: 'Жеке кеңес беру (консультация) ұйымдастыру.', ru: 'Организовать индивидуальные консультации.' }]
+  }
+};
+
+function po(n, grade) { return { n, unit: '', max: AO_MAX[grade] || 16, goals: '', tasks: [], dif: {}, scores: {}, ts: {} }; }
+const today = () => new Date().toISOString().slice(0, 10);
+const blank = () => ({ id: Date.now(), grade: 4, letter: '', subject: '', term: 1, teacher: '', date: today(), docLang: App.lang, qualMode: 'dash', roster: '', pos: [po(1, 4), po(2, 4)], allAch: true, sel: { d: {}, r: {}, c: {} }, auto: { d: {}, r: {}, c: {} }, own: { d: '', r: '', c: '' }, mon: false });
+let A = App.store.get('mt-po-cur') || blank();
+let saved = App.store.get('mt-po-saved', []);
+const save = () => App.store.set('mt-po-cur', A);
+const students = () => A.roster.split('\n').map(s => s.trim()).filter(Boolean);
+const goalsOf = p => p.goals.split('\n').map(s => s.trim()).filter(Boolean);
+const poName = (p, lang) => ((lang || A.docLang) === 'ru' ? 'ПО № ' : 'АБ № ') + p.n;
+const sc = (p, si) => { const v = p.scores[si]; return v === '' || v == null ? null : +v; };
+const pct = (p, si) => { const v = sc(p, si); return v == null ? null : v / (+p.max || 1) * 100; };
+const clsName = () => A.grade + (A.letter ? (A.docLang === 'ru' ? ' «' + A.letter + '»' : ' «' + A.letter + '»') : '');
+function stats(p) {
+  let n = 0, h = 0, m = 0, l = 0, q = 0, u = 0;
+  students().forEach((_, si) => { const x = pct(p, si); if (x == null) return; n++; const v = lvOf(x); v === 'h' ? h++ : v === 'm' ? m++ : l++; if (x >= 65) q++; if (x >= 40) u++; });
+  return { n, h, m, l, q: n ? Math.round(q / n * 100) : 0, u: n ? Math.round(u / n * 100) : 0 };
+}
+function taskPct(p, k) {
+  const m = +p.tasks[k].max || 1; let s = 0, n = 0;
+  students().forEach((_, si) => { const v = (p.ts[si] || {})[k]; if (v !== '' && v != null) { s += +v; n++; } });
+  return n ? s / (n * m) * 100 : null;
+}
+// мақсаттың орындалуы = оған қатысты тапсырмалардың орташа пайызы
+function goalPct(p, gi) {
+  const ks = p.tasks.map((tk, k) => +tk.g === gi ? k : -1).filter(k => k >= 0);
+  const ps = ks.map(k => taskPct(p, k)).filter(x => x != null);
+  return ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : null;
+}
+
+// ---- ①
+function renderS1() {
+  $('grade').value = A.grade; $('term').value = A.term; $('docLang').value = A.docLang; $('qualMode').value = A.qualMode;
+  ['letter', 'subject', 'teacher', 'date'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = A[k] || ''; });
+  if (document.activeElement !== $('roster')) $('roster').value = A.roster;
+  $('subjList').innerHTML = SUBJ[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
+}
+['letter', 'subject', 'teacher', 'date', 'roster'].forEach(k => $(k).oninput = () => { A[k] = $(k).value; save(); });
+$('grade').onchange = () => { A.grade = +$('grade').value; A.pos.forEach(p => { if (!p.tasks.length) p.max = AO_MAX[A.grade]; }); save(); };
+$('term').onchange = () => { A.term = +$('term').value; save(); };
+$('docLang').onchange = () => { A.docLang = $('docLang').value; save(); };
+$('qualMode').onchange = () => { A.qualMode = $('qualMode').value; save(); };
+
+// ---- ② аралық бағалаулар
+function renderPos() {
+  $('pos').innerHTML = A.pos.map((p, i) => {
+    const gl = goalsOf(p), sum = p.tasks.reduce((a, tk) => a + (+tk.max || 0), 0), need = AO_MAX[A.grade];
+    return '<div class="po"><div class="ph"><b>' + esc(poName(p, App.lang)) + '</b><button class="btn sm" data-rmpo="' + i + '">✕</button></div>' +
+      '<div class="g4"><label class="fld"><span>' + t('unit') + '</span><input type="text" data-p="' + i + ':unit" value="' + esc(p.unit) + '"></label>' +
+      '<label class="fld"><span>' + t('maxPts') + '</span><input type="number" min="1" data-p="' + i + ':max" value="' + p.max + '"' + (p.tasks.length ? ' disabled' : '') + '></label></div>' +
+      '<label class="fld"><span>' + t('goalsF') + '</span><textarea rows="3" data-p="' + i + ':goals" placeholder="' + esc(t('goalsPh')) + '">' + esc(p.goals) + '</textarea></label>' +
+      '<div class="fld"><span>' + t('tasksF') + '</span>' + p.tasks.map((tk, k) => '<div class="trow"><span>' + t('task') + ' ' + (k + 1) + '</span>' +
+        '<select data-tk="' + i + ':' + k + ':g">' + (gl.length ? gl : ['—']).map((g, j) => '<option value="' + j + '"' + (j === +tk.g ? ' selected' : '') + '>' + esc(g.slice(0, 70)) + '</option>').join('') + '</select>' +
+        '<input type="number" min="0" data-tk="' + i + ':' + k + ':max" value="' + tk.max + '"><button class="btn sm" data-rmt="' + i + ':' + k + '">✕</button></div>').join('') +
+        '<div class="row"><button class="btn sm" data-addt="' + i + '">' + t('addTask') + '</button>' +
+        (p.tasks.length ? '<span class="' + (sum === need ? 'lv-h' : 'lv-l') + '">' + t('sumOk') + ': ' + sum + ' / ' + need + (sum === need ? ' ✓' : '') + '</span>' : '') + '</div></div></div>';
+  }).join('');
+}
+$('pos').oninput = e => {
+  const el = e.target;
+  if (el.dataset.p) { const [i, f] = el.dataset.p.split(':'); A.pos[i][f] = f === 'max' ? +el.value : el.value; save(); if (f === 'goals') return; }
+  else if (el.dataset.tk) { const [i, k, f] = el.dataset.tk.split(':'); A.pos[i].tasks[k][f] = +el.value; recalcMax(A.pos[i]); save(); }
+};
+$('pos').onchange = e => { if (e.target.dataset.p && e.target.dataset.p.endsWith(':goals')) renderPos(); else if (e.target.dataset.tk) renderPos(); };
+$('pos').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.rmpo != null) { A.pos.splice(+d.rmpo, 1); A.pos.forEach((p, i) => p.n = i + 1); }
+  else if (d.addt != null) { const p = A.pos[d.addt]; p.tasks.push({ g: Math.min(p.tasks.length, Math.max(0, goalsOf(p).length - 1)), max: 2 }); recalcMax(p); }
+  else if (d.rmt) { const [i, k] = d.rmt.split(':'); A.pos[i].tasks.splice(k, 1); Object.values(A.pos[i].ts).forEach(r => { delete r[k]; }); recalcMax(A.pos[i]); }
+  else return;
+  save(); renderPos();
+};
+function recalcMax(p) { if (p.tasks.length) p.max = p.tasks.reduce((a, tk) => a + (+tk.max || 0), 0); }
+$('addPo').onclick = () => { A.pos.push(po(A.pos.length + 1, A.grade)); save(); renderPos(); };
+
+// ---- ③ баллдар
+let tp = 0;
+function renderGrid() {
+  const st = students();
+  if (!st.length) { $('grid').innerHTML = '<p class="muted">' + t('rosterPh') + ' → ①</p>'; $('kpis').innerHTML = ''; $('tsec').innerHTML = ''; return; }
+  $('grid').innerHTML = '<p class="muted" style="margin:0 0 6px">' + t('pasteHint') + '</p><table class="sc"><thead><tr><th>№</th><th>' + t('name') + '</th>' + A.pos.map(p => '<th>' + esc(poName(p, App.lang)) + '<br><span class="pct">max ' + p.max + '</span></th>').join('') + '</tr></thead><tbody>' +
+    st.map((s, si) => '<tr><td>' + (si + 1) + '</td><td>' + esc(s) + '</td>' + A.pos.map((p, pi) => {
+      const x = pct(p, si);
+      return '<td><input type="number" min="0" max="' + p.max + '" data-c="' + pi + ':' + si + '" value="' + (sc(p, si) ?? '') + '"' + (p.tasks.length ? ' readonly title="Σ"' : '') + '> <span class="pct ' + (x == null ? '' : 'lv-' + lvOf(x)) + '">' + (x == null ? '' : Math.round(x) + '%') + '</span></td>';
+    }).join('') + '</tr>').join('') + '</tbody></table>';
+  $('kpis').innerHTML = A.pos.map(p => { const s = stats(p); return '<div class="kpi"><b>' + esc(poName(p, App.lang)) + '</b><span class="lv-l">' + s.l + '</span> / <span class="lv-m">' + s.m + '</span> / <span class="lv-h">' + s.h + '</span></div>'; }).join('');
+  const withT = A.pos.map((p, i) => p.tasks.length ? i : -1).filter(i => i >= 0);
+  if (!withT.length) { $('tsec').innerHTML = ''; return; }
+  if (!withT.includes(tp)) tp = withT[0];
+  const p = A.pos[tp];
+  $('tsec').innerHTML = '<h3>' + t('byTask') + '</h3><div class="row" style="margin-bottom:8px">' + withT.map(i => '<button class="btn sm' + (i === tp ? ' primary' : '') + '" data-tp="' + i + '">' + esc(poName(A.pos[i], App.lang)) + '</button>').join('') + '</div>' +
+    '<div class="scroll"><table class="sc"><thead><tr><th>№</th><th>' + t('name') + '</th>' + p.tasks.map((tk, k) => '<th>' + (k + 1) + '<br><span class="pct">max ' + tk.max + '</span></th>').join('') + '<th>Σ</th></tr></thead><tbody>' +
+    st.map((s, si) => '<tr><td>' + (si + 1) + '</td><td>' + esc(s) + '</td>' + p.tasks.map((tk, k) => '<td><input type="number" min="0" max="' + tk.max + '" data-t="' + si + ':' + k + '" value="' + ((p.ts[si] || {})[k] ?? '') + '"></td>').join('') + '<td><b>' + (sc(p, si) ?? '') + '</b></td></tr>').join('') +
+    '<tr><td></td><td><b>%</b></td>' + p.tasks.map((tk, k) => { const x = taskPct(p, k); return '<td><b class="' + (x == null ? '' : x >= 65 ? 'lv-h' : 'lv-l') + '">' + (x == null ? '' : Math.round(x) + '%') + '</b></td>'; }).join('') + '<td></td></tr></tbody></table></div>';
+}
+function setTask(p, si, k, v) {
+  (p.ts[si] = p.ts[si] || {})[k] = v;
+  const vals = Object.values(p.ts[si]).filter(x => x !== '' && x != null);
+  p.scores[si] = vals.length ? vals.reduce((a, b) => a + +b, 0) : '';
+}
+$('s3').addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.c) { const [pi, si] = el.dataset.c.split(':'); A.pos[pi].scores[si] = el.value; }
+  else if (el.dataset.t) { const [si, k] = el.dataset.t.split(':'); setTask(A.pos[tp], si, k, el.value); }
+  else return;
+  save(); renderGrid();
+});
+$('s3').addEventListener('click', e => { const b = e.target.closest('[data-tp]'); if (b) { tp = +b.dataset.tp; renderGrid(); } });
+$('s3').addEventListener('paste', e => {
+  const el = e.target, txt = (e.clipboardData || window.clipboardData).getData('text');
+  if (!txt || !/[\n\t]/.test(txt.trim()) || !(el.dataset.c || el.dataset.t)) return;
+  e.preventDefault();
+  const rows = txt.trim().split(/\r?\n/).map(r => r.split('\t').map(v => v.trim().replace(',', '.')));
+  const n = students().length;
+  if (el.dataset.c) { const [pi, si] = el.dataset.c.split(':').map(Number); rows.forEach((r, a) => r.forEach((v, b) => { const p = A.pos[pi + b]; if (p && !p.tasks.length && si + a < n) p.scores[si + a] = v; })); }
+  else { const [si, k] = el.dataset.t.split(':').map(Number), p = A.pos[tp]; rows.forEach((r, a) => r.forEach((v, b) => { if (si + a < n && k + b < p.tasks.length) setTask(p, si + a, k + b, v); })); }
+  save(); renderGrid();
+});
+
+// ---- ④ белгілеу
+const bankOf = () => BANK[subjKey(A.subject)];
+function lowNames() {
+  const st = students(), low = new Set(), mid = new Set();
+  A.pos.forEach(p => st.forEach((s, si) => { const x = pct(p, si); if (x == null) return; if (x < 40) low.add(s); else if (x < 65) mid.add(s); }));
+  low.forEach(s => mid.delete(s));
+  return { low: [...low], mid: [...mid] };
+}
+const stripCode = g => g.replace(/^\s*[\d.]+\*{0,2}\s*[–—-]?\s*/, '').trim();
+// тізімдер: банк + мақсаттан жасалған + аты-жөнмен жасалған пункттер
+function items(kind) {
+  const L = A.docLang, b = bankOf(), out = [];
+  if (kind === 'd') A.pos.forEach((p, pi) => goalsOf(p).forEach((g, gi) => { if (p.dif[gi]) out.push({ id: 'g' + pi + '_' + gi, text: L === 'ru' ? 'Затруднения при выполнении заданий по цели «' + stripCode(g) + '».' : '«' + stripCode(g) + '» мақсаты бойынша тапсырмаларды орындауда қиналады.' }); }));
+  b[kind].forEach((x, i) => out.push({ id: 'b' + i, text: x[L] }));
+  if (kind === 'c') {
+    const nm = lowNames();
+    if (nm.low.length) out.push({ id: 'nlow', text: L === 'ru' ? 'Организовать индивидуальную работу и консультации с обучающимися низкого уровня: ' + nm.low.join(', ') + '.' : 'Төмен деңгейдегі білім алушылармен жеке жұмыс және кеңес беру: ' + nm.low.join(', ') + '.' });
+    if (nm.mid.length) out.push({ id: 'nmid', text: L === 'ru' ? 'Дать дополнительные разноуровневые задания обучающимся (40–64%): ' + nm.mid.join(', ') + '.' : 'Келесі білім алушыларға (40–64%) деңгейлік қосымша тапсырмалар беру: ' + nm.mid.join(', ') + '.' });
+  }
+  return out;
+}
+function renderGoals() {
+  $('allAch').checked = A.allAch;
+  $('goals').innerHTML = A.pos.map((p, pi) => '<p style="margin:10px 0 2px"><b>' + esc(poName(p, App.lang)) + (p.unit ? ' — ' + esc(p.unit) : '') + '</b></p>' +
+    (goalsOf(p).map((g, gi) => { const x = goalPct(p, gi); return '<label class="goal"><input type="checkbox" data-dg="' + pi + ':' + gi + '"' + (p.dif[gi] ? ' checked' : '') + '><span>' + esc(g) + '</span><span class="gp ' + (x == null ? '' : x >= 65 ? 'lv-h' : 'lv-l') + '">' + (x == null ? '' : Math.round(x) + '%') + (p.dif[gi] ? ' · ' + t('difW') : '') + '</span></label>'; }).join('') || '<p class="muted">—</p>')).join('');
+}
+function renderPick() {
+  ['d', 'r', 'c'].forEach(k => {
+    $('p' + k).innerHTML = items(k).map(it => '<label class="' + (A.auto[k][it.id] ? 'auto' : '') + '"><input type="checkbox" data-pk="' + k + ':' + it.id + '"' + (A.sel[k][it.id] ? ' checked' : '') + '><span>' + esc(it.text) + '</span></label>').join('');
+    $('c' + k).value = A.own[k] || '';
+  });
+}
+$('goals').onchange = e => { const k = e.target.dataset.dg; if (!k) return; const [pi, gi] = k.split(':'); A.pos[pi].dif[gi] = e.target.checked; save(); renderGoals(); renderPick(); };
+$('allAch').onchange = () => { A.allAch = $('allAch').checked; save(); };
+['d', 'r', 'c'].forEach(k => {
+  $('p' + k).onchange = e => { const v = e.target.dataset.pk; if (!v) return; const id = v.split(':')[1]; A.sel[k][id] = e.target.checked; save(); };
+  $('c' + k).oninput = () => { A.own[k] = $('c' + k).value; save(); };
+});
+function autoMark() {
+  const b = bankOf(), txt = [];
+  A.pos.forEach(p => {
+    const gl = goalsOf(p);
+    gl.forEach((g, gi) => { const x = goalPct(p, gi); if (x != null) p.dif[gi] = x < 65; });
+    // тапсырма жоқ болса: ең әлсіз нәтиже көрсеткен аралық бағалаудың мақсаттарын белгілемейміз — мұғалім өзі белгілейді
+    gl.forEach((g, gi) => { if (p.dif[gi]) txt.push(g.toLowerCase()); });
+  });
+  const hay = txt.join(' ');
+  A.sel = { d: {}, r: {}, c: {} }; A.auto = { d: {}, r: {}, c: {} };
+  const mark = (k, id) => { A.sel[k][id] = true; A.auto[k][id] = true; };
+  items('d').filter(it => it.id[0] === 'g').forEach(it => mark('d', it.id));
+  const hit = b.d.map((x, i) => (x.kw || []).some(w => hay.includes(w)) ? i : -1).filter(i => i >= 0);
+  const anyDif = txt.length > 0, weak = A.pos.some(p => { const s = stats(p); return s.n && (s.l > 0 || s.h < s.n / 2); });
+  (hit.length ? hit : (anyDif || weak ? [0, 1] : [])).forEach(i => { if (b.d[i]) mark('d', 'b' + i); });
+  const nr = hit.length ? Math.min(b.r.length, Math.max(2, hit.length)) : (anyDif || weak ? 2 : 1);
+  for (let i = 0; i < nr; i++) mark('r', 'b' + i);
+  const nc = Math.min(b.c.length, Math.max(3, hit.length + 1));
+  hit.forEach(i => { if (b.c[i]) mark('c', 'b' + i); });
+  for (let i = 0; Object.keys(A.sel.c).length < nc && i < b.c.length; i++) mark('c', 'b' + i);
+  if (!A.sel.c['b' + (b.c.length - 1)]) mark('c', 'b' + (b.c.length - 1));
+  const nm = lowNames(); if (nm.low.length) mark('c', 'nlow'); if (nm.mid.length) mark('c', 'nmid');
+  save();
+}
+$('autoBtn').onclick = () => { autoMark(); renderGoals(); renderPick(); };
+
+// ---- ⑤ құжат
+function docHtml() {
+  const ru = A.docLang === 'ru', st = students();
+  const termW = ru ? A.term + ' четверти' : A.term + '-тоқсандағы';
+  let h = '<h1>' + (ru ? 'Анализ по итогам проведения промежуточного оценивания за разделы в ' + termW + ' по предмету ' + esc(A.subject.toLowerCase())
+    : termW + ' бөлімдер бойынша аралық бағалау қорытындысының талдауы, ' + esc(A.subject) + ' пәні') + '</h1>' +
+    '<p>' + (ru ? 'Класс' : 'Сынып') + ': <b>' + esc(clsName()) + '</b></p><p>' + (ru ? 'Количество учащихся' : 'Оқушылар саны') + ': <b>' + st.length + '</b></p><p>' + (ru ? 'Педагог' : 'Педагог') + ': <b>' + esc(A.teacher) + '</b></p>' +
+    '<p><b>' + (ru ? 'Цель' : 'Мақсаты') + ':</b> ' + (ru ? 'Проверить усвоение программного материала, своевременно отреагировать на недостатки, выяснить их причины и принять необходимые меры к устранению.' : 'Бағдарламалық материалдың меңгерілуін тексеру, кемшіліктерге уақытында әрекет ету, олардың себептерін анықтау және жою бойынша қажетті шаралар қабылдау.') + '</p>';
+  const dash = A.qualMode === 'dash';
+  h += '<table><tr><th rowspan="4">' + (ru ? 'Предмет' : 'Пән') + '<br>' + esc(A.subject) + '</th><th rowspan="4">' + (ru ? 'Писали' : 'Жазғандар') + '</th><th rowspan="4">' + (ru ? 'Макс балл' : 'Макс. балл') + '</th><th colspan="3">' + (ru ? 'Процентное содержание баллов суммативного оценивания' : 'Бағалау балдарының пайыздық мазмұны') + '</th><th rowspan="4">% ' + (ru ? 'качества' : 'сапа') + '</th><th rowspan="4">% ' + (ru ? 'успеваемости' : 'үлгерім') + '</th></tr>' +
+    '<tr><th>' + (ru ? 'низкий' : 'төмен') + '</th><th>' + (ru ? 'средний' : 'орта') + '</th><th>' + (ru ? 'высокий' : 'жоғары') + '</th></tr><tr><th>0–39%</th><th>40–84%</th><th>85–100%</th></tr><tr><th colspan="3">' + (ru ? 'Количество учеников' : 'Оқушылар саны') + '</th></tr>' +
+    A.pos.map(p => { const s = stats(p); return '<tr><td class="l">' + esc(poName(p)) + '</td><td>' + s.n + '</td><td>' + p.max + '</td><td>' + s.l + '</td><td>' + s.m + '</td><td>' + s.h + '</td><td>' + (dash ? '—' : s.q) + '</td><td>' + (dash ? '—' : s.u) + '</td></tr>'; }).join('') + '</table>';
+  h += '<table><tr><th></th><th>' + (ru ? 'Цели обучения' : 'Оқу мақсаттары') + '</th><th>' + (ru ? 'Достигнутые цели' : 'Қол жеткізілген мақсаттар') + '</th><th>' + (ru ? 'Цели, вызвавшие затруднения' : 'Қиындық тудырған мақсаттар') + '</th></tr>' +
+    A.pos.map(p => { const gl = goalsOf(p); const ach = A.allAch ? gl : gl.filter((_, i) => !p.dif[i]); const dif = gl.filter((_, i) => p.dif[i]);
+      return '<tr><td class="l"><b>' + esc(poName(p)) + '</b>' + (p.unit ? '<br>' + esc(p.unit) : '') + '</td><td class="l">' + gl.map(esc).join('<br>') + '</td><td class="l">' + ach.map(esc).join('<br>') + '</td><td class="l">' + (dif.map(esc).join('<br>') || '—') + '</td></tr>'; }).join('') + '</table>';
+  const no = ru ? 'нет' : 'жоқ';
+  const lv = (k, title, rng) => '<p><b>' + title + ' (' + rng + '):</b><br>' + A.pos.map(p => { const names = st.filter((s, si) => { const x = pct(p, si); return x != null && lvOf(x) === k; }); return esc(poName(p)) + ': ' + (names.length ? esc(names.join('; ')) : no) + ';'; }).join('<br>') + '</p>';
+  h += '<p><b>1. ' + (ru ? 'Анализ результатов промежуточного оценивания показал следующий уровень знаний у обучающихся:' : 'Аралық бағалау нәтижелерін талдау білім алушылардың келесі білім деңгейін көрсетті:') + '</b></p>' +
+    lv('h', ru ? 'Высокий уровень' : 'Жоғары деңгей', '85–100%') + lv('m', ru ? 'Средний уровень' : 'Орта деңгей', '40–84%') + lv('l', ru ? 'Низкий уровень' : 'Төмен деңгей', '0–39%');
+  const list = k => { const it = items(k).filter(x => A.sel[k][x.id]).map(x => x.text).concat((A.own[k] || '').split('\n').map(s => s.trim()).filter(Boolean)); return it.length ? it.map((x, i) => (i + 1) + '. ' + esc(x)).join('<br>') : '—'; };
+  h += '<p><b>2. ' + (ru ? 'Перечень затруднений, которые возникли у обучающихся при выполнении заданий:' : 'Тапсырмаларды орындау барысында білім алушыларда туындаған қиындықтар тізбесі:') + '</b><br>' + list('d') + '</p>' +
+    '<p><b>3. ' + (ru ? 'Причины указанных выше затруднений у обучающихся при выполнении заданий:' : 'Тапсырмаларды орындау барысында аталған қиындықтардың себептері:') + '</b><br>' + list('r') + '</p>' +
+    '<p><b>4. ' + (ru ? 'Планируемая коррекционная работа (при необходимости с указанием фамилии, имени обучающихся):' : 'Жоспарланған түзету жұмысы (қажет болса, білім алушылардың аты-жөнін көрсете отырып):') + '</b><br>' + list('c') + '</p>';
+  if (A.mon && st.length) {
+    h += '<p><b>' + (ru ? 'Результаты обучающихся' : 'Білім алушылардың нәтижелері') + '</b></p><table><tr><th>№</th><th>' + (ru ? 'ФИО' : 'Аты-жөні') + '</th>' + A.pos.map(p => '<th>' + esc(poName(p)) + ' (' + p.max + ')</th><th>%</th>').join('') + '</tr>' +
+      st.map((s, si) => '<tr><td>' + (si + 1) + '</td><td class="l">' + esc(s) + '</td>' + A.pos.map(p => { const v = sc(p, si), x = pct(p, si); return '<td>' + (v ?? '') + '</td><td>' + (x == null ? '' : Math.round(x)) + '</td>'; }).join('') + '</tr>').join('') + '</table>';
+  }
+  const d = A.date ? A.date.slice(8, 10) + '.' + A.date.slice(5, 7) + '.' + A.date.slice(0, 4) : '';
+  h += '<p style="margin-top:18px">' + (ru ? 'Дата' : 'Күні') + ': ' + d + (ru ? ' г.' : ' ж.') + ' &nbsp;&nbsp;&nbsp;&nbsp; ' + (ru ? 'ФИО педагога' : 'Педагогтің аты-жөні') + ': ' + esc(A.teacher) + ' ____________</p>';
+  return h;
+}
+function fileBase() { return ((A.docLang === 'ru' ? 'Анализ_ПО_' : 'АБ_талдау_') + clsName() + '_' + (A.subject || '') + '_' + A.term).replace(/[\\/:*?"<>|«»\s]+/g, '_'); }
+function exportWord() {
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>' +
+    'body{font-family:"Times New Roman";font-size:12pt} h1{font-size:13pt;text-align:center} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:2pt 4pt;vertical-align:top;text-align:center;font-size:11pt} td.l{text-align:left} p{margin:3pt 0}' +
+    '@page{size:21cm 29.7cm;margin:1.5cm 1.5cm 1.5cm 2cm}</style></head><body>' + docHtml() + '</body></html>';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + html], { type: 'application/msword' }));
+  a.download = fileBase() + '.doc'; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+// PDF: html2pdf кітапханасы тек батырма басылғанда жүктеледі
+function loadPdfLib() {
+  return new Promise((res, rej) => {
+    if (window.html2pdf) return res();
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    s.onload = res; s.onerror = rej; document.head.append(s);
+  });
+}
+async function exportPdf() {
+  const btn = $('pdf'), old = btn.textContent; btn.textContent = t('pdfWait'); btn.disabled = true;
+  try {
+    await loadPdfLib();
+    const el = document.createElement('div');
+    el.className = 'paper'; el.style.cssText = 'width:720px;box-shadow:none;border-radius:0;padding:0;overflow:visible';
+    el.innerHTML = docHtml();
+    await html2pdf().set({ margin: [12, 12, 12, 15], filename: fileBase() + '.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, backgroundColor: '#ffffff' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', 'p'] } }).from(el).save();
+  } catch (e) { print(); }
+  btn.textContent = old; btn.disabled = false;
+}
+$('word').onclick = exportWord; $('pdf').onclick = exportPdf; $('print').onclick = () => print();
+$('mon').onchange = () => { A.mon = $('mon').checked; save(); $('paper').innerHTML = docHtml(); };
+
+// ---- сақтау, үлгі
+function renderSaved() {
+  $('savedList').innerHTML = saved.length ? saved.map((s, i) => '<li><span><b>' + esc(s.subject || '—') + '</b> · ' + esc(s.grade + (s.letter || '')) + ' · ' + s.term + ' ' + (App.lang === 'ru' ? 'четв.' : 'тоқсан') + ' <span class="muted">· ' + esc(s.when || '') + '</span></span><span class="row"><button class="btn sm primary" data-op="' + i + '">' + t('open') + '</button><button class="btn sm" data-rm="' + i + '">' + t('del') + '</button></span></li>').join('') : '<li class="muted">' + t('none') + '</li>';
+}
+$('savedList').onclick = e => {
+  const o = e.target.closest('[data-op]'), r = e.target.closest('[data-rm]');
+  if (o) { A = JSON.parse(JSON.stringify(saved[+o.dataset.op])); save(); all(); step('1'); }
+  else if (r && confirm(t('sure'))) { saved.splice(+r.dataset.rm, 1); App.store.set('mt-po-saved', saved); renderSaved(); }
+};
+$('saveDoc').onclick = () => {
+  const c = JSON.parse(JSON.stringify(A)); c.when = new Date().toLocaleDateString();
+  const i = saved.findIndex(s => s.id === A.id); if (i >= 0) saved[i] = c; else saved.unshift(c);
+  App.store.set('mt-po-saved', saved); renderSaved();
+  $('saveDoc').textContent = t('saved'); setTimeout(() => $('saveDoc').textContent = t('saveDoc'), 1500);
+};
+$('newDoc').onclick = () => { if (confirm(t('sureNew'))) { A = blank(); save(); all(); step('1'); } };
+$('sample').onclick = () => {
+  if (!confirm(t('sureNew'))) return;
+  const ru = App.lang === 'ru';
+  A = Object.assign(blank(), { grade: 4, letter: 'F', subject: 'Математика', term: 1, teacher: ru ? 'Иванова А. Б.' : 'Сейтқали А. Б.', docLang: App.lang,
+    roster: Array.from({ length: 14 }, (_, i) => (ru ? 'Ученик ' : 'Оқушы ') + (i + 1)).join('\n') });
+  const p1 = po(1, 4), p2 = po(2, 4);
+  p1.unit = ru ? '«Многозначные числа»' : '«Көп таңбалы сандар»';
+  p1.goals = ru ? '4.1.1.3 Определять разрядный и классовый состав многозначных чисел\n4.1.2.8 Применять алгоритмы сложения и вычитания многозначных чисел\n4.1.3.5 Определять доли единиц времени\n4.4.3.1 Определять закономерность в последовательности чисел до 1 000 000'
+    : '4.1.1.3 Көп таңбалы сандардың разрядтық және кластық құрамын анықтау\n4.1.2.8 Көп таңбалы сандарды қосу мен азайту алгоритмдерін қолдану\n4.1.3.5 Уақыт бірліктерінің үлестерін анықтау\n4.4.3.1 1 000 000-ға дейінгі сандар тізбегіндегі заңдылықты анықтау';
+  p1.tasks = [{ g: 0, max: 4 }, { g: 1, max: 5 }, { g: 2, max: 4 }, { g: 3, max: 3 }];
+  const T1 = [[4, 5, 3, 3], [4, 4, 2, 2], [3, 5, 2, 1], [4, 5, 4, 3], [3, 3, 1, 1], [4, 4, 2, 2], [2, 3, 1, 1], [4, 5, 3, 3], [3, 4, 2, 2], [4, 5, 3, 2], [3, 4, 2, 1], [4, 5, 4, 3], [2, 2, 1, 0], [4, 4, 3, 2]];
+  T1.forEach((r, si) => r.forEach((v, k) => setTask(p1, si, k, v)));
+  p2.unit = ru ? '«Свойства действий»' : '«Амалдардың қасиеттері»';
+  p2.goals = ru ? '4.1.2.3 Применять свойства сложения и умножения при вычислениях\n4.1.2.4 Классифицировать числа по признакам делимости на 2, 5, 10\n4.1.2.6 Выполнять деление с остатком и без остатка на 10, 100, 1000'
+    : '4.1.2.3 Есептеулерде қосу мен көбейту қасиеттерін қолдану\n4.1.2.4 Сандарды 2, 5, 10-ға бөлінгіштік белгілері бойынша жіктеу\n4.1.2.6 10, 100, 1000-ға қалдықпен және қалдықсыз бөлу';
+  p2.tasks = [{ g: 0, max: 6 }, { g: 1, max: 5 }, { g: 2, max: 5 }];
+  const T2 = [[5, 4, 2], [6, 5, 3], [4, 4, 2], [6, 5, 4], [3, 3, 1], [5, 4, 3], [2, 2, 1], [6, 5, 4], [4, 4, 2], [5, 5, 3], [4, 3, 2], [6, 5, 5], [3, 2, 0], [5, 4, 3]];
+  T2.forEach((r, si) => r.forEach((v, k) => setTask(p2, si, k, v)));
+  A.pos = [p1, p2];
+  autoMark(); save(); all(); step('5');
+};
+
+// генератордан келген аралық бағалау
+(function importFromGen() {
+  const im = App.store.get('mt-po-import'); if (!im || location.hash !== '#import') return;
+  App.store.set('mt-po-import', null); history.replaceState(null, '', location.pathname + location.search);
+  const sameCls = +A.grade === +im.grade && A.subject === im.subject && +A.term === +im.term;
+  if (!sameCls) { A = blank(); A.pos = []; Object.assign(A, { grade: im.grade, letter: im.letter || '', subject: im.subject, term: im.term, docLang: im.docLang || A.docLang }); }
+  const p = po(A.pos.length + 1, A.grade);
+  Object.assign(p, { unit: im.unit || '', goals: im.goals || '', tasks: im.tasks || [] }); recalcMax(p);
+  A.pos.push(p); save();
+})();
+
+function step(s) {
+  document.querySelectorAll('#steps .btn').forEach(b => b.classList.toggle('on', b.dataset.s === s));
+  ['1', '2', '3', '4', '5'].forEach(k => $('s' + k).classList.toggle('hide', k !== s));
+  if (s === '2') renderPos(); if (s === '3') renderGrid();
+  if (s === '4') { if (!Object.keys(A.sel.d).length && !Object.keys(A.sel.c).length && students().length) autoMark(); renderGoals(); renderPick(); }
+  if (s === '5') { $('mon').checked = A.mon; $('paper').innerHTML = docHtml(); }
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('steps').onclick = e => { const b = e.target.closest('[data-s]'); if (b) step(b.dataset.s); };
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => step(b.dataset.go));
+function all() { renderS1(); renderPos(); renderGrid(); renderGoals(); renderPick(); renderSaved(); }
+App.onLang.push(all);
+all();
+</script>
+</body>
+</html>

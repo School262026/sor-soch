@@ -235,6 +235,8 @@ const AO_MAX = { 2: 12, 3: 14, 4: 16 };
 const blank = () => ({ id: Date.now(), grade: 5, kind: 'sor', subject: '', cls: '', term: 1, num: 1, unit: '', time: 20, docLang: App.lang, goals: '', crit: '', levels: [true, true, false], tasks: [newTask()], rubric: true, answers: false, fmt: 'school', v2: false, wtitle: '' });
 function newTask() { return { text: '', text2: '', opts: '', opts2: '', crit: 0, lines: 3, answer: '', desc: [{ d: '', p: 1 }] }; }
 let W = App.store.get('mt-gen-cur') || blank();
+// басты беттен «бастауыш» сілтемесімен келсе (?g=2) — аралық бағалауға ауысу
+{ const qg = +new URLSearchParams(location.search).get('g'); if (qg >= 2 && qg <= 4 && !(W.grade >= 2 && W.grade <= 4)) { W = blank(); W.grade = qg; W.kind = 'ao'; W.time = 25; } }
 let saved = App.store.get('mt-gen-saved', []);
 const save = () => App.store.set('mt-gen-cur', W);
 const isPrim = () => W.grade >= 2 && W.grade <= 4;
@@ -452,6 +454,13 @@ $('word').onclick = exportWord;
 // талдау бетіне жұмысты беру: тапсырма балдары мен критерийлері бірге кетеді
 $('toAn').onclick = () => {
   const L = DL[W.docLang] || DL.kk, cr = lines(W.crit);
+  if (W.kind === 'ao') {
+    // бастауыш: аралық бағалаудың жеке талдау беті
+    App.store.set('mt-po-import', { grade: +W.grade, letter: W.cls || '', subject: W.subject, term: W.term, unit: W.unit, docLang: W.docLang, goals: W.goals,
+      tasks: W.tasks.map(tk => ({ g: Math.min(+tk.crit || 0, Math.max(0, lines(W.goals).length - 1)), max: tk.desc.reduce((a, d) => a + (+d.p || 0), 0) })) });
+    location.href = 'aralyq-bagalau-taldauy.html#import';
+    return;
+  }
   App.store.set('mt-an-import', {
     title: L[W.kind + 'S'] + (W.kind !== 'soch' ? ' №' + W.num : '') + ' · ' + W.subject + ' · ' + W.grade + (W.cls || ''),
     kind: W.kind, subject: W.subject, cls: W.grade + (W.cls || ''), term: W.term, unit: W.unit, docLang: W.docLang, goals: W.goals,
