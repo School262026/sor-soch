@@ -112,7 +112,8 @@ const PRESETS = [1, 2, 3, 5, 7, 10, 15, 20, 25, 30, 40, 45];
 $('presets').innerHTML = PRESETS.map(m => '<button class="btn" data-m="' + m + '">' + m + ' <span data-i="min"></span></button>').join('');
 App.apply($('presets'));
 
-let total = App.store.get('mt-timer-total', 300), left = total, running = false, endAt = 0, over = 0, finished = false, raf = 0, lastSec = -1;
+// base — таңдалған уақыт; total — ағымдағы айналым (+1 мин оны ғана ұлғайтады)
+let base = App.store.get('mt-timer-total', 300), total = base, left = total, running = false, endAt = 0, over = 0, finished = false, raf = 0, lastSec = -1;
 const opts = App.store.get('mt-timer-opts', { snd: true, tick: false, countUp: false, lbl: '' });
 ['snd', 'tick', 'countUp'].forEach(k => { $(k).checked = !!opts[k]; $(k).onchange = () => { opts[k] = $(k).checked; App.store.set('mt-timer-opts', opts); }; });
 $('lbl').value = opts.lbl || '';
@@ -161,8 +162,8 @@ function start() {
   App.beep(1, 0.01);
   running = true; endAt = performance.now() + left * 1000; loop();
 }
-function reset() { running = false; finished = false; cancelAnimationFrame(raf); left = total; over = 0; lastSec = -1; draw(); }
-function setTotal(s) { total = Math.max(1, Math.round(s)); App.store.set('mt-timer-total', total); reset(); }
+function reset() { running = false; finished = false; cancelAnimationFrame(raf); total = base; left = total; over = 0; lastSec = -1; draw(); }
+function setTotal(s) { base = Math.max(1, Math.round(s)); App.store.set('mt-timer-total', base); reset(); }
 
 $('start').onclick = start;
 $('reset').onclick = reset;
