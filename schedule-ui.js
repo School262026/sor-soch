@@ -165,6 +165,7 @@
   .ro-bar { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 14px; background: var(--amber-soft); }
   body.readonly .edit-only { display: none !important; }
   dialog { border: 1px solid var(--line); border-radius: 18px; padding: 20px; width: min(640px, calc(100vw - 32px)); background: var(--card); color: var(--text); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog.fallback { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; margin: 0; box-shadow: 0 0 0 100vmax rgba(10,14,22,.45); max-height: 90vh; overflow: auto; }
   dialog::backdrop { background: rgba(10, 14, 22, .45); }
   dialog h3 { margin: 0 0 12px; }
   .erow { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr auto; gap: 6px; margin-bottom: 6px; }

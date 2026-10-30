@@ -162,8 +162,8 @@ $('save').onclick = () => {
   st.hist.push({ d: new Date().toLocaleDateString(), t: st.topic, v: st.votes.slice() }); save(); renderHist();
   $('save').textContent = App.t('saved'); setTimeout(() => $('save').textContent = App.t('saveRes'), 1500);
 };
-$('clr').onclick = () => { if (!confirm(App.t('sure'))) return; st.votes = [0, 0, 0]; st.qs = []; save(); renderAll(); };
-$('histClr').onclick = () => { if (!confirm(App.t('sure'))) return; st.hist = []; save(); renderHist(); };
+$('clr').onclick = () => { const old = JSON.stringify(st); st.votes = [0, 0, 0]; st.qs = []; save(); renderAll(); App.toast(App.t('doneClear'), () => { st = JSON.parse(old); save(); renderAll(); }); };
+$('histClr').onclick = () => { const old = JSON.stringify(st); st.hist = []; save(); renderHist(); App.toast(App.t('doneClear'), () => { st = JSON.parse(old); save(); renderAll(); }); };
 
 function tab(v) {
   document.querySelectorAll('.tabs .btn').forEach(b => b.classList.toggle('on', b.dataset.v === v));

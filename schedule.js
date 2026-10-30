@@ -164,6 +164,9 @@
   }
   function renderAll() { renderHead(); renderQuick(); renderGrid(); renderLists(); fillSettings(); }
 
+  // <dialog> жоқ ескі браузерлер үшін қарапайым терезе
+  function openDlg() { const d = $('dlg'); if (d.showModal) { try { d.showModal(); return; } catch (e) {} } d.setAttribute('open', ''); d.classList.add('fallback'); }
+  function closeDlg() { const d = $('dlg'); if (d.close && !d.classList.contains('fallback')) d.close(); else { d.removeAttribute('open'); d.classList.remove('fallback'); } }
   // ---- ұяшық редакторы
   let edit = null;
   function openCell(si, ci, all) {
@@ -178,7 +181,7 @@
     edit.types = types;
     $('dlgAddBtns').innerHTML = types.map(ty => '<button type="button" class="btn sm" data-add="' + ty.id + '">+ ' + esc(L(ty.name)) + '</button>').join('');
     renderDlg();
-    $('dlg').showModal();
+    openDlg();
   }
   function renderDlg() {
     $('dlgList').innerHTML = edit.list.length ? edit.list.map((e, i) =>
@@ -208,9 +211,9 @@
         if (own.length) D.cells[ck(D.term, edit.s, c)] = JSON.parse(JSON.stringify(own));
         else delete D.cells[ck(D.term, edit.s, c)];
       });
-      save(); $('dlg').close(); renderGrid(); renderLists();
+      save(); closeDlg(); renderGrid(); renderLists();
     };
-    $('dlgCancel').onclick = () => $('dlg').close();
+    $('dlgCancel').onclick = closeDlg;
     $('dlgAll').onchange = () => { $('dlgAllAll').disabled = !$('dlgAll').checked; };
   }
 
@@ -234,10 +237,10 @@
       const g = prompt(t('genPrompt'), '5'); if (!g) return;
       const letters = (App.lang === 'ru' ? 'АБВГДЕЖЗ' : App.lang === 'en' ? 'ABCDEFGH' : 'АӘБВГДЕЖ').split('');
       const n = Math.min(8, Math.max(1, +prompt(t('genCount'), '4') || 4));
-      D.classes = [...new Set(D.classes.concat(g.split(/[ ,]+/).filter(Boolean).flatMap(gr => letters.slice(0, n).map(l => gr + l))))];
+      D.classes = [...new Set(D.classes.concat(g.split(/[ ,]+/).filter(Boolean).reduce((acc, gr) => acc.concat(letters.slice(0, n).map(l => gr + l)), [])))];
       save(); renderAll();
     };
-    $('resetAll').onclick = () => { if (confirm(t('sureReset'))) { D = blank(); save(); renderAll(); } };
+    $('resetAll').onclick = () => { const old = JSON.stringify(D); D = blank(); save(); renderAll(); App.toast(t('doneClear'), () => { D = JSON.parse(old); save(); renderAll(); }); };
   }
 
   // ---- экспорт / импорт / бөлісу
@@ -294,7 +297,7 @@
       e.target.value = '';
     };
     $('keep').onclick = () => {
-      if (App.store.get(KEY) && !confirm(t('sureReplace'))) return;
+      if (App.store.get(KEY)) App.store.set(KEY + '-backup', App.store.get(KEY));
       readonly = false; App.store.set(KEY, D); location.hash = ''; location.reload();
     };
   }
@@ -320,12 +323,13 @@
     if (readonly) { document.querySelector('[data-v="cls"]').click(); }
     renderAll();
   }
-  window.addEventListener('DOMContentLoaded', () => {
+  function init() {
     $('terms').innerHTML = TERMS.map(n => '<button class="btn" data-t="' + n + '">' + n + ' <span data-i="termWord"></span></button>').join('');
     App.apply($('terms'));
     bindViews(); bindDlg(); bindSettings(); bindIO(); bindQuick();
     App.onLang.push(renderAll);
     window.addEventListener('hashchange', () => location.reload());
     start();
-  });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

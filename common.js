@@ -19,6 +19,12 @@
 
   const COMMON = {
     home: { kk: 'Мұғалім құралдары', ru: 'Инструменты учителя', en: 'Teacher Tools' },
+    undo: { kk: '↶ Болдырмау', ru: '↶ Отменить', en: '↶ Undo' },
+    doneNew: { kk: 'Жаңа бет ашылды.', ru: 'Открыт новый лист.', en: 'New sheet opened.' },
+    doneSample: { kk: 'Үлгі жүктелді.', ru: 'Образец загружен.', en: 'Sample loaded.' },
+    doneDel: { kk: 'Өшірілді.', ru: 'Удалено.', en: 'Deleted.' },
+    doneClear: { kk: 'Тазаланды.', ru: 'Очищено.', en: 'Cleared.' },
+    doneAuto: { kk: 'Мәтін автоматты жазылды.', ru: 'Текст написан автоматически.', en: 'Text written automatically.' },
     homePrim: { kk: 'Бастауыш сынып мұғаліміне', ru: 'Учителю начальных классов', en: 'Primary teacher' },
     footer: {
       kk: 'Тегін. Тіркелусіз. Деректер тек сіздің құрылғыңызда сақталады.',
@@ -103,6 +109,26 @@
       } catch (e) {}
     },
     fanfare() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => App.beep(f, 0.35, 'triangle'), i * 180)); },
+    // растау терезесінің орнына: әрекет бірден орындалады, «Болдырмау» батырмасы 7 секунд тұрады
+    toast(msg, undoFn) {
+      let el = document.getElementById('mt-toast');
+      if (!el) {
+        el = document.createElement('div'); el.id = 'mt-toast';
+        el.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;background:#1c2434;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;gap:12px;align-items:center;font-weight:700;max-width:calc(100vw - 32px)';
+        document.body.append(el);
+      }
+      el.innerHTML = '<span></span>';
+      el.firstChild.textContent = msg;
+      if (undoFn) {
+        const b = document.createElement('button');
+        b.textContent = App.t('undo');
+        b.style.cssText = 'border:0;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;background:#ffd43b;color:#1c2434';
+        b.onclick = () => { el.style.display = 'none'; undoFn(); };
+        el.append(b);
+      }
+      el.style.display = 'flex';
+      clearTimeout(App._toastT); App._toastT = setTimeout(() => { el.style.display = 'none'; }, 7000);
+    },
     fullscreen(el) {
       el = el || document.documentElement;
       if (document.fullscreenElement) document.exitFullscreen();

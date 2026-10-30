@@ -440,8 +440,9 @@ $('tasks').onclick = e => {
   else return;
   save(); renderTasks(); draw();
 };
-$('newDoc').onclick = () => { if (!confirm(t('sureNew'))) return; W = blank(); changed(true); };
-$('sample').onclick = () => { if (!confirm(t('sureNew'))) return; W = sample(); changed(true); };
+function replaceW(next, msg) { const old = JSON.stringify(W); W = next; changed(true); App.toast(msg, () => { W = JSON.parse(old); changed(true); }); }
+$('newDoc').onclick = () => replaceW(blank(), t('doneNew'));
+$('sample').onclick = () => replaceW(sample(), t('doneSample'));
 $('saveDoc').onclick = () => {
   const i = saved.findIndex(s => s.id === W.id);
   const copy = JSON.parse(JSON.stringify(W)); copy.when = new Date().toLocaleDateString();
@@ -479,7 +480,7 @@ function renderSaved() {
 $('savedList').onclick = e => {
   const o = e.target.closest('[data-op]'), r = e.target.closest('[data-rm]');
   if (o) { W = JSON.parse(JSON.stringify(saved[+o.dataset.op])); changed(true); step('make'); }
-  else if (r && confirm(t('sure'))) { saved.splice(+r.dataset.rm, 1); App.store.set('mt-gen-saved', saved); renderSaved(); }
+  else if (r) { const i = +r.dataset.rm, x = saved.splice(i, 1)[0]; App.store.set('mt-gen-saved', saved); renderSaved(); App.toast(t('doneDel'), () => { saved.splice(i, 0, x); App.store.set('mt-gen-saved', saved); renderSaved(); }); }
 };
 
 // ---- талдау
@@ -521,7 +522,7 @@ function step(s) {
   if (s === 'an') { if (!$('anMax').value) $('anMax').placeholder = totalPts(); analyse(); }
 }
 $('steps').onclick = e => { const b = e.target.closest('[data-s]'); if (b) step(b.dataset.s); };
-App.onLang.push(() => { renderForm(); renderSaved(); analyse(); });
+App.onLang.push(l => { W.docLang = l; save(); renderForm(); renderSaved(); analyse(); draw(); });
 renderForm(); renderSaved(); draw();
 </script>
 </body>
