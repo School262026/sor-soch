@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>КТП күндерінің генераторы</title>
+<meta name="description" content="КТП-ға арналған сабақ күндерінің онлайн генераторы: Қазақстанның 2026–2027 оқу жылы, каникулдар мен мерекелер ескеріледі. Генератор дат для КТП и поурочного планирования. Тегін.">
+<meta property="og:title" content="Генератор дат для КТП / КТП күндерінің генераторы">
+<meta property="og:description" content="Сабақ күндері каникул мен мерекелерді ескеріп өзі қойылады. Excel, Word. Тегін.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🗓️%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css?v=20261031">
+<style>
+  .lay { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+  @media (max-width: 920px) { .lay { grid-template-columns: 1fr; } }
+  h2 { margin: 0 0 10px; font-size: 19px; }
+  .card + .card { margin-top: 14px; }
+  .per { display: grid; grid-template-columns: 34px 1fr 1fr auto; gap: 6px; align-items: center; margin: 5px 0; }
+  .per input { width: 100%; }
+  .days { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .day { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 6px 8px; }
+  .day b { font-size: 15px; }
+  .step { display: flex; align-items: center; gap: 4px; }
+  .step button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); font-size: 18px; font-weight: 800; cursor: pointer; }
+  .step span { min-width: 22px; text-align: center; font-weight: 900; font-size: 18px; }
+  .day.off { opacity: .45; }
+  .hol { display: grid; grid-template-columns: auto 104px 1fr auto; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .hol .muted { font-size: 12px; }
+  .addh { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .addh input[type=text] { grid-column: 1 / -1; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { flex: 1; border: 0; background: var(--card); padding: 8px 6px; font-weight: 800; cursor: pointer; }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .opts { display: grid; gap: 6px; margin-top: 10px; }
+  .sum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .sum .kpi { background: var(--bg); border-radius: 12px; padding: 8px 12px; font-size: 14px; } .sum .kpi b { display: block; font-size: 20px; }
+  .warn { background: var(--amber-soft); border-radius: 12px; padding: 8px 12px; font-size: 14px; margin-bottom: 10px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .scroll { overflow-x: auto; max-height: 70vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table.out { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.out th, table.out td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+  table.out th { position: sticky; top: 0; background: var(--bg); z-index: 1; }
+  table.out tr.ph td { background: var(--primary-soft); font-weight: 900; }
+  table.out td.n { color: var(--muted); width: 48px; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+    .scroll { max-height: none; border: 0; overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="lay">
+    <div>
+      <section class="card">
+        <h2 data-i="hPer"></h2>
+        <div class="row" style="margin-bottom:8px">
+          <button class="btn sm primary" id="preset" data-i="preset"></button>
+          <label class="row"><input type="checkbox" id="first"><span data-i="first"></span></label>
+        </div>
+        <div id="pers"></div>
+        <button class="btn sm" id="addPer" data-i="addPer"></button>
+        <p class="note" data-ih="perNote"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i="hHours"></h2>
+        <div class="seg" id="week" style="margin-bottom:10px"><button data-w="5" data-i="w5"></button><button data-w="6" data-i="w6"></button></div>
+        <div class="days" id="days"></div>
+        <p class="note" data-i="hoursNote"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i="hHol"></h2>
+        <div id="hols"></div>
+        <div class="addh">
+          <input type="date" id="hFrom"><input type="date" id="hTo">
+          <input type="text" id="hName" data-ip="hNamePh">
+        </div>
+        <button class="btn sm" id="addHol" style="margin-top:6px" data-i="addHol"></button>
+        <p class="note" data-i="holNote"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i="hTopics"></h2>
+        <textarea id="topics" rows="6" data-ip="topicsPh"></textarea>
+        <div class="opts">
+          <label class="row"><span data-i="plan"></span><input type="number" id="plan" min="0" style="width:90px"></label>
+          <label class="row"><span data-i="fmt"></span><select id="fmt"><option value="full">01.09.2026</option><option value="short">01.09</option></select></label>
+          <label class="row"><input type="checkbox" id="restart"><span data-i="restart"></span></label>
+          <label class="row"><input type="checkbox" id="showWd"><span data-i="showWd"></span></label>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="card">
+        <h2 data-i="hOut"></h2>
+        <div class="sum" id="sum"></div>
+        <div id="warns"></div>
+        <div class="actions">
+          <button class="btn primary" id="copyDates" data-i="copyDates"></button>
+          <button class="btn" id="copyTable" data-i="copyTable"></button>
+          <button class="btn" id="csv" data-i="csv"></button>
+          <button class="btn" id="word" data-i="word"></button>
+          <button class="btn" id="print" data-i="print"></button>
+        </div>
+        <div id="printArea"><div class="scroll" id="out"></div></div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="common.js?v=20261031"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'КТП күндерінің генераторы', ru: 'Генератор дат для КТП' },
+  hPer: { kk: '① Оқу кезеңдері (тоқсандар)', ru: '① Учебные периоды (четверти)' },
+  preset: { kk: '2026–2027 оқу жылы (ҚР бұйрығы)', ru: '2026–2027 учебный год (приказ РК)' },
+  first: { kk: '1-сынып (ақпандағы қосымша каникул)', ru: '1 класс (доп. каникулы в феврале)' },
+  addPer: { kk: '＋ Кезең қосу', ru: '＋ Добавить период' },
+  perNote: { kk: 'ҚР Оқу-ағарту министрлігінің бұйрығы бойынша: күзгі каникул 26.10–01.11, қысқы 28.12–10.01, көктемгі 22.03–28.03, 1-сыныпқа қосымша 08.02–14.02. Оқу жылы 25 мамырда аяқталады. Жарты жылдық пәндер үшін кезеңдерді өзгертіңіз.', ru: 'По приказу Минпросвещения РК: осенние каникулы 26.10–01.11, зимние 28.12–10.01, весенние 22.03–28.03, доп. для 1 класса 08.02–14.02. Учебный год заканчивается 25 мая. Для полугодий измените периоды.' },
+  hHours: { kk: '② Апталық сабақ кестесі', ru: '② Уроки по дням недели' },
+  w5: { kk: '5 күндік апта', ru: '5-дневная неделя' }, w6: { kk: '6 күндік апта', ru: '6-дневная неделя' },
+  hoursNote: { kk: 'Сол пәннен күніне неше сабақ бар екенін белгілеңіз (кесте бойынша).', ru: 'Укажите, сколько уроков по предмету в каждый день (по расписанию).' },
+  hHol: { kk: '③ Мерекелер мен демалыс күндері', ru: '③ Праздники и выходные' },
+  hNamePh: { kk: 'Атауы (мыс.: карантин, ауыстырылған демалыс)', ru: 'Название (напр.: карантин, перенос выходного)' },
+  addHol: { kk: '＋ Демалыс күнін қосу', ru: '＋ Добавить выходной' },
+  holNote: { kk: 'Мерекелер ҚР «Мерекелер туралы» заңы бойынша, демалысқа сәйкес келсе — келесі жұмыс күніне ауыстырылған. Үкімет қаулысымен ауыстырулар болса, осында қосыңыз. Белгіні алсаңыз — сол күні сабақ болады.', ru: 'Праздники по закону РК «О праздниках», выпавшие на выходной — перенесены на следующий рабочий день. Если правительство переносит дни — добавьте здесь. Снимите галочку — в этот день урок будет.' },
+  hTopics: { kk: '④ Тақырыптар (міндетті емес)', ru: '④ Темы (необязательно)' },
+  topicsPh: { kk: 'КТП-дағы тақырыптарды көшіріп қойыңыз — әр жолға біреу. Күндер тақырыптарға өзі сәйкестенеді.', ru: 'Вставьте темы из КТП — по одной в строке. Даты сопоставятся с темами.' },
+  plan: { kk: 'Жоспар бойынша сағат саны:', ru: 'Часов по плану:' },
+  fmt: { kk: 'Күн форматы:', ru: 'Формат даты:' },
+  restart: { kk: 'Әр тоқсанда нөмірді 1-ден бастау', ru: 'Нумерация с 1 в каждой четверти' },
+  showWd: { kk: 'Апта күнін көрсету', ru: 'Показывать день недели' },
+  hOut: { kk: 'Сабақ күндері', ru: 'Даты уроков' },
+  copyDates: { kk: '📋 Күндерді көшіру', ru: '📋 Копировать даты' },
+  copyTable: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
+  csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
+  copied: { kk: 'Көшірілді — КТП-ның «Күні» бағанына қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в столбец «Дата» КТП (Ctrl+V).' },
+  copiedT: { kk: 'Кесте көшірілді — Word не Excel-ге қойыңыз (Ctrl+V).', ru: 'Таблица скопирована — вставьте в Word или Excel (Ctrl+V).' },
+  total: { kk: 'Барлығы', ru: 'Всего' }, lessons: { kk: 'сабақ', ru: 'уроков' },
+  num: { kk: '№', ru: '№' }, date: { kk: 'Күні', ru: 'Дата' }, wd: { kk: 'Апта күні', ru: 'День' }, topic: { kk: 'Тақырып', ru: 'Тема' }, period: { kk: 'Кезең', ru: 'Период' },
+  noHours: { kk: 'Апта күндеріне сабақ санын қойыңыз (②).', ru: 'Укажите количество уроков по дням недели (②).' },
+  less: { kk: 'Сабақ күндері жоспардан аз: ', ru: 'Уроков меньше, чем по плану: ' },
+  more: { kk: 'Сабақ күндері жоспардан көп: ', ru: 'Уроков больше, чем по плану: ' },
+  lessHint: { kk: ' — тақырыптарды біріктіру (интеграциялау) қажет.', ru: ' — нужно объединить (интегрировать) темы.' },
+  moreHint: { kk: ' — қайталау, бекіту сабақтарын қосуға болады.', ru: ' — можно добавить уроки повторения и закрепления.' },
+  topicsLess: { kk: 'Тақырып саны сабақ күндерінен көп: ', ru: 'Тем больше, чем дат уроков: ' },
+  qWord: { kk: 'тоқсан', ru: 'четверть' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t, esc = App.esc;
+const WD = { kk: ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'], ru: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'] };
+const WDs = { kk: ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'], ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] };
+
+// ҚР ОАМ бұйрығы бойынша 2026–2027 оқу жылы
+const PRESET = [['2026-09-01', '2026-10-25'], ['2026-11-02', '2026-12-27'], ['2027-01-11', '2027-03-21'], ['2027-03-29', '2027-05-25']];
+const FIRST_BREAK = { from: '2027-02-08', to: '2027-02-14', kk: '1-сынып оқушыларына қосымша каникул', ru: 'Доп. каникулы для 1 класса', first: true };
+// ҚР мерекелері (демалысқа түссе — келесі жұмыс күніне ауыстырылған)
+const HOLIDAYS = [
+  { from: '2026-10-26', kk: 'Республика күні (25.10 → ауыстырылған)', ru: 'День Республики (перенос с 25.10)' },
+  { from: '2026-12-16', kk: 'Тәуелсіздік күні', ru: 'День Независимости' },
+  { from: '2027-01-01', to: '2027-01-02', kk: 'Жаңа жыл', ru: 'Новый год' },
+  { from: '2027-01-07', kk: 'Православиелік Рождество', ru: 'Православное Рождество' },
+  { from: '2027-03-08', kk: 'Халықаралық әйелдер күні', ru: 'Международный женский день' },
+  { from: '2027-03-21', to: '2027-03-24', kk: 'Наурыз мейрамы (21.03 → 24.03 ауыстырылған)', ru: 'Наурыз мейрамы (перенос с 21.03 на 24.03)' },
+  { from: '2027-05-03', kk: 'Қазақстан халқының бірлігі мерекесі (01.05 → ауыстырылған)', ru: 'Праздник единства народа Казахстана (перенос с 01.05)' },
+  { from: '2027-05-07', kk: 'Отан қорғаушы күні', ru: 'День защитника Отечества' },
+  { from: '2027-05-10', kk: 'Жеңіс күні (09.05 → ауыстырылған)', ru: 'День Победы (перенос с 09.05)' },
+  { from: '2027-05-16', kk: 'Құрбан айт (күнін тексеріңіз)', ru: 'Курбан айт (уточните дату)', off: true }
+];
+
+const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); };
+const fmtD = (s, f) => s.slice(8, 10) + '.' + s.slice(5, 7) + (f === 'short' ? '' : '.' + s.slice(0, 4));
+const defHol = () => HOLIDAYS.map(h => ({ from: h.from, to: h.to || '', kk: h.kk, ru: h.ru, on: !h.off })).concat([Object.assign({}, FIRST_BREAK, { on: false })]);
+const blank = () => ({ pers: PRESET.map(p => p.slice()), week: 5, hours: [0, 1, 0, 0, 0, 0, 0], hols: defHol(), topics: '', plan: '', fmt: 'full', restart: false, showWd: true, first: false });
+let S = App.store.get('mt-ktp') || blank();
+const save = () => App.store.set('mt-ktp', S);
+
+function holName(h) { return h[App.lang] || h.kk || h.ru || ''; }
+function offSet() {
+  const set = {};
+  S.hols.forEach(h => {
+    if (!h.on || !h.from) return;
+    const a = parse(h.from), b = parse(h.to || h.from);
+    for (let d = new Date(a); d <= b; d.setDate(d.getDate() + 1)) set[iso(d)] = holName(h);
+  });
+  return set;
+}
+// сабақ күндерін есептеу
+function compute() {
+  const off = offSet(), out = [];
+  S.pers.forEach((p, pi) => {
+    if (!p[0] || !p[1]) return;
+    for (let d = parse(p[0]); d <= parse(p[1]); d.setDate(d.getDate() + 1)) {
+      const wd = d.getDay();
+      if (wd === 0 || (wd === 6 && S.week !== 6)) continue;
+      const n = +S.hours[wd] || 0; if (!n) continue;
+      const k = iso(d); if (off[k]) continue;
+      for (let i = 0; i < n; i++) out.push({ p: pi, d: k, wd, i });
+    }
+  });
+  return out;
+}
+
+// ---- сол жақ: енгізу
+function renderPers() {
+  $('pers').innerHTML = S.pers.map((p, i) => '<div class="per"><b>' + (i + 1) + '</b><input type="date" data-pe="' + i + ':0" value="' + (p[0] || '') + '"><input type="date" data-pe="' + i + ':1" value="' + (p[1] || '') + '"><button class="btn sm" data-rmpe="' + i + '">✕</button></div>').join('');
+  $('first').checked = !!S.first;
+}
+$('pers').onchange = e => { const k = e.target.dataset.pe; if (!k) return; const [i, j] = k.split(':'); S.pers[i][j] = e.target.value; save(); calc(); };
+$('pers').onclick = e => { const b = e.target.closest('[data-rmpe]'); if (!b) return; S.pers.splice(+b.dataset.rmpe, 1); save(); renderPers(); calc(); };
+$('addPer').onclick = () => { if (S.pers.length < 6) S.pers.push(['', '']); save(); renderPers(); };
+$('preset').onclick = () => {
+  const old = JSON.stringify(S);
+  S.pers = PRESET.map(p => p.slice()); const keep = S.hols.filter(h => h.custom); S.hols = defHol().concat(keep); applyFirst();
+  save(); all(); App.toast(t('preset') + ' ✓', () => { S = JSON.parse(old); save(); all(); });
+};
+function applyFirst() { S.hols.forEach(h => { if (h.first) h.on = !!S.first; }); }
+$('first').onchange = () => { S.first = $('first').checked; applyFirst(); save(); renderHols(); calc(); };
+
+function renderDays() {
+  document.querySelectorAll('#week button').forEach(b => b.classList.toggle('on', +b.dataset.w === S.week));
+  const L = WD[App.lang] || WD.kk;
+  $('days').innerHTML = [1, 2, 3, 4, 5, 6].map(d => '<div class="day' + (d === 6 && S.week !== 6 ? ' off' : '') + '"><b>' + L[d] + '</b><span class="step"><button data-dm="' + d + '">−</button><span>' + (+S.hours[d] || 0) + '</span><button data-dp="' + d + '">+</button></span></div>').join('');
+}
+$('week').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; S.week = +b.dataset.w; save(); renderDays(); calc(); };
+$('days').onclick = e => {
+  const m = e.target.closest('[data-dm]'), p = e.target.closest('[data-dp]'); if (!m && !p) return;
+  const d = +(m || p).dataset[m ? 'dm' : 'dp']; if (d === 6 && S.week !== 6) return;
+  S.hours[d] = Math.max(0, Math.min(6, (+S.hours[d] || 0) + (m ? -1 : 1))); save(); renderDays(); calc();
+};
+
+function renderHols() {
+  const sorted = S.hols.map((h, i) => ({ h, i })).sort((a, b) => a.h.from.localeCompare(b.h.from));
+  $('hols').innerHTML = sorted.map(({ h, i }) => '<label class="hol"><input type="checkbox" data-ho="' + i + '"' + (h.on ? ' checked' : '') + '><span>' + fmtD(h.from, 'full') + (h.to && h.to !== h.from ? '<br><span class="muted">– ' + fmtD(h.to, 'full') + '</span>' : '') + '</span><span>' + esc(holName(h)) + '</span>' +
+    (h.custom ? '<button class="btn sm" data-rmho="' + i + '">✕</button>' : '<span></span>') + '</label>').join('');
+}
+$('hols').onchange = e => { const i = e.target.dataset.ho; if (i == null) return; S.hols[i].on = e.target.checked; save(); calc(); };
+$('hols').onclick = e => { const b = e.target.closest('[data-rmho]'); if (!b) return; e.preventDefault(); S.hols.splice(+b.dataset.rmho, 1); save(); renderHols(); calc(); };
+$('addHol').onclick = () => {
+  const f = $('hFrom').value; if (!f) { $('hFrom').focus(); return; }
+  const to = $('hTo').value && $('hTo').value >= f ? $('hTo').value : '';
+  const nm = $('hName').value.trim() || (App.lang === 'ru' ? 'Выходной' : 'Демалыс');
+  S.hols.push({ from: f, to, kk: nm, ru: nm, on: true, custom: true });
+  $('hFrom').value = ''; $('hTo').value = ''; $('hName').value = '';
+  save(); renderHols(); calc();
+};
+
+['topics', 'plan'].forEach(k => $(k).oninput = () => { S[k] = $(k).value; save(); calc(); });
+$('fmt').onchange = () => { S.fmt = $('fmt').value; save(); calc(); };
+$('restart').onchange = () => { S.restart = $('restart').checked; save(); calc(); };
+$('showWd').onchange = () => { S.showWd = $('showWd').checked; save(); calc(); };
+
+// ---- оң жақ: нәтиже
+let rows = [];
+function calc() {
+  rows = compute();
+  const topics = S.topics.split('\n').map(s => s.trim()).filter(Boolean);
+  const per = S.pers.map((_, i) => rows.filter(r => r.p === i).length);
+  $('sum').innerHTML = per.map((n, i) => '<div class="kpi">' + (i + 1) + ' ' + t('qWord') + '<b>' + n + '</b></div>').join('') + '<div class="kpi">' + t('total') + '<b>' + rows.length + '</b></div>';
+  const w = [];
+  if (!S.hours.some((h, d) => h > 0 && (d !== 6 || S.week === 6))) w.push(t('noHours'));
+  const plan = +S.plan;
+  if (plan && rows.length < plan) w.push(t('less') + (plan - rows.length) + t('lessHint'));
+  if (plan && rows.length > plan) w.push(t('more') + (rows.length - plan) + t('moreHint'));
+  if (topics.length > rows.length) w.push(t('topicsLess') + (topics.length - rows.length));
+  $('warns').innerHTML = w.map(x => '<div class="warn">⚠️ ' + esc(x) + '</div>').join('');
+  const L = WDs[App.lang] || WDs.kk;
+  let h = '<table class="out"><thead><tr><th>' + t('num') + '</th><th>' + t('date') + '</th>' + (S.showWd ? '<th>' + t('wd') + '</th>' : '') + (topics.length ? '<th>' + t('topic') + '</th>' : '') + '</tr></thead><tbody>';
+  let cur = -1, n = 0;
+  rows.forEach((r, k) => {
+    if (r.p !== cur) { cur = r.p; if (S.restart) n = 0; h += '<tr class="ph"><td colspan="4">' + (r.p + 1) + ' ' + t('qWord') + ' · ' + per[r.p] + ' ' + t('lessons') + '</td></tr>'; }
+    n++; r.n = n; r.topic = topics[k] || '';
+    h += '<tr><td class="n">' + n + '</td><td>' + fmtD(r.d, S.fmt) + (r.i ? ' <span class="muted">(' + (r.i + 1) + ')</span>' : '') + '</td>' + (S.showWd ? '<td>' + L[r.wd] + '</td>' : '') + (topics.length ? '<td>' + esc(r.topic) + '</td>' : '') + '</tr>';
+  });
+  $('out').innerHTML = h + '</tbody></table>';
+}
+
+// ---- көшіру, жүктеу
+function copyText(txt, msg) {
+  const done = () => App.toast(msg);
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+  function fallback() { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
+}
+const tableRows = () => rows.map(r => [r.n, fmtD(r.d, S.fmt)].concat(S.showWd ? [(WD[App.lang] || WD.kk)[r.wd]] : []).concat(r.topic ? [r.topic] : []));
+$('copyDates').onclick = () => copyText(rows.map(r => fmtD(r.d, S.fmt)).join('\n'), t('copied'));
+$('copyTable').onclick = () => copyText(tableRows().map(r => r.join('\t')).join('\n'), t('copiedT'));
+function download(name, data, mime) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: mime })); a.download = name;
+  document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const head = () => [t('num'), t('date')].concat(S.showWd ? [t('wd')] : []).concat(rows.some(r => r.topic) ? [t('topic')] : []);
+$('csv').onclick = () => {
+  const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТП_күндері') + '.csv', '﻿' + [head()].concat(tableRows()).map(r => r.map(q).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
+};
+$('word').onclick = () => {
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:"Times New Roman";font-size:12pt} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:2pt 5pt;text-align:left} th{background:#eee} tr.ph td{background:#e7ecff;font-weight:bold}</style></head><body>' +
+    '<h3 style="text-align:center">' + esc(t('pageTitle')) + '</h3><table><tr>' + head().map(x => '<th>' + esc(x) + '</th>').join('') + '</tr>' +
+    rows.map((r, k) => (k === 0 || rows[k - 1].p !== r.p ? '<tr class="ph"><td colspan="' + head().length + '">' + (r.p + 1) + ' ' + t('qWord') + '</td></tr>' : '') + '<tr>' + tableRows()[k].map(x => '<td>' + esc(x) + '</td>').join('') + '</tr>').join('') + '</table></body></html>';
+  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТП_күндері') + '.doc', '﻿' + html, 'application/msword');
+};
+$('print').onclick = () => print();
+
+function all() {
+  renderPers(); renderDays(); renderHols();
+  $('topics').value = S.topics; $('plan').value = S.plan; $('fmt').value = S.fmt; $('restart').checked = S.restart; $('showWd').checked = S.showWd;
+  calc();
+}
+App.onLang.push(all);
+all();
+</script>
+</body>
+</html>
