@@ -49,6 +49,20 @@
   .t-soch { background: var(--violet-soft); color: var(--violet); }
   .t-ao { background: var(--green-soft); color: var(--green); }
   .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .quick { border: 2px dashed var(--line); border-radius: 16px; padding: 12px; margin-bottom: 14px; }
+  .quick h3 { margin: 0 0 4px; font-size: 16px; }
+  .quick .qh { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .quick .qq { font-size: 13px; font-weight: 800; color: var(--muted); margin: 10px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+  .chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .chip { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; border: 1px solid var(--line); border-left-width: 5px; border-radius: 12px; padding: 8px 10px; background: var(--card); cursor: pointer; text-align: left; position: relative; transition: transform .1s; }
+  .chip:hover { transform: translateY(-1px); }
+  .chip small { font-size: 12px; font-weight: 800; }
+  .chip b { font-size: 17px; font-variant-numeric: tabular-nums; }
+  .chip .ic { position: absolute; right: 8px; top: 8px; opacity: .45; font-size: 14px; }
+  .chip.c-sor { border-left-color: var(--primary); } .chip.c-sor small { color: var(--primary); }
+  .chip.c-soch { border-left-color: var(--violet); } .chip.c-soch small { color: var(--violet); }
+  .chip.c-ao { border-left-color: var(--green); } .chip.c-ao small { color: var(--green); }
+  .chip.ok { background: var(--green-soft); } .chip.ok .ic { opacity: 1; }
   details summary { cursor: pointer; font-weight: 800; }
   @media print {
     body * { visibility: hidden; }
@@ -115,6 +129,11 @@
           <button class="btn" id="word" data-i="word"></button>
           <button class="btn" id="print" data-i="print"></button>
         </div>
+        <div class="quick no-print">
+          <div class="qh"><div><h3 data-i="qTitle"></h3><span class="note" data-i="qHint"></span></div>
+            <div class="row"><button class="btn sm primary" id="cpDates" data-i="cpDates"></button><button class="btn sm" id="cpTyped" data-i="cpTyped"></button></div></div>
+          <div id="chips"></div>
+        </div>
         <div id="printArea"><div id="out" style="overflow-x:auto"></div></div>
         <p class="note" data-i="outNote"></p>
       </section>
@@ -151,6 +170,12 @@ App.init({
   copyT: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
   csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
   outNote: { kk: 'Күндер тоқсан ішіне біркелкі бөлінеді. Күнді тізімнен ауыстыра аласыз: бос емес күндер мен ТЖБ-дан кейінгі күндер сұр болып, таңдалмайды. Жұмыстар күн ретімен өзі нөмірленеді.', ru: 'Даты распределяются равномерно по четверти. Дату можно сменить из списка: занятые дни и дни после СОЧ недоступны. Работы нумеруются по порядку дат.' },
+  qTitle: { kk: '⚡ Күндерді бірден алу', ru: '⚡ Быстро забрать даты' },
+  qHint: { kk: 'Карточканы бассаңыз — сол күн көшіріледі.', ru: 'Нажмите на карточку — дата скопируется.' },
+  cpDates: { kk: '📋 Тек күндерін көшіру', ru: '📋 Копировать только даты' },
+  cpTyped: { kk: '📋 Түрімен бірге көшіру', ru: '📋 Копировать с видом работы' },
+  cpOne: { kk: 'Көшірілді: ', ru: 'Скопировано: ' },
+  cpAll: { kk: 'Барлық күн көшірілді — КТП не журналға қойыңыз (Ctrl+V).', ru: 'Все даты скопированы — вставьте в КТП или журнал (Ctrl+V).' },
   copied: { kk: 'Көшірілді — Word не Excel-ге қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в Word или Excel (Ctrl+V).' },
   num: { kk: '№', ru: '№' }, type: { kk: 'Түрі', ru: 'Вид' }, unit: { kk: 'Бөлім / тақырып', ru: 'Раздел / тема' }, date: { kk: 'Күні', ru: 'Дата' }, wd: { kk: 'Апта күні', ru: 'День' },
   qWord: { kk: 'тоқсан', ru: 'четверть' }, lessons: { kk: 'сабақ', ru: 'уроков' }, total: { kk: 'Барлығы', ru: 'Всего' },
@@ -335,6 +360,7 @@ function renderOut() {
   $('sum').innerHTML = (S.level === 'prim' ? '<div class="kpi">' + SHORT.ao[App.lang] + '<b>' + counts.ao + '</b></div>' : '<div class="kpi">' + SHORT.sor[App.lang] + '<b>' + counts.sor + '</b></div><div class="kpi">' + SHORT.soch[App.lang] + '<b>' + counts.soch + '</b></div>') +
     '<div class="kpi">' + t('total') + '<b>' + n + '</b></div>';
   $('warns').innerHTML = [...new Set(warns)].map(x => '<div class="warn">⚠️ ' + esc(x) + '</div>').join('');
+  renderChips();
 }
 // күн бос емес пе, ретке сай ма: БЖБ/АБ — ТЖБ-дан бұрын, ТЖБ — соңғы БЖБ-дан кейін
 function blocked(list, w, d) {
@@ -361,13 +387,27 @@ function rowsData() {
   (S.works || []).forEach((list, qi) => list.forEach(w => { n++; out.push([n, qi + 1, wName(w), w.unit || '', fmtD(w.d), w.d ? WD[App.lang][parse(w.d).getDay()] : '']); }));
   return out;
 }
-function copyText(txt) {
-  const done = () => App.toast(t('copied'));
+function copyText(txt, msg) {
+  const done = () => App.toast(msg || t('copied'));
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, fb); else fb();
   function fb() { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
 }
 function download(name, data, mime) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: mime })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
 const fileBase = () => ((App.lang === 'ru' ? 'График_СОР_СОЧ' : 'БЖБ_ТЖБ_графигі') + (S.subject ? '_' + S.subject : '') + (S.cls ? '_' + S.cls : '')).replace(/[\\/:*?"<>|\s]+/g, '_');
+function renderChips() {
+  const L = WDs[App.lang];
+  $('chips').innerHTML = (S.works || []).map((list, qi) => !list.length ? '' : '<div class="qq">' + (qi + 1) + ' ' + t('qWord') + '</div><div class="chips">' +
+    list.filter(w => w.d).map(w => '<button class="chip c-' + w.type + '" data-cd="' + fmtD(w.d) + '" data-cn="' + esc(wName(w)) + '"><small>' + esc(wName(w)) + (w.unit ? ' · ' + esc(w.unit.slice(0, 18)) : '') + '</small><b>' + fmtD(w.d) + '</b><span class="muted" style="font-size:12px">' + (WD[App.lang][parse(w.d).getDay()]) + '</span><span class="ic">⧉</span></button>').join('') + '</div>').join('');
+}
+$('chips').onclick = e => {
+  const c = e.target.closest('[data-cd]'); if (!c) return;
+  copyText(c.dataset.cd, t('cpOne') + c.dataset.cn + ' — ' + c.dataset.cd);
+  c.classList.add('ok'); c.querySelector('.ic').textContent = '✓';
+  setTimeout(() => { c.classList.remove('ok'); c.querySelector('.ic').textContent = '⧉'; }, 1500);
+};
+const allWorks = () => [].concat.apply([], (S.works || []).map(l => l.filter(w => w.d)));
+$('cpDates').onclick = () => copyText(allWorks().map(w => fmtD(w.d)).join(String.fromCharCode(10)), t('cpAll'));
+$('cpTyped').onclick = () => copyText(allWorks().map(w => wName(w) + (w.unit ? ' (' + w.unit + ')' : '') + ' — ' + fmtD(w.d)).join(String.fromCharCode(10)), t('cpAll'));
 $('copyT').onclick = () => copyText([head()].concat(rowsData()).map(r => r.join('\t')).join('\n'));
 $('csv').onclick = () => { const q = v => '"' + String(v).replace(/"/g, '""') + '"'; download(fileBase() + '.csv', '﻿' + [[title()], []].concat([head()], rowsData()).map(r => r.map(q).join(';')).join('\r\n'), 'text/csv;charset=utf-8'); };
 $('word').onclick = () => {
