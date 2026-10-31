@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>БЖБ мен ТЖБ (АБ) графигі</title>
+<meta name="description" content="БЖБ, ТЖБ және аралық бағалау (АБ) күндерінің онлайн генераторы: сабақ кестесі, каникул және ҚР мерекелері ескеріледі. Генератор графика СОР, СОЧ и ПО. Тегін, қазақша/орысша.">
+<meta property="og:title" content="График СОР и СОЧ (ПО) / БЖБ мен ТЖБ (АБ) графигі">
+<meta property="og:description" content="Жиынтық бағалау күндері өзі қойылады: 5–11 сынып БЖБ/ТЖБ, 1–4 сынып АБ. Excel, Word. Тегін.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📆%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css?v=20261031">
+<style>
+  .lay { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+  @media (max-width: 920px) { .lay { grid-template-columns: 1fr; } }
+  h2 { margin: 0 0 10px; font-size: 19px; }
+  .card + .card { margin-top: 14px; }
+  .g3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .fld { display: grid; gap: 4px; }
+  .fld > span { font-weight: 800; font-size: 14px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { flex: 1; border: 0; background: var(--card); padding: 9px 6px; font-weight: 800; cursor: pointer; }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .per { display: grid; grid-template-columns: 34px 1fr 1fr auto; gap: 6px; align-items: center; margin: 5px 0; }
+  .per input { width: 100%; }
+  .days { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .day { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 6px 8px; }
+  .day.off { opacity: .45; }
+  .step { display: flex; align-items: center; gap: 4px; }
+  .step button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); font-size: 18px; font-weight: 800; cursor: pointer; }
+  .step span { min-width: 22px; text-align: center; font-weight: 900; font-size: 18px; }
+  .cnt { display: grid; grid-template-columns: 110px 1fr auto; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .hol { display: grid; grid-template-columns: auto 104px 1fr auto; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .addh { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .addh input[type=text] { grid-column: 1 / -1; }
+  .rule { background: var(--amber-soft); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-top: 10px; }
+  .sum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .sum .kpi { background: var(--bg); border-radius: 12px; padding: 8px 12px; font-size: 14px; } .sum .kpi b { display: block; font-size: 18px; }
+  .warn { background: var(--amber-soft); border-radius: 12px; padding: 8px 12px; font-size: 14px; margin-bottom: 8px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  table.out { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.out th, table.out td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+  table.out th { background: var(--bg); }
+  table.out tr.ph td { background: var(--primary-soft); font-weight: 900; }
+  table.out select { max-width: 170px; }
+  table.out input[type=text] { width: 100%; min-width: 120px; }
+  .tag { display: inline-block; border-radius: 7px; padding: 2px 8px; font-weight: 800; font-size: 13px; }
+  .t-sor { background: var(--primary-soft); color: var(--primary); }
+  .t-soch { background: var(--violet-soft); color: var(--violet); }
+  .t-ao { background: var(--green-soft); color: var(--green); }
+  .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  details summary { cursor: pointer; font-weight: 800; }
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+    #printArea select, #printArea input { border: 0; background: none; appearance: none; -webkit-appearance: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="lay">
+    <div>
+      <section class="card">
+        <h2 data-i="h1"></h2>
+        <div class="seg" id="level" style="margin-bottom:10px"><button data-l="sec" data-i="lSec"></button><button data-l="prim" data-i="lPrim"></button></div>
+        <div class="g3">
+          <label class="fld"><span data-i="subject"></span><input type="text" id="subject" list="subjList"><datalist id="subjList"></datalist></label>
+          <label class="fld"><span data-i="cls"></span><input type="text" id="cls" placeholder="5А"></label>
+          <label class="fld"><span data-i="teacher"></span><input type="text" id="teacher"></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="hHours"></h2>
+        <div class="seg" id="week" style="margin-bottom:10px"><button data-w="5" data-i="w5"></button><button data-w="6" data-i="w6"></button></div>
+        <div class="days" id="days"></div>
+        <p class="note" id="weekly"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i="hCnt"></h2>
+        <div id="cnts"></div>
+        <label class="row" style="margin-top:8px" id="sochRow"><input type="checkbox" id="soch"><span data-i="sochOn"></span></label>
+        <div class="rule" id="rule"></div>
+      </section>
+
+      <section class="card">
+        <details>
+          <summary data-i="hPer"></summary>
+          <div class="row" style="margin:8px 0"><button class="btn sm primary" id="preset" data-i="preset"></button><label class="row"><input type="checkbox" id="first"><span data-i="first"></span></label></div>
+          <div id="pers"></div>
+          <button class="btn sm" id="addPer" data-i="addPer"></button>
+        </details>
+        <details style="margin-top:10px">
+          <summary data-i="hHol"></summary>
+          <div id="hols"></div>
+          <div class="addh"><input type="date" id="hFrom"><input type="date" id="hTo"><input type="text" id="hName" data-ip="hNamePh"></div>
+          <button class="btn sm" id="addHol" style="margin-top:6px" data-i="addHol"></button>
+        </details>
+        <p class="note" data-i="perNote"></p>
+      </section>
+    </div>
+
+    <div>
+      <section class="card">
+        <h2 id="outTitle"></h2>
+        <div class="sum" id="sum"></div>
+        <div id="warns"></div>
+        <div class="actions">
+          <button class="btn sm" id="regen" data-i="regen"></button>
+          <button class="btn primary" id="copyT" data-i="copyT"></button>
+          <button class="btn" id="csv" data-i="csv"></button>
+          <button class="btn" id="word" data-i="word"></button>
+          <button class="btn" id="print" data-i="print"></button>
+        </div>
+        <div id="printArea"><div id="out" style="overflow-x:auto"></div></div>
+        <p class="note" data-i="outNote"></p>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="common.js?v=20261031"></script>
+<script>
+App.init({
+  pageTitle: { kk: 'БЖБ мен ТЖБ (АБ) графигі', ru: 'График СОР и СОЧ (ПО)' },
+  h1: { kk: '① Сынып және пән', ru: '① Класс и предмет' },
+  lSec: { kk: '5–11 сынып: БЖБ / ТЖБ', ru: '5–11 классы: СОР / СОЧ' },
+  lPrim: { kk: '1–4 сынып: АБ', ru: '1–4 классы: ПО' },
+  subject: { kk: 'Пән', ru: 'Предмет' }, cls: { kk: 'Сынып', ru: 'Класс' }, teacher: { kk: 'Мұғалім', ru: 'Учитель' },
+  hHours: { kk: '② Сабақ кестесі (пәннің апталық сабақтары)', ru: '② Расписание (уроки предмета по дням)' },
+  w5: { kk: '5 күндік апта', ru: '5-дневная неделя' }, w6: { kk: '6 күндік апта', ru: '6-дневная неделя' },
+  perWeek: { kk: 'Аптасына сағат саны: ', ru: 'Часов в неделю: ' },
+  hCnt: { kk: '③ Тоқсандағы жұмыс саны', ru: '③ Количество работ в четверти' },
+  sochOn: { kk: 'Тоқсан соңында ТЖБ өткізу', ru: 'Проводить СОЧ в конце четверти' },
+  ruleSec: { kk: 'БЖБ санын әр тоқсанға өзіңіз қойыңыз (1–6), әдетте бөлім санына тең. ТЖБ — тоқсан соңында, соңғы сабақтың алдында. <b>Аптасына 1 сағаттық пәнде</b> — тоқсанына 1 БЖБ, ТЖБ өткізілмейді (автоматты қойылады).', ru: 'Количество СОР укажите для каждой четверти (1–6), обычно по числу разделов. СОЧ — в конце четверти, перед последним уроком. <b>Для предмета 1 час в неделю</b> — 1 СОР в четверть, СОЧ не проводится (ставится автоматически).' },
+  rulePrim: { kk: '2026–2027 оқу жылынан 1–4 сыныптарда БЖБ мен ТЖБ жоқ — бөлімдер бойынша <b>аралық бағалау (АБ)</b> өткізіледі. Әр тоқсанға АБ санын өзіңіз қойыңыз (1–6).', ru: 'С 2026–2027 учебного года в 1–4 классах нет СОР и СОЧ — проводится <b>промежуточное оценивание (ПО)</b> за разделы. Укажите количество ПО в каждой четверти (1–6).' },
+  oneHour: { kk: 'Аптасына 1 сағат: тоқсанына 1 БЖБ, ТЖБ жоқ.', ru: '1 час в неделю: 1 СОР в четверть, СОЧ нет.' },
+  hPer: { kk: '④ Тоқсандар (2026–2027, ресми бұйрық бойынша) ▾', ru: '④ Четверти (2026–2027, по приказу) ▾' },
+  preset: { kk: '2026–2027 оқу жылы', ru: '2026–2027 учебный год' },
+  first: { kk: '1-сынып (ақпандағы қосымша каникул)', ru: '1 класс (доп. каникулы в феврале)' },
+  addPer: { kk: '＋ Кезең қосу', ru: '＋ Добавить период' },
+  hHol: { kk: '⑤ Мерекелер мен демалыс күндері ▾', ru: '⑤ Праздники и выходные ▾' },
+  hNamePh: { kk: 'Атауы (мыс.: карантин)', ru: 'Название (напр.: карантин)' },
+  addHol: { kk: '＋ Демалыс күнін қосу', ru: '＋ Добавить выходной' },
+  perNote: { kk: 'Тоқсандар мен мерекелер ҚР 2026–2027 оқу жылына сай қойылған. Мерекелер демалысқа түссе — келесі жұмыс күніне ауыстырылған.', ru: 'Четверти и праздники заданы на 2026–2027 учебный год РК. Праздники, выпавшие на выходной, перенесены на следующий рабочий день.' },
+  regen: { kk: '↻ Күндерді қайта бөлу', ru: '↻ Распределить заново' },
+  copyT: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
+  csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
+  outNote: { kk: 'Күндер тоқсан ішіне біркелкі бөлінеді. Күнді тізімнен ауыстыра аласыз, бөлім атауын жазыңыз — бәрі сақталады.', ru: 'Даты распределяются равномерно по четверти. Дату можно сменить из списка, впишите название раздела — всё сохраняется.' },
+  copied: { kk: 'Көшірілді — Word не Excel-ге қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в Word или Excel (Ctrl+V).' },
+  num: { kk: '№', ru: '№' }, type: { kk: 'Түрі', ru: 'Вид' }, unit: { kk: 'Бөлім / тақырып', ru: 'Раздел / тема' }, date: { kk: 'Күні', ru: 'Дата' }, wd: { kk: 'Апта күні', ru: 'День' },
+  qWord: { kk: 'тоқсан', ru: 'четверть' }, lessons: { kk: 'сабақ', ru: 'уроков' }, total: { kk: 'Барлығы', ru: 'Всего' },
+  noHours: { kk: 'Пәннің сабақ күндерін белгілеңіз (②).', ru: 'Отметьте дни уроков предмета (②).' },
+  tooMany: { kk: 'тоқсанда сабақ саны жұмыс санына жетпейді.', ru: 'четверть: уроков меньше, чем работ.' },
+  sameDay: { kk: 'Бір күнге екі жұмыс түсті: ', ru: 'Две работы в один день: ' },
+  unitPh: { kk: 'мыс.: «Ғылым әлемі»', ru: 'напр.: «Мир науки»' }
+});
+const $ = id => document.getElementById(id);
+const t = App.t, esc = App.esc;
+const WD = { kk: ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'], ru: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'] };
+const WDs = { kk: ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'], ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] };
+const SHORT = { sor: { kk: 'БЖБ', ru: 'СОР' }, soch: { kk: 'ТЖБ', ru: 'СОЧ' }, ao: { kk: 'АБ', ru: 'ПО' } };
+const SUBJ = { kk: ['Математика', 'Алгебра', 'Геометрия', 'Қазақ тілі', 'Қазақ әдебиеті', 'Әдебиеттік оқу', 'Орыс тілі', 'Ағылшын тілі', 'Жаратылыстану', 'Дүниетану', 'Физика', 'Химия', 'Биология', 'География', 'Қазақстан тарихы', 'Дүниежүзі тарихы', 'Информатика', 'Цифрлық сауаттылық', 'Құқық негіздері'],
+  ru: ['Математика', 'Алгебра', 'Геометрия', 'Русский язык', 'Русская литература', 'Литературное чтение', 'Казахский язык', 'Английский язык', 'Естествознание', 'Познание мира', 'Физика', 'Химия', 'Биология', 'География', 'История Казахстана', 'Всемирная история', 'Информатика', 'Цифровая грамотность', 'Основы права'] };
+
+// ҚР ОАМ бұйрығы бойынша 2026–2027 оқу жылы (КТП генераторымен бірдей)
+const PRESET = [['2026-09-01', '2026-10-25'], ['2026-11-02', '2026-12-27'], ['2027-01-11', '2027-03-21'], ['2027-03-29', '2027-05-25']];
+const FIRST_BREAK = { from: '2027-02-08', to: '2027-02-14', kk: '1-сынып оқушыларына қосымша каникул', ru: 'Доп. каникулы для 1 класса', first: true };
+const HOLIDAYS = [
+  { from: '2026-10-26', kk: 'Республика күні (25.10 → ауыстырылған)', ru: 'День Республики (перенос с 25.10)' },
+  { from: '2026-12-16', kk: 'Тәуелсіздік күні', ru: 'День Независимости' },
+  { from: '2027-01-01', to: '2027-01-02', kk: 'Жаңа жыл', ru: 'Новый год' },
+  { from: '2027-01-07', kk: 'Православиелік Рождество', ru: 'Православное Рождество' },
+  { from: '2027-03-08', kk: 'Халықаралық әйелдер күні', ru: 'Международный женский день' },
+  { from: '2027-03-21', to: '2027-03-24', kk: 'Наурыз мейрамы (21.03 → 24.03 ауыстырылған)', ru: 'Наурыз мейрамы (перенос с 21.03 на 24.03)' },
+  { from: '2027-05-03', kk: 'Қазақстан халқының бірлігі мерекесі (01.05 → ауыстырылған)', ru: 'Праздник единства народа Казахстана (перенос с 01.05)' },
+  { from: '2027-05-07', kk: 'Отан қорғаушы күні', ru: 'День защитника Отечества' },
+  { from: '2027-05-10', kk: 'Жеңіс күні (09.05 → ауыстырылған)', ru: 'День Победы (перенос с 09.05)' },
+  { from: '2027-05-16', kk: 'Құрбан айт (күнін тексеріңіз)', ru: 'Курбан айт (уточните дату)', off: true }
+];
+const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); };
+const fmtD = s => s ? s.slice(8, 10) + '.' + s.slice(5, 7) + '.' + s.slice(0, 4) : '—';
+const defHol = () => HOLIDAYS.map(h => ({ from: h.from, to: h.to || '', kk: h.kk, ru: h.ru, on: !h.off })).concat([Object.assign({}, FIRST_BREAK, { on: false })]);
+
+// КТП генераторында қойылған кесте болса — содан бастаймыз
+const ktp = App.store.get('mt-ktp');
+const blank = () => ({ level: App.prim ? 'prim' : 'sec', subject: '', cls: '', teacher: '',
+  pers: ktp && ktp.pers ? ktp.pers : PRESET.map(p => p.slice()), week: ktp ? ktp.week : 5, hours: ktp ? ktp.hours.slice() : [0, 1, 0, 1, 0, 0, 0],
+  hols: ktp && ktp.hols ? ktp.hols : defHol(), first: false, cnt: [2, 2, 3, 2], soch: true, works: null });
+let S = App.store.get('mt-sg') || blank();
+if (App.prim && S.level !== 'prim') S.level = 'prim';
+const save = () => App.store.set('mt-sg', S);
+const holName = h => h[App.lang] || h.kk || '';
+const perWeek = () => [1, 2, 3, 4, 5, 6].reduce((a, d) => a + (d === 6 && S.week !== 6 ? 0 : (+S.hours[d] || 0)), 0);
+const oneHour = () => S.level === 'sec' && perWeek() === 1;
+
+// сабақ күндері тоқсан бойынша (бір күнде бірнеше сағат болса — бір күн ретінде)
+function lessonDays() {
+  const off = {};
+  S.hols.forEach(h => { if (!h.on || !h.from) return; for (let d = parse(h.from); d <= parse(h.to || h.from); d.setDate(d.getDate() + 1)) off[iso(d)] = 1; });
+  return S.pers.map(p => {
+    const out = []; if (!p[0] || !p[1]) return out;
+    for (let d = parse(p[0]); d <= parse(p[1]); d.setDate(d.getDate() + 1)) {
+      const wd = d.getDay();
+      if (wd === 0 || (wd === 6 && S.week !== 6) || !(+S.hours[wd]) || off[iso(d)]) continue;
+      out.push(iso(d));
+    }
+    return out;
+  });
+}
+// жұмыстарды біркелкі бөлу: ТЖБ — соңғы сабақтың алдында, БЖБ/АБ — бөлімдер соңында
+function distribute() {
+  const days = lessonDays();
+  const old = S.works || [];
+  S.works = days.map((ld, qi) => {
+    const prev = old[qi] || [];
+    const unitOf = (type, n) => { const w = prev.find(x => x.type === type && x.n === n); return w ? w.unit : ''; };
+    const L = ld.length, list = [];
+    if (S.level === 'prim') {
+      const k = Math.max(1, Math.min(6, +S.cnt[qi] || 1));
+      for (let i = 0; i < k; i++) list.push({ type: 'ao', n: i + 1, d: ld[Math.max(0, Math.round((i + 1) * L / k) - 1)] || '', unit: unitOf('ao', i + 1) });
+    } else {
+      const one = oneHour(), k = one ? 1 : Math.max(1, Math.min(6, +S.cnt[qi] || 1)), soch = !one && S.soch;
+      const sochIdx = soch ? (L >= 4 ? L - 2 : L - 1) : L;
+      const span = soch ? Math.max(1, sochIdx) : L;
+      for (let i = 0; i < k; i++) {
+        let idx = Math.max(0, Math.round((i + 1) * span / (k + (soch ? 0.5 : 0))) - 1);
+        if (soch && idx >= sochIdx) idx = sochIdx - 1;
+        list.push({ type: 'sor', n: i + 1, d: ld[Math.max(0, idx)] || '', unit: unitOf('sor', i + 1) });
+      }
+      if (soch) list.push({ type: 'soch', n: 1, d: ld[Math.max(0, sochIdx)] || '', unit: unitOf('soch', 1) });
+    }
+    // бір күнге екі жұмыс түспесін
+    for (let i = 1; i < list.length; i++) if (list[i].d && list[i].d === list[i - 1].d) { const j = ld.indexOf(list[i].d); if (ld[j + 1]) list[i].d = ld[j + 1]; }
+    return list;
+  });
+  save();
+}
+
+// ---- енгізу
+function renderTop() {
+  document.querySelectorAll('#level button').forEach(b => { b.classList.toggle('on', b.dataset.l === S.level); b.classList.toggle('hide', App.prim && b.dataset.l === 'sec'); });
+  ['subject', 'cls', 'teacher'].forEach(k => { if (document.activeElement !== $(k)) $(k).value = S[k] || ''; });
+  $('subjList').innerHTML = SUBJ[App.lang].map(s => '<option value="' + esc(s) + '">').join('');
+}
+$('level').onclick = e => { const b = e.target.closest('[data-l]'); if (!b) return; S.level = b.dataset.l; distribute(); all(); };
+['subject', 'cls', 'teacher'].forEach(k => $(k).oninput = () => { S[k] = $(k).value; save(); renderOut(); });
+
+function renderDays() {
+  document.querySelectorAll('#week button').forEach(b => b.classList.toggle('on', +b.dataset.w === S.week));
+  const L = WD[App.lang];
+  $('days').innerHTML = [1, 2, 3, 4, 5, 6].map(d => '<div class="day' + (d === 6 && S.week !== 6 ? ' off' : '') + '"><b>' + L[d] + '</b><span class="step"><button data-dm="' + d + '">−</button><span>' + (+S.hours[d] || 0) + '</span><button data-dp="' + d + '">+</button></span></div>').join('');
+  $('weekly').innerHTML = t('perWeek') + '<b>' + perWeek() + '</b>' + (oneHour() ? ' — ' + t('oneHour') : '');
+}
+$('week').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; S.week = +b.dataset.w; distribute(); all(); };
+$('days').onclick = e => {
+  const m = e.target.closest('[data-dm]'), p = e.target.closest('[data-dp]'); if (!m && !p) return;
+  const d = +(m || p).dataset[m ? 'dm' : 'dp']; if (d === 6 && S.week !== 6) return;
+  S.hours[d] = Math.max(0, Math.min(6, (+S.hours[d] || 0) + (m ? -1 : 1))); distribute(); all();
+};
+
+function renderCnt() {
+  const one = oneHour(), nm = S.level === 'prim' ? SHORT.ao[App.lang] : SHORT.sor[App.lang];
+  $('cnts').innerHTML = S.pers.map((p, i) => '<div class="cnt"><b>' + (i + 1) + ' ' + t('qWord') + '</b><span>' + nm + (S.level === 'sec' && !one && S.soch ? ' + ' + SHORT.soch[App.lang] : '') + '</span>' +
+    '<span class="step"><button data-cm="' + i + '"' + (one ? ' disabled' : '') + '>−</button><span>' + (one ? 1 : (+S.cnt[i] || 1)) + '</span><button data-cp="' + i + '"' + (one ? ' disabled' : '') + '>+</button></span></div>').join('');
+  $('sochRow').classList.toggle('hide', S.level !== 'sec' || one);
+  $('soch').checked = !!S.soch;
+  $('rule').innerHTML = S.level === 'prim' ? t('rulePrim') : t('ruleSec');
+}
+$('cnts').onclick = e => {
+  const m = e.target.closest('[data-cm]'), p = e.target.closest('[data-cp]'); if (!m && !p) return;
+  const i = +(m || p).dataset[m ? 'cm' : 'cp'];
+  S.cnt[i] = Math.max(1, Math.min(6, (+S.cnt[i] || 1) + (m ? -1 : 1))); distribute(); all();
+};
+$('soch').onchange = () => { S.soch = $('soch').checked; distribute(); all(); };
+
+function renderPers() {
+  $('pers').innerHTML = S.pers.map((p, i) => '<div class="per"><b>' + (i + 1) + '</b><input type="date" data-pe="' + i + ':0" value="' + (p[0] || '') + '"><input type="date" data-pe="' + i + ':1" value="' + (p[1] || '') + '"><button class="btn sm" data-rmpe="' + i + '">✕</button></div>').join('');
+  $('first').checked = !!S.first;
+}
+$('pers').onchange = e => { const k = e.target.dataset.pe; if (!k) return; const [i, j] = k.split(':'); S.pers[i][j] = e.target.value; distribute(); all(); };
+$('pers').onclick = e => { const b = e.target.closest('[data-rmpe]'); if (!b) return; S.pers.splice(+b.dataset.rmpe, 1); S.cnt.splice(+b.dataset.rmpe, 1); distribute(); all(); };
+$('addPer').onclick = () => { if (S.pers.length < 6) { S.pers.push(['', '']); S.cnt.push(2); } save(); renderPers(); renderCnt(); };
+$('preset').onclick = () => { const old = JSON.stringify(S); S.pers = PRESET.map(p => p.slice()); S.cnt = [2, 2, 3, 2]; S.hols = defHol().concat(S.hols.filter(h => h.custom)); applyFirst(); distribute(); all(); App.toast(t('preset') + ' ✓', () => { S = JSON.parse(old); save(); all(); }); };
+function applyFirst() { S.hols.forEach(h => { if (h.first) h.on = !!S.first; }); }
+$('first').onchange = () => { S.first = $('first').checked; applyFirst(); distribute(); all(); };
+
+function renderHols() {
+  const sorted = S.hols.map((h, i) => ({ h, i })).sort((a, b) => a.h.from.localeCompare(b.h.from));
+  $('hols').innerHTML = sorted.map(({ h, i }) => '<label class="hol"><input type="checkbox" data-ho="' + i + '"' + (h.on ? ' checked' : '') + '><span>' + fmtD(h.from) + (h.to && h.to !== h.from ? '<br>– ' + fmtD(h.to) : '') + '</span><span>' + esc(holName(h)) + '</span>' + (h.custom ? '<button class="btn sm" data-rmho="' + i + '">✕</button>' : '<span></span>') + '</label>').join('');
+}
+$('hols').onchange = e => { const i = e.target.dataset.ho; if (i == null) return; S.hols[i].on = e.target.checked; distribute(); all(); };
+$('hols').onclick = e => { const b = e.target.closest('[data-rmho]'); if (!b) return; e.preventDefault(); S.hols.splice(+b.dataset.rmho, 1); distribute(); all(); };
+$('addHol').onclick = () => {
+  const f = $('hFrom').value; if (!f) { $('hFrom').focus(); return; }
+  const to = $('hTo').value && $('hTo').value >= f ? $('hTo').value : '';
+  const nm = $('hName').value.trim() || (App.lang === 'ru' ? 'Выходной' : 'Демалыс');
+  S.hols.push({ from: f, to, kk: nm, ru: nm, on: true, custom: true });
+  $('hFrom').value = ''; $('hTo').value = ''; $('hName').value = '';
+  distribute(); all();
+};
+
+// ---- нәтиже
+const title = () => t('pageTitle') + (S.subject ? ' · ' + S.subject : '') + (S.cls ? ' · ' + S.cls : '');
+const wName = w => SHORT[w.type][App.lang] + (w.type === 'soch' ? '' : ' №' + w.n);
+function renderOut() {
+  $('outTitle').textContent = title();
+  const days = lessonDays(), L = WDs[App.lang];
+  const warns = [];
+  if (!perWeek()) warns.push(t('noHours'));
+  let h = '<table class="out"><thead><tr><th>' + t('num') + '</th><th>' + t('type') + '</th><th>' + t('unit') + '</th><th>' + t('date') + '</th></tr></thead><tbody>';
+  let n = 0;
+  const counts = { sor: 0, soch: 0, ao: 0 };
+  (S.works || []).forEach((list, qi) => {
+    if (!list.length) return;
+    if (days[qi].length < list.length) warns.push((qi + 1) + ' ' + t('tooMany'));
+    h += '<tr class="ph"><td colspan="4">' + (qi + 1) + ' ' + t('qWord') + ' · ' + days[qi].length + ' ' + t('lessons') + '</td></tr>';
+    list.forEach((w, wi) => {
+      n++; counts[w.type]++;
+      if (list.some((x, xi) => xi !== wi && x.d && x.d === w.d) && wi > list.findIndex(x => x.d === w.d)) warns.push(t('sameDay') + fmtD(w.d));
+      h += '<tr><td>' + n + '</td><td><span class="tag t-' + w.type + '">' + esc(wName(w)) + '</span></td>' +
+        '<td><input type="text" data-u="' + qi + ':' + wi + '" value="' + esc(w.unit || '') + '" placeholder="' + esc(t('unitPh')) + '"></td>' +
+        '<td><select data-d="' + qi + ':' + wi + '">' + days[qi].map(d => '<option value="' + d + '"' + (d === w.d ? ' selected' : '') + '>' + fmtD(d) + ' · ' + L[parse(d).getDay()] + '</option>').join('') + '</select></td></tr>';
+    });
+  });
+  $('out').innerHTML = h + '</tbody></table>';
+  $('sum').innerHTML = (S.level === 'prim' ? '<div class="kpi">' + SHORT.ao[App.lang] + '<b>' + counts.ao + '</b></div>' : '<div class="kpi">' + SHORT.sor[App.lang] + '<b>' + counts.sor + '</b></div><div class="kpi">' + SHORT.soch[App.lang] + '<b>' + counts.soch + '</b></div>') +
+    '<div class="kpi">' + t('total') + '<b>' + n + '</b></div>';
+  $('warns').innerHTML = [...new Set(warns)].map(x => '<div class="warn">⚠️ ' + esc(x) + '</div>').join('');
+}
+$('out').onchange = e => { const k = e.target.dataset.d; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].d = e.target.value; save(); renderOut(); };
+$('out').oninput = e => { const k = e.target.dataset.u; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].unit = e.target.value; save(); };
+$('regen').onclick = () => { const old = JSON.stringify(S); distribute(); renderOut(); App.toast(t('regen') + ' ✓', () => { S = JSON.parse(old); save(); renderOut(); }); };
+
+// ---- экспорт
+const head = () => [t('num'), (App.lang === 'ru' ? 'Четверть' : 'Тоқсан'), t('type'), t('unit'), t('date'), t('wd')];
+function rowsData() {
+  const out = []; let n = 0;
+  (S.works || []).forEach((list, qi) => list.forEach(w => { n++; out.push([n, qi + 1, wName(w), w.unit || '', fmtD(w.d), w.d ? WD[App.lang][parse(w.d).getDay()] : '']); }));
+  return out;
+}
+function copyText(txt) {
+  const done = () => App.toast(t('copied'));
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, fb); else fb();
+  function fb() { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
+}
+function download(name, data, mime) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: mime })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+const fileBase = () => ((App.lang === 'ru' ? 'График_СОР_СОЧ' : 'БЖБ_ТЖБ_графигі') + (S.subject ? '_' + S.subject : '') + (S.cls ? '_' + S.cls : '')).replace(/[\\/:*?"<>|\s]+/g, '_');
+$('copyT').onclick = () => copyText([head()].concat(rowsData()).map(r => r.join('\t')).join('\n'));
+$('csv').onclick = () => { const q = v => '"' + String(v).replace(/"/g, '""') + '"'; download(fileBase() + '.csv', '﻿' + [[title()], []].concat([head()], rowsData()).map(r => r.map(q).join(';')).join('\r\n'), 'text/csv;charset=utf-8'); };
+$('word').onclick = () => {
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:"Times New Roman";font-size:12pt} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:3pt 5pt;text-align:left} th{background:#eee}</style></head><body>' +
+    '<h3 style="text-align:center">' + esc(title()) + '</h3>' + (S.teacher ? '<p>' + esc(t('teacher')) + ': ' + esc(S.teacher) + '</p>' : '') +
+    '<table><tr>' + head().map(x => '<th>' + esc(x) + '</th>').join('') + '</tr>' + rowsData().map(r => '<tr>' + r.map(x => '<td>' + esc(x) + '</td>').join('') + '</tr>').join('') + '</table></body></html>';
+  download(fileBase() + '.doc', '﻿' + html, 'application/msword');
+};
+$('print').onclick = () => print();
+
+function all() { renderTop(); renderDays(); renderCnt(); renderPers(); renderHols(); renderOut(); }
+App.onLang.push(all);
+if (!S.works) distribute();
+all();
+</script>
+</body>
+</html>
