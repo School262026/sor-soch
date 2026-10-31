@@ -145,10 +145,12 @@ App.init({
   hNamePh: { kk: 'Атауы (мыс.: карантин)', ru: 'Название (напр.: карантин)' },
   addHol: { kk: '＋ Демалыс күнін қосу', ru: '＋ Добавить выходной' },
   perNote: { kk: 'Тоқсандар мен мерекелер ҚР 2026–2027 оқу жылына сай қойылған. Мерекелер демалысқа түссе — келесі жұмыс күніне ауыстырылған.', ru: 'Четверти и праздники заданы на 2026–2027 учебный год РК. Праздники, выпавшие на выходной, перенесены на следующий рабочий день.' },
-  regen: { kk: '↻ Күндерді қайта бөлу', ru: '↻ Распределить заново' },
+  regen: { kk: '↻ Тазалап, қайта бөлу', ru: '↻ Очистить и распределить заново' },
+  cleared: { kk: 'Кесте тазаланып, күндер қайта бөлінді.', ru: 'Таблица очищена, даты распределены заново.' },
+  afterSoch: { kk: 'БЖБ ТЖБ-дан кейін тұр — тексеріңіз.', ru: 'СОР стоит после СОЧ — проверьте.' },
   copyT: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
   csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
-  outNote: { kk: 'Күндер тоқсан ішіне біркелкі бөлінеді. Күнді тізімнен ауыстыра аласыз, бөлім атауын жазыңыз — бәрі сақталады.', ru: 'Даты распределяются равномерно по четверти. Дату можно сменить из списка, впишите название раздела — всё сохраняется.' },
+  outNote: { kk: 'Күндер тоқсан ішіне біркелкі бөлінеді. Күнді тізімнен ауыстыра аласыз: бос емес күндер мен ТЖБ-дан кейінгі күндер сұр болып, таңдалмайды. Жұмыстар күн ретімен өзі нөмірленеді.', ru: 'Даты распределяются равномерно по четверти. Дату можно сменить из списка: занятые дни и дни после СОЧ недоступны. Работы нумеруются по порядку дат.' },
   copied: { kk: 'Көшірілді — Word не Excel-ге қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в Word или Excel (Ctrl+V).' },
   num: { kk: '№', ru: '№' }, type: { kk: 'Түрі', ru: 'Вид' }, unit: { kk: 'Бөлім / тақырып', ru: 'Раздел / тема' }, date: { kk: 'Күні', ru: 'Дата' }, wd: { kk: 'Апта күні', ru: 'День' },
   qWord: { kk: 'тоқсан', ru: 'четверть' }, lessons: { kk: 'сабақ', ru: 'уроков' }, total: { kk: 'Барлығы', ru: 'Всего' },
@@ -321,9 +323,12 @@ function renderOut() {
     list.forEach((w, wi) => {
       n++; counts[w.type]++;
       if (list.some((x, xi) => xi !== wi && x.d && x.d === w.d) && wi > list.findIndex(x => x.d === w.d)) warns.push(t('sameDay') + fmtD(w.d));
+      const so = list.find(x => x.type === 'soch');
+      if (w.type === 'sor' && so && w.d && so.d && w.d > so.d) warns.push((qi + 1) + ' ' + t('qWord') + ': ' + t('afterSoch'));
       h += '<tr><td>' + n + '</td><td><span class="tag t-' + w.type + '">' + esc(wName(w)) + '</span></td>' +
         '<td><input type="text" data-u="' + qi + ':' + wi + '" value="' + esc(w.unit || '') + '" placeholder="' + esc(t('unitPh')) + '"></td>' +
-        '<td><select data-d="' + qi + ':' + wi + '">' + days[qi].map(d => '<option value="' + d + '"' + (d === w.d ? ' selected' : '') + '>' + fmtD(d) + ' · ' + L[parse(d).getDay()] + '</option>').join('') + '</select></td></tr>';
+        '<td><select data-d="' + qi + ':' + wi + '">' + days[qi].map(d => { const dis = d !== w.d && blocked(list, w, d);
+          return '<option value="' + d + '"' + (d === w.d ? ' selected' : '') + (dis ? ' disabled' : '') + '>' + fmtD(d) + ' · ' + L[parse(d).getDay()] + '</option>'; }).join('') + '</select></td></tr>';
     });
   });
   $('out').innerHTML = h + '</tbody></table>';
@@ -331,9 +336,23 @@ function renderOut() {
     '<div class="kpi">' + t('total') + '<b>' + n + '</b></div>';
   $('warns').innerHTML = [...new Set(warns)].map(x => '<div class="warn">⚠️ ' + esc(x) + '</div>').join('');
 }
-$('out').onchange = e => { const k = e.target.dataset.d; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].d = e.target.value; save(); renderOut(); };
+// күн бос емес пе, ретке сай ма: БЖБ/АБ — ТЖБ-дан бұрын, ТЖБ — соңғы БЖБ-дан кейін
+function blocked(list, w, d) {
+  if (list.some(x => x !== w && x.d === d)) return true;
+  const so = list.find(x => x.type === 'soch');
+  if (w.type === 'sor' && so && so.d && d >= so.d) return true;
+  if (w.type === 'soch') { const last = list.filter(x => x.type === 'sor' && x.d).map(x => x.d).sort().pop(); if (last && d <= last) return true; }
+  return false;
+}
+// күн ауысқан соң: жұмыстар күн ретімен сұрыпталып, қайта нөмірленеді (бөлім атауы жұмыспен бірге жүреді)
+function reorder(qi) {
+  const list = S.works[qi];
+  ['sor', 'ao'].forEach(ty => { list.filter(x => x.type === ty).sort((a, b) => (a.d || '9').localeCompare(b.d || '9')).forEach((x, i) => { x.n = i + 1; }); });
+  list.sort((a, b) => (a.type === 'soch') - (b.type === 'soch') || a.n - b.n);
+}
+$('out').onchange = e => { const k = e.target.dataset.d; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].d = e.target.value; reorder(+q); save(); renderOut(); };
 $('out').oninput = e => { const k = e.target.dataset.u; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].unit = e.target.value; save(); };
-$('regen').onclick = () => { const old = JSON.stringify(S); distribute(); renderOut(); App.toast(t('regen') + ' ✓', () => { S = JSON.parse(old); save(); renderOut(); }); };
+$('regen').onclick = () => { const old = JSON.stringify(S); S.works = null; distribute(); renderOut(); App.toast(t('cleared'), () => { S = JSON.parse(old); save(); renderOut(); }); };
 
 // ---- экспорт
 const head = () => [t('num'), (App.lang === 'ru' ? 'Четверть' : 'Тоқсан'), t('type'), t('unit'), t('date'), t('wd')];
