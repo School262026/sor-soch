@@ -123,6 +123,7 @@
         <div class="sum" id="sum"></div>
         <div id="warns"></div>
         <div class="actions">
+          <button class="btn sm red" id="clearAll" data-i="clearAll"></button>
           <button class="btn sm" id="regen" data-i="regen"></button>
           <button class="btn primary" id="copyT" data-i="copyT"></button>
           <button class="btn" id="csv" data-i="csv"></button>
@@ -164,8 +165,10 @@ App.init({
   hNamePh: { kk: 'Атауы (мыс.: карантин)', ru: 'Название (напр.: карантин)' },
   addHol: { kk: '＋ Демалыс күнін қосу', ru: '＋ Добавить выходной' },
   perNote: { kk: 'Тоқсандар мен мерекелер ҚР 2026–2027 оқу жылына сай қойылған. Мерекелер демалысқа түссе — келесі жұмыс күніне ауыстырылған.', ru: 'Четверти и праздники заданы на 2026–2027 учебный год РК. Праздники, выпавшие на выходной, перенесены на следующий рабочий день.' },
-  regen: { kk: '↻ Тазалап, қайта бөлу', ru: '↻ Очистить и распределить заново' },
-  cleared: { kk: 'Кесте тазаланып, күндер қайта бөлінді.', ru: 'Таблица очищена, даты распределены заново.' },
+  regen: { kk: '↻ Күндерді қайта бөлу', ru: '↻ Распределить даты заново' },
+  cleared: { kk: 'Күндер қайта бөлінді, бөлім атаулары тазаланды.', ru: 'Даты распределены заново, названия разделов очищены.' },
+  clearAll: { kk: '🗑 Барлығын тазалау', ru: '🗑 Очистить всё' },
+  clearedAll: { kk: 'Барлығы тазаланды — жаңа пәнді толтырыңыз.', ru: 'Всё очищено — заполните новый предмет.' },
   afterSoch: { kk: 'БЖБ ТЖБ-дан кейін тұр — тексеріңіз.', ru: 'СОР стоит после СОЧ — проверьте.' },
   copyT: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
   csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
@@ -246,6 +249,7 @@ function distribute() {
     const prev = old[qi] || [];
     const unitOf = (type, n) => { const w = prev.find(x => x.type === type && x.n === n); return w ? w.unit : ''; };
     const L = ld.length, list = [];
+    if (!L) return list; // сабақ күні жоқ — жұмыс та жоқ
     if (S.level === 'prim') {
       const k = Math.max(1, Math.min(6, +S.cnt[qi] || 1));
       for (let i = 0; i < k; i++) list.push({ type: 'ao', n: i + 1, d: ld[Math.max(0, Math.round((i + 1) * L / k) - 1)] || '', unit: unitOf('ao', i + 1) });
@@ -341,6 +345,7 @@ function renderOut() {
   let h = '<table class="out"><thead><tr><th>' + t('num') + '</th><th>' + t('type') + '</th><th>' + t('unit') + '</th><th>' + t('date') + '</th></tr></thead><tbody>';
   let n = 0;
   const counts = { sor: 0, soch: 0, ao: 0 };
+  if (!perWeek()) { $('out').innerHTML = '<p class="muted" style="padding:12px">' + t('noHours') + '</p>'; $('sum').innerHTML = ''; $('warns').innerHTML = ''; renderChips(); return; }
   (S.works || []).forEach((list, qi) => {
     if (!list.length) return;
     if (days[qi].length < list.length) warns.push((qi + 1) + ' ' + t('tooMany'));
@@ -378,6 +383,13 @@ function reorder(qi) {
 }
 $('out').onchange = e => { const k = e.target.dataset.d; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].d = e.target.value; reorder(+q); save(); renderOut(); };
 $('out').oninput = e => { const k = e.target.dataset.u; if (!k) return; const [q, i] = k.split(':'); S.works[q][i].unit = e.target.value; save(); };
+// толық тазалау: пән, сынып, мұғалім, сабақ кестесі, жұмыс саны және күндер (тоқсандар мен мерекелер қалады)
+$('clearAll').onclick = () => {
+  const old = JSON.stringify(S);
+  Object.assign(S, { subject: '', cls: '', teacher: '', hours: [0, 0, 0, 0, 0, 0, 0], cnt: S.pers.map(() => 1), soch: true, works: null });
+  distribute(); all(); scrollTo({ top: 0, behavior: 'smooth' });
+  App.toast(t('clearedAll'), () => { S = JSON.parse(old); save(); all(); });
+};
 $('regen').onclick = () => { const old = JSON.stringify(S); S.works = null; distribute(); renderOut(); App.toast(t('cleared'), () => { S = JSON.parse(old); save(); renderOut(); }); };
 
 // ---- экспорт
