@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>КТП күндерінің генераторы</title>
-<meta name="description" content="КТП-ға арналған сабақ күндерінің онлайн генераторы: Қазақстанның 2026–2027 оқу жылы, каникулдар мен мерекелер ескеріледі. Генератор дат для КТП и поурочного планирования. Тегін.">
-<meta property="og:title" content="КТП күндерінің генераторы / Генератор дат для КТП">
+<title>КТЖ күндерінің генераторы</title>
+<meta name="description" content="КТЖ-ға (күнтізбелік-тақырыптық жоспар) арналған сабақ күндерінің онлайн генераторы: Қазақстанның 2026–2027 оқу жылы, каникулдар мен мерекелер ескеріледі. Генератор дат для КТП и поурочного планирования. Тегін.">
+<meta property="og:title" content="КТЖ күндерінің генераторы / Генератор дат для КТП">
 <meta property="og:description" content="Сабақ күндері каникул мен мерекелерді ескеріп өзі қойылады. Excel, Word. Тегін.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🗓️%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -107,6 +107,7 @@
           <button class="btn" id="csv" data-i="csv"></button>
           <button class="btn" id="word" data-i="word"></button>
           <button class="btn" id="print" data-i="print"></button>
+          <button class="btn" id="clearAll" data-i="clearAll"></button>
         </div>
         <div id="printArea"><div class="scroll" id="out"></div></div>
       </section>
@@ -116,7 +117,7 @@
 <script src="common.js?v=20261031"></script>
 <script>
 App.init({
-  pageTitle: { kk: 'КТП күндерінің генераторы', ru: 'Генератор дат для КТП' },
+  pageTitle: { kk: 'КТЖ күндерінің генераторы', ru: 'Генератор дат для КТП' },
   hPer: { kk: '① Оқу кезеңдері (тоқсандар)', ru: '① Учебные периоды (четверти)' },
   preset: { kk: '2026–2027 оқу жылы (ҚР бұйрығы)', ru: '2026–2027 учебный год (приказ РК)' },
   first: { kk: '1-сынып (ақпандағы қосымша каникул)', ru: '1 класс (доп. каникулы в феврале)' },
@@ -130,7 +131,7 @@ App.init({
   addHol: { kk: '＋ Демалыс күнін қосу', ru: '＋ Добавить выходной' },
   holNote: { kk: 'Мерекелер ҚР «Мерекелер туралы» заңы бойынша, демалысқа сәйкес келсе — келесі жұмыс күніне ауыстырылған. Үкімет қаулысымен ауыстырулар болса, осында қосыңыз. Белгіні алсаңыз — сол күні сабақ болады.', ru: 'Праздники по закону РК «О праздниках», выпавшие на выходной — перенесены на следующий рабочий день. Если правительство переносит дни — добавьте здесь. Снимите галочку — в этот день урок будет.' },
   hTopics: { kk: '④ Тақырыптар (міндетті емес)', ru: '④ Темы (необязательно)' },
-  topicsPh: { kk: 'КТП-дағы тақырыптарды көшіріп қойыңыз — әр жолға біреу. Күндер тақырыптарға өзі сәйкестенеді.', ru: 'Вставьте темы из КТП — по одной в строке. Даты сопоставятся с темами.' },
+  topicsPh: { kk: 'КТЖ-дағы тақырыптарды көшіріп қойыңыз — әр жолға біреу. Күндер тақырыптарға өзі сәйкестенеді.', ru: 'Вставьте темы из КТП — по одной в строке. Даты сопоставятся с темами.' },
   plan: { kk: 'Жоспар бойынша сағат саны:', ru: 'Часов по плану:' },
   fmt: { kk: 'Күн форматы:', ru: 'Формат даты:' },
   restart: { kk: 'Әр тоқсанда нөмірді 1-ден бастау', ru: 'Нумерация с 1 в каждой четверти' },
@@ -139,7 +140,7 @@ App.init({
   copyDates: { kk: '📋 Күндерді көшіру', ru: '📋 Копировать даты' },
   copyTable: { kk: '📋 Кестені көшіру', ru: '📋 Копировать таблицу' },
   csv: { kk: '⬇ Excel', ru: '⬇ Excel' }, word: { kk: '⬇ Word', ru: '⬇ Word' }, print: { kk: '🖨 Басып шығару', ru: '🖨 Печать' },
-  copied: { kk: 'Көшірілді — КТП-ның «Күні» бағанына қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в столбец «Дата» КТП (Ctrl+V).' },
+  copied: { kk: 'Көшірілді — КТЖ-ның «Күні» бағанына қойыңыз (Ctrl+V).', ru: 'Скопировано — вставьте в столбец «Дата» КТП (Ctrl+V).' },
   copiedT: { kk: 'Кесте көшірілді — Word не Excel-ге қойыңыз (Ctrl+V).', ru: 'Таблица скопирована — вставьте в Word или Excel (Ctrl+V).' },
   total: { kk: 'Барлығы', ru: 'Всего' }, lessons: { kk: 'сабақ', ru: 'уроков' },
   num: { kk: '№', ru: '№' }, date: { kk: 'Күні', ru: 'Дата' }, wd: { kk: 'Апта күні', ru: 'День' }, topic: { kk: 'Тақырып', ru: 'Тема' }, period: { kk: 'Кезең', ru: 'Период' },
@@ -149,7 +150,9 @@ App.init({
   lessHint: { kk: ' — тақырыптарды біріктіру (интеграциялау) қажет.', ru: ' — нужно объединить (интегрировать) темы.' },
   moreHint: { kk: ' — қайталау, бекіту сабақтарын қосуға болады.', ru: ' — можно добавить уроки повторения и закрепления.' },
   topicsLess: { kk: 'Тақырып саны сабақ күндерінен көп: ', ru: 'Тем больше, чем дат уроков: ' },
-  qWord: { kk: 'тоқсан', ru: 'четверть' }
+  qWord: { kk: 'тоқсан', ru: 'четверть' },
+  clearAll: { kk: '🗑 Барлығын тазалау', ru: '🗑 Очистить всё' },
+  cleared: { kk: 'Тазаланды — енді жаңа күндерді қоя беріңіз.', ru: 'Очищено — можно вводить новые данные.' }
 });
 const $ = id => document.getElementById(id);
 const t = App.t, esc = App.esc;
@@ -297,15 +300,22 @@ function download(name, data, mime) {
 const head = () => [t('num'), t('date')].concat(S.showWd ? [t('wd')] : []).concat(rows.some(r => r.topic) ? [t('topic')] : []);
 $('csv').onclick = () => {
   const q = v => '"' + String(v).replace(/"/g, '""') + '"';
-  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТП_күндері') + '.csv', '﻿' + [head()].concat(tableRows()).map(r => r.map(q).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
+  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТЖ_күндері') + '.csv', '﻿' + [head()].concat(tableRows()).map(r => r.map(q).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
 };
 $('word').onclick = () => {
   const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:"Times New Roman";font-size:12pt} table{border-collapse:collapse;width:100%} td,th{border:1px solid #000;padding:2pt 5pt;text-align:left} th{background:#eee} tr.ph td{background:#e7ecff;font-weight:bold}</style></head><body>' +
     '<h3 style="text-align:center">' + esc(t('pageTitle')) + '</h3><table><tr>' + head().map(x => '<th>' + esc(x) + '</th>').join('') + '</tr>' +
     rows.map((r, k) => (k === 0 || rows[k - 1].p !== r.p ? '<tr class="ph"><td colspan="' + head().length + '">' + (r.p + 1) + ' ' + t('qWord') + '</td></tr>' : '') + '<tr>' + tableRows()[k].map(x => '<td>' + esc(x) + '</td>').join('') + '</tr>').join('') + '</table></body></html>';
-  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТП_күндері') + '.doc', '﻿' + html, 'application/msword');
+  download((App.lang === 'ru' ? 'Даты_КТП' : 'КТЖ_күндері') + '.doc', '﻿' + html, 'application/msword');
 };
 $('print').onclick = () => print();
+// сабақ саны, тақырыптар, жоспар, өз демалыстары тазаланады; тоқсандар мен мерекелер қалады
+$('clearAll').onclick = () => {
+  const old = JSON.stringify(S);
+  S.hours = [0, 0, 0, 0, 0, 0, 0]; S.topics = ''; S.plan = ''; S.hols = S.hols.filter(h => !h.custom);
+  $('hFrom').value = ''; $('hTo').value = ''; $('hName').value = '';
+  save(); all(); App.toast(t('cleared'), () => { S = JSON.parse(old); save(); all(); });
+};
 
 function all() {
   renderPers(); renderDays(); renderHols();
