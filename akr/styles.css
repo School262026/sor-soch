@@ -103,18 +103,20 @@ img.fig.small { height: 100px; display: inline-block; margin: 4px 8px; vertical-
 .atitle { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
 .aitem { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 30px; margin: 3px 0; }
 .aitem.lines, .aitem.draw, .aitem.line { display: block; }
+.aitem.short, .aitem.choice { display: inline-flex; width: 49%; vertical-align: top; }
+.aitem.short .ans-short { flex: 1; max-width: 220px; }
 .bubbles { display: flex; gap: 18px; }
 .bub { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
 .bub i { width: 20px; height: 20px; border: 2px solid #000; border-radius: 50%; display: inline-block; }
 .ans-short { display: inline-block; width: 160px; height: 26px; border-bottom: 1.5px solid #000; }
 .ans-line { height: 28px; border-bottom: 1.2px solid #444; margin: 0 0 2px 18px; }
-.grid { position: relative; height: 5cm; margin: 4px 0 4px 18px; border: 1.5px solid #000;
+.grid { position: relative; height: 4cm; margin: 4px 0 4px 18px; border: 1.5px solid #000;
   background-image: linear-gradient(#bbb 1px, transparent 1px), linear-gradient(90deg, #bbb 1px, transparent 1px); background-size: 1cm 1cm; }
 .grid span { position: absolute; right: 4px; bottom: 2px; font-size: 10px; background: #fff; padding: 0 3px; }
 .boxes { display: flex; flex-direction: column; gap: 3px; margin-left: 18px; }
 .bx { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
 .bx i { display: inline-block; width: 34px; height: 24px; border: 1.5px solid #000; border-radius: 4px; }
-table.score { margin-top: 10px; }
+table.score { margin-top: 10px; break-inside: avoid; }
 table.score td, table.score th { text-align: center; }
 .sign { margin-top: 18px; }
 

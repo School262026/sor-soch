@@ -45,7 +45,14 @@ export const L = {
   },
 };
 
-export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// «3 балл» (қаз) / «1 балл, 3 балла, 5 баллов» (орыс)
+function pts(n, lang) {
+  if (lang !== 'ru') return `${n} балл`;
+  const d = n % 10, h = n % 100;
+  return `${n} ${d === 1 && h !== 11 ? 'балл' : d >= 2 && d <= 4 && (h < 12 || h > 14) ? 'балла' : 'баллов'}`;
+}
+
+export const esc =(s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nl = (s) => esc(s).replace(/\n/g, '<br>');
 
 // SVG <img> ішінде көрсетіледі — скрипт орындалмайды.
@@ -122,7 +129,7 @@ export function taskPage(p, vi) {
     ${header(p, l, v.name)}
     <p class="hint">✏️ ${l.toAnswer}</p>
     ${v.tasks.map((t, ti) => `<div class="task c${ti % 6}">
-      <div class="task-title"><span class="tn">${t.n}</span> ${esc(t.title)} <span class="tp">(${t.points} ${l.pts})</span></div>
+      <div class="task-title"><span class="tn">${t.n}</span> ${esc(t.title)} <span class="tp">(${pts(t.points, p.lang)})</span></div>
       ${t.instruction ? `<div class="instr">${nl(t.instruction)}</div>` : ''}
       ${t.passage ? `<div class="passage">${nl(t.passage)}</div>` : ''}
       ${svgImg(t.figure_svg)}
@@ -145,7 +152,7 @@ function answerArea(it, l) {
     case 'line':
       return '<div class="ans-line"></div>';
     case 'lines':
-      return '<div class="ans-line"></div>'.repeat(4);
+      return '<div class="ans-line"></div>'.repeat(3);
     case 'draw':
       return `<div class="grid"><span>${l.grid}</span></div>`;
     case 'order':
@@ -165,7 +172,7 @@ export function answerPage(p, vi) {
     ${header(p, l, '')}
     <p class="hint">${l.fill}</p>
     ${v.tasks.map((t) => `<div class="atask">
-      <div class="atitle">${t.n}-${l.task === 'Задание' ? 'е задание' : l.task} <small>(${t.points} ${l.pts})</small></div>
+      <div class="atitle">${p.lang === 'ru' ? `Задание ${t.n}` : `${t.n}-${l.task}`} <small>(${pts(t.points, p.lang)})</small></div>
       ${t.items.map((it) => `<div class="aitem ${it.kind}"><b>${esc(it.label)}</b> ${answerArea(it, l)}</div>`).join('')}
     </div>`).join('')}
     ${scoreTable(p, l)}
