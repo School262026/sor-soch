@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>АКР бот</title>
+<meta name="theme-color" content="#1f6f5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-head">
+  <div class="brand"><img src="icon.svg" alt=""> АКР бот <small>1–4 сынып • ӘБЖ / АКР</small></div>
+  <nav>
+    <button data-tab="make" class="on">📝 Құрастыру</button>
+    <button data-tab="check">📷 Тексеру</button>
+    <button data-tab="results">📊 Нәтижелер</button>
+    <button data-tab="settings">⚙️ Баптаулар</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 1. Құрастыру -->
+  <section id="tab-make" class="tab on">
+    <div class="card">
+      <h3>Жаңа АКР құрастыру</h3>
+      <div class="row">
+        <label>Сынып <select id="g-grade"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+        <label>Тоқсан <select id="g-quarter"><option selected>1</option><option>2</option><option>3</option><option>4</option></select></label>
+        <label>Пән <select id="g-subject"></select></label>
+        <label>Тілі <select id="g-lang"><option value="kk">Қазақша</option><option value="ru">Орысша</option></select></label>
+        <label>Тақырып көзі <select id="g-source"></select></label>
+        <label>Жалпы балл <select id="g-points"><option>12</option><option>14</option><option selected>16</option><option>18</option><option>20</option></select></label>
+      </div>
+      <label class="full">Тоқсанда өтілген тақырыптар <small>(КТЖ бойынша тексеріп, түзетіңіз)</small>
+        <textarea id="g-topics" rows="8"></textarea></label>
+      <label class="full">Қосымша талап <small>(міндетті емес: «мәтін ауылдағы күз туралы болсын», «тест 5 сұрақ» т.б.)</small>
+        <textarea id="g-notes" rows="2"></textarea></label>
+      <label class="full">КТЖ, оқулық беттері немесе үлгі (PDF, міндетті емес)
+        <input id="g-files" type="file" accept="application/pdf" multiple></label>
+      <div id="g-filelist" class="muted"></div>
+      <button id="g-go" class="primary">✨ АКР жасау</button>
+      <div id="g-status" class="status"></div>
+    </div>
+
+    <div class="card">
+      <h3>Сақталған жұмыстар</h3>
+      <div id="p-list"></div>
+      <label class="inline">Паспортты жүктеу (.json) <input id="p-import" type="file" accept="application/json,.json"></label>
+    </div>
+
+    <div id="preview" class="card hidden">
+      <div class="toolbar">
+        <b id="pv-title"></b>
+        <span class="grow"></span>
+        <select id="pv-part">
+          <option value="all">Барлығы</option>
+          <option value="spec">Спецификация</option>
+          <option value="t0">Тапсырма — 1-нұсқа</option>
+          <option value="t1">Тапсырма — 2-нұсқа</option>
+          <option value="a0">Жауап парағы — 1-нұсқа</option>
+          <option value="a1">Жауап парағы — 2-нұсқа</option>
+          <option value="key">Дескриптор + кілт</option>
+          <option value="anl">Талдау парағы</option>
+        </select>
+        <button id="pv-print">🖨️ Басып шығару / PDF</button>
+        <button id="pv-word">📄 Word</button>
+        <button id="pv-json">💾 Паспорт (.json)</button>
+      </div>
+      <div id="pv-warn" class="warn hidden"></div>
+      <div id="pv-pages" class="pages"></div>
+    </div>
+  </section>
+
+  <!-- 2. Тексеру -->
+  <section id="tab-check" class="tab">
+    <div class="card">
+      <h3>Жауап парағын тексеру</h3>
+      <div class="row">
+        <label class="grow">Жұмыс <select id="c-passport"></select></label>
+        <label>Сынып <input id="c-class" placeholder="2 «А»" size="8"></label>
+      </div>
+      <div class="row">
+        <label class="btn">📷 Камера<input id="c-cam" type="file" accept="image/*" capture="environment" hidden></label>
+        <label class="btn">🖼️ Галерея<input id="c-gal" type="file" accept="image/*" multiple hidden></label>
+        <button id="c-clear">Тазалау</button>
+      </div>
+      <p class="muted">Бір оқушының парағын түсіріңіз (2 бет болса — екеуін де). Парақ толық, түзу, жарық жерде түссін.</p>
+      <div id="c-thumbs" class="thumbs"></div>
+      <button id="c-go" class="primary" disabled>🔍 Тексеру</button>
+      <div id="c-status" class="status"></div>
+    </div>
+    <div id="c-result" class="card hidden"></div>
+  </section>
+
+  <!-- 3. Нәтижелер -->
+  <section id="tab-results" class="tab">
+    <div class="card">
+      <h3>Нәтижелер</h3>
+      <div class="row">
+        <label class="grow">Жұмыс <select id="r-passport"></select></label>
+        <label>Сынып <select id="r-class"></select></label>
+      </div>
+      <div id="r-stats"></div>
+      <div id="r-table"></div>
+      <div class="row">
+        <button id="r-xlsx">📗 Excel</button>
+        <button id="r-anl" class="primary">🧾 Анықтама-талдау жазу</button>
+      </div>
+      <div id="r-status" class="status"></div>
+    </div>
+    <div id="r-doc" class="card hidden">
+      <div class="toolbar"><span class="grow"></span><button id="r-print">🖨️ Басып шығару</button><button id="r-word">📄 Word</button></div>
+      <div id="r-doc-body" class="pages"></div>
+    </div>
+  </section>
+
+  <!-- 4. Баптаулар -->
+  <section id="tab-settings" class="tab">
+    <div class="card">
+      <h3>Баптаулар</h3>
+      <label class="full">Claude API кілті
+        <input id="s-key" type="password" placeholder="sk-ant-..." autocomplete="off"></label>
+      <p class="muted">Кілт тек осы құрылғыда сақталады. console.anthropic.com → Billing бөлімінде айлық шектеу (limit) қойып қойыңыз.</p>
+      <label class="full">Модель
+        <select id="s-model">
+          <option value="claude-opus-5-5">Claude Opus 5.5 — ең дәл (ұсынылады)</option>
+          <option value="claude-sonnet-5-5">Claude Sonnet 5.5 — арзанырақ, шамамен 2 есе</option>
+        </select></label>
+      <label class="full">Мектеп атауы <input id="s-school" placeholder="Baiterek School of Science and Technology"></label>
+      <button id="s-save" class="primary">Сақтау</button>
+      <div id="s-status" class="status"></div>
+      <hr>
+      <p class="muted">Шығын: <span id="s-cost">—</span></p>
+    </div>
+  </section>
+</main>
+
+<div id="print-area"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
