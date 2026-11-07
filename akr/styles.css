@@ -87,6 +87,10 @@ table.res td.l { text-align: left; }
 .task.c2 { border-color: #f39c12; background: #fff6e6; } .task.c3 { border-color: #8e44ad; background: #f6eefb; }
 .task.c4 { border-color: #e74c3c; background: #fdeeee; } .task.c5 { border-color: #16a2b8; background: #e8f8fa; }
 .task-title { font-weight: 700; font-size: 15px; }
+.tasks.big { font-size: 17px; line-height: 1.55; }
+.tasks.big .task-title { font-size: 18px; }
+.tasks.big .opts { gap: 8px 34px; font-size: 18px; }
+.tasks.big .item { margin: 8px 0 8px 6px; }
 .tn { display: inline-block; min-width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #1f6f5c; color: #fff; margin-right: 4px; }
 .tp { font-weight: 400; color: #444; font-size: 13px; }
 .instr { margin: 4px 0; }

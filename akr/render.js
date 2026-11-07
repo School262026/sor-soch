@@ -4,7 +4,9 @@ export const L = {
   kk: {
     spec: 'ӘКІМШІЛІК БАҚЫЛАУ ЖҰМЫСЫНЫҢ СПЕЦИФИКАЦИЯСЫ', goal: 'Мақсаты', topics: 'Қамтылатын тақырыптар',
     time: 'Орындау уақыты: 40 минут', total: 'Жалпы балл', variants: 'Нұсқа саны: 2 (құрылымы бірдей, мазмұны әртүрлі)',
-    specCols: ['№', 'Бөлім / тақырып', 'Тексерілетін оқу мақсаты', 'Код (КТЖ)', 'Деңгей', 'Балл'],
+    specCols: ['№', 'Бөлім', 'Тексерілетін оқу мақсаты (коды)', 'Ойлау дағдыларының деңгейі', 'Тапсырма түрі', 'Уақыты (мин)', 'Балл'],
+    types: 'Тапсырма түрлері: КЖТ — көп жауапты таңдау; ҚЖ — қысқа жауап; ТЖ — толық (кеңейтілген) жауап.',
+    keyCols: ['№', 'Жауап / эталон', 'Балл', 'Қосымша ақпарат'],
     sum: 'Барлығы', levels: 'Ойлау дағдыларының деңгейі бойынша балл үлесі', levelCols: ['Деңгей', 'Балл', 'Үлесі'],
     lv: { low: 'Т', mid: 'О', high: 'Ж' },
     lvName: { low: 'Т — білу және түсіну', mid: 'О — қолдану', high: 'Ж — жоғары деңгей дағдылары (талдау, жинақтау, бағалау)' },
@@ -16,7 +18,7 @@ export const L = {
     scoreRow: ['Тапсырма', 'Ең жоғары балл', 'Алған балл'],
     desc: 'БАҒАЛАУ КРИТЕРИЙЛЕРІ МЕН ДЕСКРИПТОРЛАР', descNote: 'Әр дескриптор 1 балл. Шарт толық орындалса — 1, орындалмаса — 0. Жартылай балл қойылмайды. Кілтте берілмеген, бірақ дұрыс жауаптар қабылданады.',
     descCols: ['№', 'Бағалау критерийі', 'Дескриптор (білім алушы…)', 'Тексеру', 'Деңгей', 'Балл'],
-    key: 'ЖАУАП КІЛТІ (тексерушіге)', keyCols: ['Тапсырма', 'Дұрыс жауап'],
+    key: 'БАЛЛ ҚОЮ СХЕМАСЫ (тексерушіге)',
     anl: 'БАҚЫЛАУ НӘТИЖЕСІН ТАЛДАУ ПАРАҒЫ', teacher: 'Мұғалім', held: 'Өткізілген күні', count: 'Сыныптағы оқушы саны', took: 'Жұмысқа қатысқаны',
     anlCols: ['№', 'Оқушының аты-жөні', 'Нұсқа'], anlEnd: ['Барлығы', '%', 'Деңгей', 'Баға'],
     sign: 'Мұғалім: ____________________ (қолы)          ОІЖО: ____________________ (қолы)',
@@ -25,7 +27,9 @@ export const L = {
   ru: {
     spec: 'СПЕЦИФИКАЦИЯ АДМИНИСТРАТИВНОЙ КОНТРОЛЬНОЙ РАБОТЫ', goal: 'Цель', topics: 'Проверяемые темы',
     time: 'Время выполнения: 40 минут', total: 'Максимальный балл', variants: 'Количество вариантов: 2 (одинаковая структура, разное содержание)',
-    specCols: ['№', 'Раздел / тема', 'Проверяемая цель обучения', 'Код (КТП)', 'Уровень', 'Балл'],
+    specCols: ['№', 'Раздел', 'Проверяемые цели (с кодом)', 'Уровень мыслительных навыков', 'Тип задания', 'Время (мин)', 'Балл'],
+    types: 'Типы заданий: МВО — задания с множественным выбором ответов; КО — задания, требующие краткого ответа; РО — задания, требующие развёрнутого ответа.',
+    keyCols: ['№', 'Ответ / эталон ответа', 'Балл', 'Дополнительная информация'],
     sum: 'Итого', levels: 'Распределение баллов по уровням мыслительных навыков', levelCols: ['Уровень', 'Балл', 'Доля'],
     lv: { low: 'З', mid: 'П', high: 'НВП' },
     lvName: { low: 'З — знание и понимание', mid: 'П — применение', high: 'НВП — навыки высокого порядка (анализ, синтез, оценка)' },
@@ -37,7 +41,7 @@ export const L = {
     scoreRow: ['Задание', 'Максимальный балл', 'Получено'],
     desc: 'КРИТЕРИИ ОЦЕНИВАНИЯ И ДЕСКРИПТОРЫ', descNote: 'Каждый дескриптор — 1 балл. Условие выполнено полностью — 1, не выполнено — 0. Частичные баллы не ставятся. Верные ответы, не указанные в ключе, принимаются.',
     descCols: ['№', 'Критерий оценивания', 'Дескриптор (обучающийся…)', 'Проверка', 'Уровень', 'Балл'],
-    key: 'КЛЮЧ ОТВЕТОВ (для проверяющего)', keyCols: ['Задание', 'Правильный ответ'],
+    key: 'СХЕМА ВЫСТАВЛЕНИЯ БАЛЛОВ (для проверяющего)',
     anl: 'ЛИСТ АНАЛИЗА РЕЗУЛЬТАТОВ', teacher: 'Учитель', held: 'Дата проведения', count: 'Учащихся в классе', took: 'Выполняли работу',
     anlCols: ['№', 'Фамилия, имя учащегося', 'Вариант'], anlEnd: ['Итого', '%', 'Уровень', 'Оценка'],
     sign: 'Учитель: ____________________ (подпись)          ЗДУР: ____________________ (подпись)',
@@ -96,6 +100,13 @@ function scoreTable(p, l) {
     <tr><td>${l.scoreRow[2]}</td>${ns.map(() => '<td></td>').join('')}<td></td></tr></table>`;
 }
 
+// Мақсат кодымен бірге: «2.1.1.2 – екі таңбалы сандарды оқу…». Код мәтінде бар болса, қайталамаймыз.
+function goalWithCode(r) {
+  const obj = String(r.objective || '');
+  if (!r.code || /\d\.\d\.\d\.\d/.test(obj)) return nl(obj);
+  return `<b>${esc(r.code)}</b> – ${nl(obj)}`;
+}
+
 // ---------- Спецификация ----------
 export function specPage(p) {
   const l = L[p.lang];
@@ -109,9 +120,10 @@ export function specPage(p) {
     <p><b>${l.goal}:</b> ${nl(p.goal)}</p>
     <p><b>${l.topics}:</b> ${nl(p.topics)}</p>
     <p>${l.time}. ${l.total}: ${total}. ${l.variants}.</p>
+    <p class="note">${l.types}</p>
     <table><tr>${l.specCols.map((c) => `<th>${c}</th>`).join('')}</tr>
-      ${p.spec.map((r) => `<tr><td>${r.n}</td><td>${esc(r.section)}</td><td>${esc(r.objective)}</td><td>${esc(r.code)}</td><td>${esc(r.level)}</td><td>${r.points}</td></tr>`).join('')}
-      <tr><td></td><td><b>${l.sum}</b></td><td></td><td></td><td></td><td><b>${total}</b></td></tr></table>
+      ${p.spec.map((r) => `<tr><td>${r.n}</td><td>${esc(r.section)}</td><td>${goalWithCode(r)}</td><td>${esc(r.level)}</td><td>${esc(r.type || '')}</td><td>${esc(r.time || '')}</td><td>${r.points}</td></tr>`).join('')}
+      <tr><td></td><td><b>${l.sum}</b></td><td></td><td></td><td></td><td>${p.spec.some((r) => r.time) ? p.spec.reduce((a, r) => a + (+r.time || 0), 0) : ''}</td><td><b>${total}</b></td></tr></table>
     <h3>${l.levels}</h3>
     <table><tr>${l.levelCols.map((c) => `<th>${c}</th>`).join('')}</tr>
       ${['low', 'mid', 'high'].map((k) => `<tr><td>${l.lvName[k]}</td><td>${lvSum[k]}</td><td>${Math.round((lvSum[k] / total) * 100)}%</td></tr>`).join('')}</table>
@@ -125,7 +137,8 @@ export function specPage(p) {
 export function taskPage(p, vi) {
   const l = L[p.lang];
   const v = p.variants[vi];
-  return `<section class="page tasks">
+  // 1–2 сыныпқа ірі шрифт
+  return `<section class="page tasks${Number(p.grade) <= 2 ? ' big' : ''}">
     ${header(p, l, v.name)}
     <p class="hint">✏️ ${l.toAnswer}</p>
     ${v.tasks.map((t, ti) => `<div class="task c${ti % 6}">
@@ -151,8 +164,8 @@ function answerArea(it, l) {
       return '<span class="ans-short"></span>';
     case 'line':
       return '<div class="ans-line"></div>';
-    case 'lines':
-      return '<div class="ans-line"></div>'.repeat(3);
+    case 'lines': // жауап парағына тек жауап жазылады, шешу жолы — тапсырма парағында/дәптерде
+      return '<div class="ans-line"></div>';
     case 'draw':
       return `<div class="grid"><span>${l.grid}</span></div>`;
     case 'order':
@@ -191,7 +204,12 @@ export function keyPage(p) {
       <tr><td></td><td><b>${l.sum}</b></td><td></td><td></td><td></td><td><b>${total}</b></td></tr></table>
     ${p.variants.map((v) => `<h3>${l.key} — ${esc(v.name)}</h3>
       <table><tr>${l.keyCols.map((c) => `<th>${c}</th>`).join('')}</tr>
-      ${v.tasks.map((t) => `<tr><td>${t.n}</td><td>${t.items.map((i) => `<div><b>${esc(i.label)}</b> ${esc(i.answer)}</div>`).join('')}${t.solution ? `<div class="sol">${nl(t.solution)}</div>` : ''}</td></tr>`).join('')}</table>`).join('')}
+      ${v.tasks.map((t) => {
+        const d = p.descriptors.find((x) => x.task_n === t.n);
+        const info = d ? d.items.map((i) => `${i.points} б. — ${esc(i.check || i.text)}`).join('<br>') : '';
+        return `<tr><td>${t.n}</td><td>${t.items.map((i) => `<div><b>${esc(i.label)}</b> ${esc(i.answer)}</div>`).join('')}${t.solution ? `<div class="sol">${nl(t.solution)}</div>` : ''}</td><td>${t.points}</td><td class="small">${info}</td></tr>`;
+      }).join('')}
+      <tr><td></td><td><b>${l.sum}</b></td><td><b>${total}</b></td><td></td></tr></table>`).join('')}
   </section>`;
 }
 

@@ -93,6 +93,14 @@ async function fillTopics() {
   }
 }
 ['#g-grade', '#g-subject'].forEach((s) => $(s).addEventListener('change', fillSources));
+// Аралық бағалаудың ең жоғары балы: 2-сынып — 12, 3 — 14, 4 — 16 (орыс тілі 16: 7 + 9)
+const MAX_POINTS = { 1: 12, 2: 12, 3: 14, 4: 16 };
+function fillPoints() {
+  const v = $('#g-subject').value === 'rus' ? 16 : MAX_POINTS[+$('#g-grade').value];
+  if (![...$('#g-points').options].some((o) => +o.value === v)) $('#g-points').add(new Option(v, v));
+  $('#g-points').value = v;
+}
+['#g-grade', '#g-subject'].forEach((s) => $(s).addEventListener('change', fillPoints));
 $('#g-quarter').addEventListener('change', fillTopics);
 $('#g-source').addEventListener('change', fillTopics);
 $('#g-lang').addEventListener('change', () => { fillSubjects(); fillSources(); });
@@ -591,7 +599,7 @@ function svgToPng(src) {
 }
 
 // ---------- Іске қосу ----------
-fillSubjects(); fillSources(); renderPassportList(); showCost();
+fillSubjects(); fillSources(); fillPoints(); renderPassportList(); showCost();
 // index.html#check — телефонда бірден тексеру бетін ашу үшін
 const startTab = settings.key ? location.hash.slice(1) : 'settings';
 document.querySelector(`nav [data-tab="${startTab}"]`)?.click();
