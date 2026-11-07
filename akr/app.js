@@ -289,7 +289,7 @@ function buildResult(p, g) {
   return {
     id: `r-${Date.now().toString(36)}`, passportId: p.id, ts: new Date().toISOString(),
     name: g.student_name, cls: $('#c-class').value.trim() || g.class_name, variant: variantIndex(p, g.variant),
-    legibility: g.legibility, note: g.general_comment, rows,
+    legibility: g.legibility, note: g.general_comment, rows, errorWork: g.error_work,
   };
 }
 
@@ -330,7 +330,9 @@ function showResult(p, r) {
         <div><b>${x.task_n}-т.</b> ${esc(x.text)} <small>(${x.points} б.)</small>
           <div class="sa ${x.confident ? '' : 'unsure'}">${x.confident ? '' : '⚠️ '}Оқушы: ${esc(x.sa)} — ${esc(x.comment)}</div></div>
       </div>`).join('')}
-      <button id="rv-save" class="primary">💾 Сақтау</button> <button id="rv-next">Келесі оқушы ➜</button>`;
+      ${errorWorkHTML(r)}
+      <button id="rv-save" class="primary">💾 Сақтау</button> <button id="rv-slip">🖨️ Оқушы парағы</button> <button id="rv-next">Келесі оқушы ➜</button>`;
+    $('#rv-slip').onclick = () => { sync(); printHTML(slipHTML(p, r)); };
     box.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { const x = r.rows[+b.dataset.i]; x.met = !x.met; x.edited = true; sync(); draw(); });
     $('#rv-save').onclick = () => {
       sync();
@@ -347,6 +349,32 @@ function showResult(p, r) {
   };
   draw();
   box.scrollIntoView({ behavior: 'smooth' });
+}
+
+// «Қатемен жұмыс» — модель әр оқушыға жазған жоспар (мұғалім басып шығарып береді).
+function errorWorkHTML(r) {
+  const w = r.errorWork;
+  if (!w) return '';
+  return `<div class="errwork"><h4>📌 Қатемен жұмыс</h4>${w.summary ? `<p>${esc(w.summary)}</p>` : ''}
+    ${w.steps.length ? `<table class="res"><tr><th>Дағды</th><th>Нені қайталау</th><th>Жаттығу</th></tr>
+      ${w.steps.map((s) => `<tr><td class="l">${esc(s.skill)}</td><td class="l">${esc(s.repeat)}</td><td class="l">${esc(s.exercise)}</td></tr>`).join('')}</table>` : ''}</div>`;
+}
+
+function slipHTML(p, r) {
+  const s = score(p, r);
+  const w = r.errorWork || { summary: '', steps: [] };
+  return `<section class="page">
+    <h2>${p.lang === 'ru' ? 'РАБОТА НАД ОШИБКАМИ' : 'ҚАТЕМЕН ЖҰМЫС'}</h2>
+    <p class="sub">${esc(p.title)}</p>
+    <p><b>${esc(r.name)}</b>, ${esc(r.cls)} • ${esc(p.variants[r.variant]?.name || '')}<br>
+      ${p.lang === 'ru' ? 'Балл' : 'Балл'}: <b>${s.total}/${s.max}</b> • ${s.pct}% • ${LEVELS[p.lang][s.level]}${s.mark !== '—' ? ` • «${s.mark}»` : ''}</p>
+    <table><tr><th>№</th><th>${p.lang === 'ru' ? 'Дескриптор' : 'Дескриптор'}</th><th></th></tr>
+      ${r.rows.map((x) => `<tr><td>${x.task_n}</td><td>${esc(x.text)}</td><td>${x.met ? '✔' : '✘'}</td></tr>`).join('')}</table>
+    ${w.summary ? `<p>${esc(w.summary)}</p>` : ''}
+    ${w.steps.length ? `<table><tr><th>${p.lang === 'ru' ? 'Навык' : 'Дағды'}</th><th>${p.lang === 'ru' ? 'Что повторить' : 'Нені қайталау'}</th><th>${p.lang === 'ru' ? 'Упражнение' : 'Жаттығу'}</th></tr>
+      ${w.steps.map((x) => `<tr><td>${esc(x.skill)}</td><td>${esc(x.repeat)}</td><td>${esc(x.exercise)}</td></tr>`).join('')}</table>` : ''}
+    <p class="sign">${p.lang === 'ru' ? 'Учитель' : 'Мұғалім'}: ____________________</p>
+  </section>`;
 }
 
 // =====================================================================
@@ -433,6 +461,14 @@ $('#r-xlsx').addEventListener('click', async () => {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
     ['Тапсырма', 'Дескриптор', 'Орындаған, %'], ...st.descPct.map((d) => [d.task, d.text, d.pct]),
   ]), '3-Дескрипторлар');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Оқушы', 'Сынып', 'Қорытынды', 'Дағды', 'Нені қайталау', 'Жаттығу'],
+    ...rs.flatMap((r) => {
+      const w = r.errorWork;
+      if (!w) return [[r.name, r.cls, '(жоқ)']];
+      return w.steps.length ? w.steps.map((x, i) => [i ? '' : r.name, i ? '' : r.cls, i ? '' : w.summary, x.skill, x.repeat, x.exercise]) : [[r.name, r.cls, w.summary]];
+    }),
+  ]), '4-Қатемен жұмыс');
   XLSX.writeFile(wb, `АКР-нәтиже-${p.subjectName}-${p.grade}сынып-${$('#r-class').value || 'барлығы'}.xlsx`);
 });
 
